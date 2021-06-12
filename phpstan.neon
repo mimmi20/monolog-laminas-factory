@@ -1,0 +1,20 @@
+parameters:
+  level: max
+  parallel:
+    maximumNumberOfProcesses: 1
+    processTimeout: 200.0
+  paths:
+    - src
+    - tests
+  scanFiles:
+    - %currentWorkingDirectory%/vendor/autoload.php
+    - %currentWorkingDirectory%/vendor/squizlabs/php_codesniffer/autoload.php
+    - %currentWorkingDirectory%/vendor/squizlabs/php_codesniffer/src/Util/Tokens.php
+  exceptionRules:
+    reportUnusedCatchesOfUncheckedExceptions: true
+    uncheckedExceptions: []
+  checkMissingIterableValueType: false
+  excludes_analyse:
+    - */tests/*/data/*
+#  ignoreErrors:
+#    - '~MockObject~'
