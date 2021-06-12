@@ -28,7 +28,7 @@
         <ini name="date.timezone" value="UTC"/>
     </php>
 
-    <testsuite name="Template Test Suite">
+    <testsuite name="monolog-laminas-factory Test Suite">
         <directory>tests/</directory>
     </testsuite>
 

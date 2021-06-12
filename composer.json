@@ -1,8 +1,8 @@
 {
-  "name": "mimmi20/template",
+  "name": "mimmi20/monolog-laminas-factory",
   "type": "library",
-  "description": "Provides a GitHub repository template for a PHP library, using GitHub actions.",
-  "homepage": "https://github.com/mimmi20/template",
+  "description": "Provides a Factory to build a Laminas Logger using Monolog.",
+  "homepage": "https://github.com/mimmi20/monolog-laminas-factory",
   "license": "MIT",
   "authors": [
     {
@@ -12,10 +12,16 @@
     }
   ],
   "require": {
-    "php": "^7.4.7 || ^8.0.0"
+    "php": "^7.4.7 || ^8.0.0",
+    "laminas/laminas-log": "^2.13.1",
+    "monolog/monolog": "^2.2.0",
+    "nikolaposa/cascader": "^1.3.0"
   },
   "require-dev": {
     "infection/infection": "^0.23.0",
+    "laminas/laminas-config": "^3.5.0",
+    "laminas/laminas-dependency-plugin": "^2.1.2",
+    "laminas/laminas-modulemanager": "^2.10.2",
     "mimmi20/coding-standard": "^2.2.2",
     "pepakriz/phpstan-exception-rules": "^0.11.7",
     "phpstan/extension-installer": "^1.1.0",
@@ -28,8 +34,23 @@
     "preferred-install": "dist",
     "sort-packages": true
   },
+  "extra": {
+    "laminas": {
+      "config-provider": "Mimmi20\\LoggerFactory\\ConfigProvider"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "Mimmi20\\LoggerFactory\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Mimmi20Test\\LoggerFactory\\": "tests/"
+    }
+  },
   "support": {
-    "issues": "https://github.com/mimmi20/template/issues",
-    "source": "https://github.com/mimmi20/template"
+    "issues": "https://github.com/mimmi20/monolog-laminas-factory/issues",
+    "source": "https://github.com/mimmi20/monolog-laminas-factory"
   }
 }

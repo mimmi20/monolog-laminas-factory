@@ -1,23 +1,21 @@
-# template
+# monolog-laminas-factory
 
-[![Latest Stable Version](https://poser.pugx.org/mimmi20/template/v/stable?format=flat-square)](https://packagist.org/packages/mimmi20/template)
-[![Latest Unstable Version](https://poser.pugx.org/mimmi20/template/v/unstable?format=flat-square)](https://packagist.org/packages/mimmi20/template)
-[![License](https://poser.pugx.org/mimmi20/template/license?format=flat-square)](https://packagist.org/packages/mimmi20/template)
+[![Latest Stable Version](https://poser.pugx.org/mimmi20/monolog-laminas-factory/v/stable?format=flat-square)](https://packagist.org/packages/mimmi20/monolog-laminas-factory)
+[![Latest Unstable Version](https://poser.pugx.org/mimmi20/monolog-laminas-factory/v/unstable?format=flat-square)](https://packagist.org/packages/mimmi20/monolog-laminas-factory)
+[![License](https://poser.pugx.org/mimmi20/monolog-laminas-factory/license?format=flat-square)](https://packagist.org/packages/mimmi20/monolog-laminas-factory)
 
 ## Code Status
 
-[![codecov](https://codecov.io/gh/mimmi20/template/branch/master/graph/badge.svg)](https://codecov.io/gh/mimmi20/template)
-[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/mimmi20/template.svg)](http://isitmaintained.com/project/mimmi20/template "Average time to resolve an issue")
-[![Percentage of issues still open](http://isitmaintained.com/badge/open/mimmi20/template.svg)](http://isitmaintained.com/project/mimmi20/template "Percentage of issues still open")
+[![codecov](https://codecov.io/gh/mimmi20/monolog-laminas-factory/branch/master/graph/badge.svg)](https://codecov.io/gh/mimmi20/monolog-laminas-factory)
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/mimmi20/monolog-laminas-factory.svg)](http://isitmaintained.com/project/mimmi20/monolog-laminas-factory "Average time to resolve an issue")
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/mimmi20/monolog-laminas-factory.svg)](http://isitmaintained.com/project/mimmi20/monolog-laminas-factory "Percentage of issues still open")
 
 ## Installation
-
-:bulb: This is a great place for showing how to install the package, see below:
 
 Run
 
 ```
-$ composer require mimmi20/template
+$ composer require mimmi20/monolog-laminas-factory
 ```
 
 ## Usage
