@@ -34,10 +34,9 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutname(): void
+    public function testInvoceWithoutName(): void
     {
         $requestedName = Logger::class;
-        $options       = ['abc' => 'xyz'];
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -59,7 +58,7 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutname2(): void
+    public function testInvoceWithoutName2(): void
     {
         $requestedName = Logger::class;
         $options       = [];
