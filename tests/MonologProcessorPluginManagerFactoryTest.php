@@ -137,7 +137,7 @@ final class MonologProcessorPluginManagerFactoryTest extends TestCase
     {
         $requestedName = PsrPlaceholder::class;
         $options       = ['abc' => 'xyz'];
-        $config        = ['monolog_formatters' => 'test'];
+        $config        = ['monolog_processors' => 'test'];
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -164,7 +164,7 @@ final class MonologProcessorPluginManagerFactoryTest extends TestCase
     {
         $requestedName = PsrPlaceholder::class;
         $options       = ['abc' => 'xyz'];
-        $config        = ['monolog_formatters' => []];
+        $config        = ['monolog_processors' => []];
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()

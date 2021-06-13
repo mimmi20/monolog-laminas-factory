@@ -137,7 +137,7 @@ final class MonologPluginManagerFactoryTest extends TestCase
     {
         $requestedName = HtmlFormatter::class;
         $options       = ['abc' => 'xyz'];
-        $config        = ['monolog_formatters' => 'test'];
+        $config        = ['monolog' => 'test'];
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -164,7 +164,7 @@ final class MonologPluginManagerFactoryTest extends TestCase
     {
         $requestedName = HtmlFormatter::class;
         $options       = ['abc' => 'xyz'];
-        $config        = ['monolog_formatters' => []];
+        $config        = ['monolog' => []];
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
