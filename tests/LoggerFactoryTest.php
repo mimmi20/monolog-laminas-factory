@@ -856,4 +856,102 @@ final class LoggerFactoryTest extends TestCase
         self::assertSame($writerPluginManager, $logger->getWriterPluginManager());
         self::assertSame($processorPluginManager, $logger->getProcessorPluginManager());
     }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig11(): void
+    {
+        $requestedName = Logger::class;
+        $config        = [
+            'logger' => [
+                'exceptionhandler' => true,
+                'errorhandler' => true,
+                'fatal_error_shutdownfunction' => true,
+                'name' => 'test-name',
+                'writers' => [
+                    ['name' => 'abc'],
+                ],
+                'processors' => [
+                    [
+                        'enabled' => true,
+                        'name' => 'xyz',
+                    ],
+                ],
+                'handlers' => [
+                    $this->createMock(HandlerInterface::class),
+                ],
+                'monolog_processors' => [
+                    static fn (array $record): array => $record,
+                ],
+            ],
+        ];
+
+        $processor = $this->getMockBuilder(WriterInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $processorPluginManager = $this->getMockBuilder(ProcessorPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $processorPluginManager->expects(self::never())
+            ->method('has');
+        $processorPluginManager->expects(self::once())
+            ->method('get')
+            ->with('xyz', null)
+            ->willReturn($processor);
+
+        $writer = $this->getMockBuilder(WriterInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $writerPluginManager = $this->getMockBuilder(WriterPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $writerPluginManager->expects(self::never())
+            ->method('has');
+        $writerPluginManager->expects(self::once())
+            ->method('get')
+            ->with('abc', null)
+            ->willReturn($writer);
+
+        $monolog = $this->getMockBuilder(\Monolog\Logger::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologPluginManager->expects(self::never())
+            ->method('has');
+        $monologPluginManager->expects(self::once())
+            ->method('get')
+            ->with(\Monolog\Logger::class)
+            ->willReturn($monolog);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::exactly(2))
+            ->method('has')
+            ->withConsecutive(['LogProcessorManager'], ['LogWriterManager'])
+            ->willReturnOnConsecutiveCalls(true, true);
+        $container->expects(self::exactly(4))
+            ->method('get')
+            ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'], [MonologPluginManager::class])
+            ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager, $monologPluginManager);
+
+        $factory = new LoggerFactory();
+
+        $logger = $factory($container, $requestedName, null);
+
+        self::assertInstanceOf(Logger::class, $logger);
+        self::assertInstanceOf(SplPriorityQueue::class, $logger->getWriters());
+        self::assertCount(3, $logger->getWriters());
+        self::assertInstanceOf(SplPriorityQueue::class, $logger->getProcessors());
+        self::assertCount(1, $logger->getProcessors());
+        self::assertSame($writerPluginManager, $logger->getWriterPluginManager());
+        self::assertSame($processorPluginManager, $logger->getProcessorPluginManager());
+    }
 }

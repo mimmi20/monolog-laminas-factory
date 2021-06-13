@@ -23,7 +23,6 @@ use Laminas\Log\Writer\WriterInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Container\ContainerExceptionInterface;
 
 use function array_key_exists;
@@ -172,15 +171,5 @@ final class LoggerFactory implements FactoryInterface
         }
 
         return $logger;
-    }
-
-    /**
-     * Factory for laminas-servicemanager v2.
-     *
-     * Proxies to `__invoke()`.
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator): Logger
-    {
-        return $this($serviceLocator, Logger::class);
     }
 }
