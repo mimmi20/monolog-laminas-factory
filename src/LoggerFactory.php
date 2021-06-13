@@ -23,7 +23,6 @@ use Laminas\Log\Writer\WriterInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Container\ContainerExceptionInterface;
 
 use function array_key_exists;
@@ -66,8 +65,14 @@ final class LoggerFactory implements FactoryInterface
             $logConfig = [];
         }
 
+        $loggerOptions = [
+            'exceptionhandler' => $logConfig['exceptionhandler'] ?? false,
+            'errorhandler' => $logConfig['errorhandler'] ?? false,
+            'fatal_error_shutdownfunction' => $logConfig['exceptionhandler'] ?? false,
+        ];
+
         try {
-            $logger = new Logger();
+            $logger = new Logger($loggerOptions);
         } catch (InvalidArgumentException $e) {
             throw new ServiceNotCreatedException('An error occured while initialing the logger', 0, $e);
         }
@@ -75,9 +80,7 @@ final class LoggerFactory implements FactoryInterface
         if ($container->has('LogProcessorManager')) {
             try {
                 $logger->setProcessorPluginManager($container->get('LogProcessorManager'));
-            } catch (ContainerExceptionInterface $e) {
-                throw new ServiceNotFoundException(sprintf('Could not find service %s', 'LogProcessorManager'), 0, $e);
-            } catch (InvalidArgumentException $e) {
+            } catch (ContainerExceptionInterface | InvalidArgumentException $e) {
                 throw new ServiceNotCreatedException('An error occured while setting the ProcessorPluginManager', 0, $e);
             }
         }
@@ -86,7 +89,7 @@ final class LoggerFactory implements FactoryInterface
             try {
                 $logger->setWriterPluginManager($container->get('LogWriterManager'));
             } catch (ContainerExceptionInterface $e) {
-                throw new ServiceNotFoundException(sprintf('Could not find service %s', 'LogWriterManager'), 0, $e);
+                throw new ServiceNotCreatedException('An error occured while setting the setWriterPluginManager', 0, $e);
             }
         }
 
@@ -115,7 +118,7 @@ final class LoggerFactory implements FactoryInterface
 
                 try {
                     $logger->addWriter($writer['name'], $priority, $writerOptions);
-                } catch (InvalidArgumentException $e) {
+                } catch (ServiceNotCreatedException | ServiceNotFoundException | InvalidArgumentException $e) {
                     throw new ServiceNotCreatedException('An error occured while adding a writer', 0, $e);
                 }
             }
@@ -140,7 +143,7 @@ final class LoggerFactory implements FactoryInterface
 
                 try {
                     $logger->addProcessor($processor['name'], $priority, $processorOptions);
-                } catch (InvalidArgumentException $e) {
+                } catch (ServiceNotCreatedException | ServiceNotFoundException | InvalidArgumentException $e) {
                     throw new ServiceNotCreatedException('An error occured while adding a processor', 0, $e);
                 }
             }
@@ -157,7 +160,7 @@ final class LoggerFactory implements FactoryInterface
                     ]
                 );
             } catch (ContainerExceptionInterface $e) {
-                throw new ServiceNotFoundException(sprintf('Could not find service %s', MonologPluginManager::class), 0, $e);
+                throw new ServiceNotCreatedException(sprintf('Could not find service %s', MonologPluginManager::class), 0, $e);
             }
 
             try {
@@ -168,15 +171,5 @@ final class LoggerFactory implements FactoryInterface
         }
 
         return $logger;
-    }
-
-    /**
-     * Factory for laminas-servicemanager v2.
-     *
-     * Proxies to `__invoke()`.
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator): Logger
-    {
-        return $this($serviceLocator, Logger::class);
     }
 }
