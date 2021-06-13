@@ -15,6 +15,7 @@ namespace Mimmi20\LoggerFactory;
 use Cascader\Cascader;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
@@ -39,7 +40,7 @@ final class MonologHandlerAbstractFactory implements AbstractFactoryInterface
      *
      * @param string                                                                    $requestedName
      * @param array<int|string, array<string, array<string, mixed>|string>|string>|null $options
-     * @phpstan-param array{parameters?: array, processors?: array{callable|array{enabled?: bool, name: string, parameters?: array{mixed}}}, formatter?: array{enabled?: bool, name: string, parameters?: array{mixed}}} $options
+     * @phpstan-param array{parameters?: array, processors?: string|array{callable|array{enabled?: bool, name?: string, parameters?: array}}, formatter?: string|FormatterInterface|array{enabled?: bool, name?: string, parameters?: array}} $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -63,10 +64,19 @@ final class MonologHandlerAbstractFactory implements AbstractFactoryInterface
             $handler instanceof ProcessableHandlerInterface
             && is_array($options)
             && array_key_exists('processors', $options)
-            && is_array($options['processors'])
         ) {
+            if (!is_array($options['processors'])) {
+                throw new ServiceNotCreatedException('Processors must be an Array');
+            }
+
+            try {
+                $monologProcessorPluginManager = $container->get(MonologProcessorPluginManager::class);
+            } catch (ContainerExceptionInterface $e) {
+                throw new ServiceNotFoundException(sprintf('Could not find service %s', MonologProcessorPluginManager::class), 0, $e);
+            }
+
             foreach (array_reverse($options['processors']) as $processorConfig) {
-                $processor = $this->createProcessor($processorConfig, $container);
+                $processor = $this->createProcessor($processorConfig, $monologProcessorPluginManager);
 
                 if (null === $processor) {
                     continue;
@@ -80,9 +90,20 @@ final class MonologHandlerAbstractFactory implements AbstractFactoryInterface
             $handler instanceof FormattableHandlerInterface
             && is_array($options)
             && array_key_exists('formatter', $options)
-            && is_array($options['formatter'])
         ) {
-            $formatter = $this->createFormatter($options['formatter'], $container);
+            if (!is_array($options['formatter']) && !$options['formatter'] instanceof FormatterInterface) {
+                throw new ServiceNotCreatedException(
+                    sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+                );
+            }
+
+            try {
+                $monologFormatterPluginManager = $container->get(MonologFormatterPluginManager::class);
+            } catch (ContainerExceptionInterface $e) {
+                throw new ServiceNotFoundException(sprintf('Could not find service %s', MonologFormatterPluginManager::class), 0, $e);
+            }
+
+            $formatter = $this->createFormatter($options['formatter'], $monologFormatterPluginManager);
 
             if (null !== $formatter) {
                 $handler->setFormatter($formatter);
@@ -106,13 +127,13 @@ final class MonologHandlerAbstractFactory implements AbstractFactoryInterface
     }
 
     /**
-     * @param array<string, array<string, mixed>|string>|callable $processorConfig
-     * @phpstan-param callable|array{enabled?: bool, name: string, parameters?: array{mixed}} $processorConfig
+     * @param array<string, array<string, mixed>|bool|string>|callable $processorConfig
+     * @phpstan-param callable|array{enabled?: bool, name?: string, parameters?: array} $processorConfig
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
      */
-    private function createProcessor($processorConfig, ContainerInterface $container): ?callable
+    private function createProcessor($processorConfig, AbstractPluginManager $monologProcessorPluginManager): ?callable
     {
         if (is_callable($processorConfig)) {
             return $processorConfig;
@@ -127,12 +148,12 @@ final class MonologHandlerAbstractFactory implements AbstractFactoryInterface
         }
 
         try {
-            $processor = $container->get(MonologProcessorPluginManager::class)->get(
+            $processor = $monologProcessorPluginManager->get(
                 $processorConfig['name'],
                 $processorConfig['parameters'] ?? []
             );
         } catch (ContainerExceptionInterface $e) {
-            throw new ServiceNotFoundException(sprintf('Could not find service %s', MonologProcessorPluginManager::class), 0, $e);
+            throw new ServiceNotFoundException(sprintf('Could not find service %s', $processorConfig['name']), 0, $e);
         }
 
         assert(is_callable($processor));
@@ -141,14 +162,18 @@ final class MonologHandlerAbstractFactory implements AbstractFactoryInterface
     }
 
     /**
-     * @param array<string, array<string, mixed>|string> $formatterConfig
-     * @phpstan-param array{enabled?: bool, name: string, parameters?: array{mixed}} $formatterConfig
+     * @param array<string, array<string, mixed>|bool|string>|FormatterInterface $formatterConfig
+     * @phpstan-param FormatterInterface|array{enabled?: bool, name?: string, parameters?: array} $formatterConfig
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
      */
-    private function createFormatter(array $formatterConfig, ContainerInterface $container): ?FormatterInterface
+    private function createFormatter($formatterConfig, AbstractPluginManager $monologFormatterPluginManager): ?FormatterInterface
     {
+        if ($formatterConfig instanceof FormatterInterface) {
+            return $formatterConfig;
+        }
+
         if (array_key_exists('enabled', $formatterConfig) && !$formatterConfig['enabled']) {
             return null;
         }
@@ -158,12 +183,12 @@ final class MonologHandlerAbstractFactory implements AbstractFactoryInterface
         }
 
         try {
-            $formatter = $container->get(MonologFormatterPluginManager::class)->get(
+            $formatter = $monologFormatterPluginManager->get(
                 $formatterConfig['name'],
                 $formatterConfig['parameters'] ?? []
             );
         } catch (ContainerExceptionInterface $e) {
-            throw new ServiceNotFoundException(sprintf('Could not find service %s', MonologFormatterPluginManager::class), 0, $e);
+            throw new ServiceNotFoundException(sprintf('Could not find service %s', $formatterConfig['name']), 0, $e);
         }
 
         assert($formatter instanceof FormatterInterface);

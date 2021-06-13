@@ -144,7 +144,7 @@ final class MonologFactory implements FactoryInterface
     }
 
     /**
-     * @param array<string, array<string, mixed>|string>|callable $processorConfig
+     * @param array<string, array<string, mixed>|bool|string>|callable $processorConfig
      * @phpstan-param callable|array{enabled?: bool, name: string, parameters?: array{mixed}} $processorConfig
      *
      * @throws ServiceNotCreatedException
