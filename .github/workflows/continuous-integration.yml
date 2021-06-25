@@ -23,7 +23,7 @@ jobs:
 
       matrix:
         operating-system:
-          - "ubuntu-latest"
+          - "ubuntu-20.04"
 
         php-version:
           - "7.4"
@@ -64,9 +64,8 @@ jobs:
 
       matrix:
         operating-system:
-          - "ubuntu-latest"
-#          - "windows-latest"
-#          - "macos-latest"
+          - "ubuntu-18.04"
+          - "ubuntu-20.04"
 
         php-version:
           - "7.4"
@@ -77,56 +76,6 @@ jobs:
 
         continue-on-error:
           - false
-
-#        include:
-#          - operating-system: "ubuntu-latest"
-#            php-version: "8.0"
-#            dependencies: "--prefer-lowest"
-#            continue-on-error: true
-#          - operating-system: "ubuntu-latest"
-#            php-version: "8.0"
-#            dependencies: ""
-#            continue-on-error: true
-#          - operating-system: "windows-latest"
-#            dependencies: "--prefer-lowest"
-#            php-version: "8.0"
-#            continue-on-error: true
-#          - operating-system: "windows-latest"
-#            dependencies: ""
-#            php-version: "8.0"
-#            continue-on-error: true
-#          - operating-system: "macos-latest"
-#            dependencies: "--prefer-lowest"
-#            php-version: "8.0"
-#            continue-on-error: true
-#          - operating-system: "macos-latest"
-#            dependencies: ""
-#            php-version: "8.0"
-#            continue-on-error: true
-#          - operating-system: "ubuntu-latest"
-#            php-version: "8.1"
-#            dependencies: "--prefer-lowest"
-#            continue-on-error: true
-#          - operating-system: "ubuntu-latest"
-#            php-version: "8.1"
-#            dependencies: ""
-#            continue-on-error: true
-#          - operating-system: "windows-latest"
-#            dependencies: "--prefer-lowest"
-#            php-version: "8.1"
-#            continue-on-error: true
-#          - operating-system: "windows-latest"
-#            dependencies: ""
-#            php-version: "8.1"
-#            continue-on-error: true
-#          - operating-system: "macos-latest"
-#            dependencies: "--prefer-lowest"
-#            php-version: "8.1"
-#            continue-on-error: true
-#          - operating-system: "macos-latest"
-#            dependencies: ""
-#            php-version: "8.1"
-#            continue-on-error: true
 
     steps:
       - name: "Checkout"
@@ -172,7 +121,7 @@ jobs:
 
       matrix:
         operating-system:
-          - "ubuntu-latest"
+          - "ubuntu-20.04"
 
         php-version:
           - "7.4"
@@ -224,7 +173,7 @@ jobs:
 
       matrix:
         operating-system:
-          - "ubuntu-latest"
+          - "ubuntu-20.04"
 
         php-version:
           - "7.4"
@@ -277,7 +226,7 @@ jobs:
 
       matrix:
         operating-system:
-          - "ubuntu-latest"
+          - "ubuntu-20.04"
 
         php-version:
           - "7.4"
@@ -329,9 +278,10 @@ jobs:
 
       matrix:
         operating-system:
-          - "ubuntu-latest"
-          - "windows-latest"
-          - "macos-latest"
+          - "ubuntu-18.04"
+          - "ubuntu-20.04"
+          - "windows-2019"
+          - "macos-10.15"
 
         php-version:
           - "7.4"
@@ -343,13 +293,13 @@ jobs:
           - false
 
         include:
-          - operating-system: "ubuntu-latest"
+          - operating-system: "ubuntu-20.04"
             php-version: "8.0"
             continue-on-error: true
-          - operating-system: "windows-latest"
+          - operating-system: "windows-2019"
             php-version: "8.0"
             continue-on-error: true
-          - operating-system: "macos-latest"
+          - operating-system: "macos-10.15"
             php-version: "8.0"
             continue-on-error: true
 
@@ -397,7 +347,7 @@ jobs:
 
       matrix:
         operating-system:
-          - "ubuntu-latest"
+          - "ubuntu-20.04"
 
         php-version:
           - "7.4"
@@ -407,7 +357,6 @@ jobs:
 
         coverage-drivers:
           - "xdebug"
-          - "pcov"
 
     steps:
       - name: "Checkout"
