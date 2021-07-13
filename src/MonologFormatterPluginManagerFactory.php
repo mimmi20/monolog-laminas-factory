@@ -26,8 +26,6 @@ use function sprintf;
 final class MonologFormatterPluginManagerFactory implements FactoryInterface
 {
     /**
-     * Create an object
-     *
      * @param string            $requestedName
      * @param array<mixed>|null $options
      *

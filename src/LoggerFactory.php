@@ -131,7 +131,7 @@ final class LoggerFactory implements FactoryInterface
                 }
 
                 if (!isset($processor['name'])) {
-                    throw new ServiceNotCreatedException('Options must contain a name for the processor');
+                    throw new ServiceNotCreatedException('Options must contain a type for the processor');
                 }
 
                 if (!is_string($processor['name']) && !($processor['name'] instanceof ProcessorInterface)) {

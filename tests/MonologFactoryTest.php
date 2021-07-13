@@ -265,7 +265,7 @@ final class MonologFactoryTest extends TestCase
         $factory = new MonologFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
-        $this->expectExceptionMessage('Options must contain a name for the handler');
+        $this->expectExceptionMessage('Options must contain a type for the handler');
         $this->expectExceptionCode(0);
 
         $factory($container, $requestedName, $options);
@@ -285,9 +285,10 @@ final class MonologFactoryTest extends TestCase
                 ['enabled' => false],
                 [
                     'enabled' => true,
-                    'name' => 'xyz',
+                    'type' => 'xyz',
+                    'options' => ['abc' => 'def'],
                 ],
-                ['name' => 'abc'],
+                ['type' => 'abc'],
             ],
         ];
 
@@ -298,7 +299,7 @@ final class MonologFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with('xyz', ['enabled' => true, 'name' => 'xyz'])
+            ->with('xyz', ['abc' => 'def'])
             ->willThrowException(new ServiceNotFoundException());
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -335,9 +336,10 @@ final class MonologFactoryTest extends TestCase
                 ['enabled' => false],
                 [
                     'enabled' => true,
-                    'name' => 'xyz',
+                    'type' => 'xyz',
+                    'options' => ['abc' => 'def'],
                 ],
-                ['name' => 'abc'],
+                ['type' => 'abc'],
                 $this->createMock(HandlerInterface::class),
             ],
         ];
@@ -351,7 +353,7 @@ final class MonologFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::exactly(2))
             ->method('get')
-            ->withConsecutive(['xyz', ['enabled' => true, 'name' => 'xyz']], ['abc', ['name' => 'abc']])
+            ->withConsecutive(['xyz', ['abc' => 'def']], ['abc', []])
             ->willReturn($handler);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -458,7 +460,7 @@ final class MonologFactoryTest extends TestCase
         $factory = new MonologFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
-        $this->expectExceptionMessage('Options must contain a name for the processor');
+        $this->expectExceptionMessage('Options must contain a type for the processor');
         $this->expectExceptionCode(0);
 
         $factory($container, $requestedName, $options);
@@ -478,9 +480,9 @@ final class MonologFactoryTest extends TestCase
                 ['enabled' => false],
                 [
                     'enabled' => true,
-                    'name' => 'xyz',
+                    'type' => 'xyz',
                 ],
-                ['name' => 'abc'],
+                ['type' => 'abc'],
             ],
         ];
 
@@ -528,10 +530,10 @@ final class MonologFactoryTest extends TestCase
                 ['enabled' => false],
                 [
                     'enabled' => true,
-                    'name' => 'xyz',
-                    'parameters' => ['efg' => 'ijk'],
+                    'type' => 'xyz',
+                    'options' => ['efg' => 'ijk'],
                 ],
-                ['name' => 'abc'],
+                ['type' => 'abc'],
                 static fn (array $record): array => $record,
             ],
         ];
