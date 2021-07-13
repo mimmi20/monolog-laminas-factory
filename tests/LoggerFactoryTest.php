@@ -604,7 +604,7 @@ final class LoggerFactoryTest extends TestCase
         $factory = new LoggerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
-        $this->expectExceptionMessage('Options must contain a name for the processor');
+        $this->expectExceptionMessage('Options must contain a type for the processor');
         $this->expectExceptionCode(0);
 
         $factory($container, $requestedName, null);

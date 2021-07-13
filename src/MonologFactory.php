@@ -30,7 +30,6 @@ use function array_key_exists;
 use function array_reverse;
 use function assert;
 use function is_array;
-use function is_callable;
 use function is_iterable;
 use function is_string;
 use function sprintf;
@@ -40,9 +39,11 @@ use function sprintf;
  */
 final class MonologFactory implements FactoryInterface
 {
+    use CreateProcessorTrait;
+
     /**
      * @param string $requestedName
-     * @phpstan-param array{name?: string, timezone?: (bool|string|DateTimeZone), handlers?: string|array{HandlerInterface|array{enabled?: bool, name?: string}}, processors?: (callable|string|array{enabled?: bool, name?: string, parameters?: array})}|null $options
+     * @phpstan-param array{name?: string, timezone?: (bool|string|DateTimeZone), handlers?: string|array{HandlerInterface|array{enabled?: bool, type?: string}}, processors?: (callable|string|array{enabled?: bool, type?: string, options?: array})}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -95,21 +96,25 @@ final class MonologFactory implements FactoryInterface
                     continue;
                 }
 
+                if (!is_array($handlerArray)) {
+                    continue;
+                }
+
                 if (array_key_exists('enabled', $handlerArray) && !$handlerArray['enabled']) {
                     continue;
                 }
 
-                if (!isset($handlerArray['name'])) {
-                    throw new ServiceNotCreatedException('Options must contain a name for the handler');
+                if (!isset($handlerArray['type'])) {
+                    throw new ServiceNotCreatedException('Options must contain a type for the handler');
                 }
 
                 try {
                     $handler = $monologHandlerPluginManager->get(
-                        $handlerArray['name'],
-                        $handlerArray
+                        $handlerArray['type'],
+                        $handlerArray['options'] ?? []
                     );
                 } catch (ServiceNotFoundException | InvalidServiceException $e) {
-                    throw new ServiceNotFoundException(sprintf('Could not find service %s', $handlerArray['name']), 0, $e);
+                    throw new ServiceNotFoundException(sprintf('Could not find service %s', $handlerArray['type']), 0, $e);
                 }
 
                 assert($handler instanceof HandlerInterface);
@@ -141,40 +146,5 @@ final class MonologFactory implements FactoryInterface
         }
 
         return $monolog;
-    }
-
-    /**
-     * @param array<string, array<string, mixed>|bool|string>|callable $processorConfig
-     * @phpstan-param callable|array{enabled?: bool, name: string, parameters?: array{mixed}} $processorConfig
-     *
-     * @throws ServiceNotCreatedException
-     * @throws ServiceNotFoundException
-     */
-    private function createProcessor($processorConfig, AbstractPluginManager $monologProcessorPluginManager): ?callable
-    {
-        if (is_callable($processorConfig)) {
-            return $processorConfig;
-        }
-
-        if (array_key_exists('enabled', $processorConfig) && !$processorConfig['enabled']) {
-            return null;
-        }
-
-        if (!array_key_exists('name', $processorConfig)) {
-            throw new ServiceNotCreatedException('Options must contain a name for the processor');
-        }
-
-        try {
-            $processor = $monologProcessorPluginManager->get(
-                $processorConfig['name'],
-                $processorConfig['parameters'] ?? []
-            );
-        } catch (ServiceNotFoundException | InvalidServiceException $e) {
-            throw new ServiceNotFoundException(sprintf('Could not find service %s', $processorConfig['name']), 0, $e);
-        }
-
-        assert(is_callable($processor));
-
-        return $processor;
     }
 }
