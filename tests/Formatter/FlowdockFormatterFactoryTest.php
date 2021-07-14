@@ -14,13 +14,15 @@ namespace Mimmi20Test\LoggerFactory\Formatter;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Mimmi20\LoggerFactory\Formatter\ElasticaFormatterFactory;
-use Monolog\Formatter\ElasticaFormatter;
+use Mimmi20\LoggerFactory\Formatter\FlowdockFormatterFactory;
+use Monolog\Formatter\FlowdockFormatter;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
+use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
-final class ElasticaFormatterFactoryTest extends TestCase
+final class FlowdockFormatterFactoryTest extends TestCase
 {
     /**
      * @throws Exception
@@ -35,7 +37,7 @@ final class ElasticaFormatterFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new ElasticaFormatterFactory();
+        $factory = new FlowdockFormatterFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
@@ -47,7 +49,7 @@ final class ElasticaFormatterFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutIndex(): void
+    public function testInvoceWithoutSource(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -57,22 +59,21 @@ final class ElasticaFormatterFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new ElasticaFormatterFactory();
+        $factory = new FlowdockFormatterFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('No index provided');
+        $this->expectExceptionMessage('No source provided');
 
         $factory($container, '', []);
     }
 
     /**
      * @throws Exception
-     * @throws InvalidArgumentException
      */
-    public function testInvoceWithIndex(): void
+    public function testInvoceWithoutSourceEmail(): void
     {
-        $index = 'abc';
+        $source = 'abc';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -82,23 +83,24 @@ final class ElasticaFormatterFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new ElasticaFormatterFactory();
+        $factory = new FlowdockFormatterFactory();
 
-        $formatter = $factory($container, '', ['index' => $index]);
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No sourceEmail provided');
 
-        self::assertInstanceOf(ElasticaFormatter::class, $formatter);
-        self::assertSame($index, $formatter->getIndex());
-        self::assertSame('', $formatter->getType());
+        $factory($container, '', ['source' => $source]);
     }
 
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
-    public function testInvoceWithIndexAndType(): void
+    public function testInvoceWithSouceAndSourceEmail(): void
     {
-        $index = 'abc';
-        $type  = 'xyz';
+        $source      = 'abc';
+        $sourceEmail = 'xyz';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -108,12 +110,20 @@ final class ElasticaFormatterFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new ElasticaFormatterFactory();
+        $factory = new FlowdockFormatterFactory();
 
-        $formatter = $factory($container, '', ['index' => $index, 'type' => $type]);
+        $formatter = $factory($container, '', ['source' => $source, 'sourceEmail' => $sourceEmail]);
 
-        self::assertInstanceOf(ElasticaFormatter::class, $formatter);
-        self::assertSame($index, $formatter->getIndex());
-        self::assertSame($type, $formatter->getType());
+        self::assertInstanceOf(FlowdockFormatter::class, $formatter);
+
+        $s = new ReflectionProperty($formatter, 'source');
+        $s->setAccessible(true);
+
+        self::assertSame($source, $s->getValue($formatter));
+
+        $se = new ReflectionProperty($formatter, 'sourceEmail');
+        $se->setAccessible(true);
+
+        self::assertSame($sourceEmail, $se->getValue($formatter));
     }
 }

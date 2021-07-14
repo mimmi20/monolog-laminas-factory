@@ -39,7 +39,7 @@ final class LogmaticFormatterFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): LogmaticFormatter
     {
-        $batchMode     =            JsonFormatter::BATCH_MODE_JSON;
+        $batchMode     = JsonFormatter::BATCH_MODE_JSON;
         $appendNewline = true;
 
         if (is_array($options)) {

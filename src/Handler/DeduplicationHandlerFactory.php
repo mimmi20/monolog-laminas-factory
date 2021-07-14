@@ -59,7 +59,7 @@ final class DeduplicationHandlerFactory implements FactoryInterface
 
         $handler = $this->getHandler($container, $options['handler']);
 
-        $deduplicationStore =            $options['deduplicationStore'] ?? null;
+        $deduplicationStore = $options['deduplicationStore'] ?? null;
         $deduplicationLevel = $options['deduplicationLevel'] ?? LogLevel::ERROR;
         $time               = (int) ($options['time'] ?? 60);
 

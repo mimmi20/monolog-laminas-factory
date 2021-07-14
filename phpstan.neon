@@ -24,3 +24,4 @@ parameters:
     - '~Laminas\\ServiceManager\\Exception\\(ServiceNotCreatedException|ServiceNotFoundException) is never thrown in the corresponding try block~'
     - '~MongoDB\\Client~'
     - '~PhpAmqpLib\\Channel\\AMQPChannel~'
+    - '~Call to deprecated method getType\(\) of class Monolog\\Formatter\\ElasticaFormatter~'

@@ -76,7 +76,7 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
         }
 
         $stopBuffering = (bool) ($options['stopBuffering'] ?? true);
-        $passthruLevel =            $options['passthruLevel'] ?? null;
+        $passthruLevel = $options['passthruLevel'] ?? null;
 
         $handler = new FingersCrossedHandler(
             $handler,

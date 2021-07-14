@@ -46,17 +46,17 @@ final class LogstashFormatterFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No applicationName provided');
         }
 
-        $applicationName =           (string) $options['applicationName'];
-        $systemName      =           null;
+        $applicationName = (string) $options['applicationName'];
+        $systemName      = null;
         $extraPrefix     = 'extra';
         $contextPrefix   = 'context';
 
         if (array_key_exists('systemName', $options)) {
-            $systemName =          (string) $options['systemName'];
+            $systemName = (string) $options['systemName'];
         }
 
         if (array_key_exists('extraPrefix', $options)) {
-            $extraPrefix =          (string) $options['extraPrefix'];
+            $extraPrefix = (string) $options['extraPrefix'];
         }
 
         if (array_key_exists('contextPrefix', $options)) {

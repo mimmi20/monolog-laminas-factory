@@ -75,7 +75,7 @@ final class SendGridHandlerFactory implements FactoryInterface
         $apiUser = (string) $options['apiUser'];
         $apiKey  = (string) $options['apiKey'];
         $from    = (string) $options['from'];
-        $to      =           $options['to'];
+        $to      = $options['to'];
         $subject = (string) $options['subject'];
 
         $level  = LogLevel::DEBUG;
