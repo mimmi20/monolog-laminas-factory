@@ -44,18 +44,18 @@ final class LogglyFormatterFactory implements FactoryInterface
 
         if (is_array($options)) {
             if (array_key_exists('batchMode', $options)) {
-                $batchMode = (int) $options['batchMode'];
+                $batchMode = $options['batchMode'];
             }
 
             if (array_key_exists('appendNewline', $options)) {
-                $appendNewline = (bool) $options['appendNewline'];
+                $appendNewline = $options['appendNewline'];
             }
         }
 
         $formatter = new LogglyFormatter($batchMode, $appendNewline);
 
         if (is_array($options) && array_key_exists('includeStacktraces', $options)) {
-            $formatter->includeStacktraces((bool) $options['includeStacktraces']);
+            $formatter->includeStacktraces($options['includeStacktraces']);
         }
 
         return $formatter;

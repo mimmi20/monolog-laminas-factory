@@ -28,7 +28,7 @@ final class LogmaticFormatterFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (int|bool|string)>|null $options
-     * @phpstan-param array{batchMode?: JsonFormatter::BATCH_MODE_*, appendNewline?: bool, hostname?: string, appName?: string}|null $options
+     * @phpstan-param array{batchMode?: JsonFormatter::BATCH_MODE_*, appendNewline?: bool, hostname?: string, appName?: string, includeStacktraces?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -44,11 +44,11 @@ final class LogmaticFormatterFactory implements FactoryInterface
 
         if (is_array($options)) {
             if (array_key_exists('batchMode', $options)) {
-                $batchMode = (int) $options['batchMode'];
+                $batchMode = $options['batchMode'];
             }
 
             if (array_key_exists('appendNewline', $options)) {
-                $appendNewline = (bool) $options['appendNewline'];
+                $appendNewline = $options['appendNewline'];
             }
         }
 
@@ -56,11 +56,15 @@ final class LogmaticFormatterFactory implements FactoryInterface
 
         if (is_array($options)) {
             if (array_key_exists('hostname', $options)) {
-                $formatter->setHostname((string) $options['hostname']);
+                $formatter->setHostname($options['hostname']);
             }
 
             if (array_key_exists('appName', $options)) {
-                $formatter->setAppname((string) $options['appName']);
+                $formatter->setAppname($options['appName']);
+            }
+
+            if (array_key_exists('includeStacktraces', $options)) {
+                $formatter->includeStacktraces($options['includeStacktraces']);
             }
         }
 

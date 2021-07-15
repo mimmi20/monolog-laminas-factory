@@ -13,16 +13,16 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Formatter;
 
 use Interop\Container\ContainerInterface;
-use Mimmi20\LoggerFactory\Formatter\LogglyFormatterFactory;
+use Mimmi20\LoggerFactory\Formatter\LogmaticFormatterFactory;
 use Monolog\Formatter\JsonFormatter;
-use Monolog\Formatter\LogglyFormatter;
+use Monolog\Formatter\LogmaticFormatter;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
-final class LogglyFormatterFactoryTest extends TestCase
+final class LogmaticFormatterFactoryTest extends TestCase
 {
     /**
      * @throws Exception
@@ -39,12 +39,12 @@ final class LogglyFormatterFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new LogglyFormatterFactory();
+        $factory = new LogmaticFormatterFactory();
 
         $formatter = $factory($container, '');
 
-        self::assertInstanceOf(LogglyFormatter::class, $formatter);
-        self::assertSame(JsonFormatter::BATCH_MODE_NEWLINES, $formatter->getBatchMode());
+        self::assertInstanceOf(LogmaticFormatter::class, $formatter);
+        self::assertSame(JsonFormatter::BATCH_MODE_JSON, $formatter->getBatchMode());
         self::assertTrue($formatter->isAppendingNewlines());
 
         $ig = new ReflectionProperty($formatter, 'ignoreEmptyContextAndExtra');
@@ -56,6 +56,16 @@ final class LogglyFormatterFactoryTest extends TestCase
         $st->setAccessible(true);
 
         self::assertFalse($st->getValue($formatter));
+
+        $h = new ReflectionProperty($formatter, 'hostname');
+        $h->setAccessible(true);
+
+        self::assertSame('', $h->getValue($formatter));
+
+        $a = new ReflectionProperty($formatter, 'appname');
+        $a->setAccessible(true);
+
+        self::assertSame('', $a->getValue($formatter));
     }
 
     /**
@@ -73,12 +83,12 @@ final class LogglyFormatterFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new LogglyFormatterFactory();
+        $factory = new LogmaticFormatterFactory();
 
         $formatter = $factory($container, '', []);
 
-        self::assertInstanceOf(LogglyFormatter::class, $formatter);
-        self::assertSame(JsonFormatter::BATCH_MODE_NEWLINES, $formatter->getBatchMode());
+        self::assertInstanceOf(LogmaticFormatter::class, $formatter);
+        self::assertSame(JsonFormatter::BATCH_MODE_JSON, $formatter->getBatchMode());
         self::assertTrue($formatter->isAppendingNewlines());
 
         $ig = new ReflectionProperty($formatter, 'ignoreEmptyContextAndExtra');
@@ -90,6 +100,16 @@ final class LogglyFormatterFactoryTest extends TestCase
         $st->setAccessible(true);
 
         self::assertFalse($st->getValue($formatter));
+
+        $h = new ReflectionProperty($formatter, 'hostname');
+        $h->setAccessible(true);
+
+        self::assertSame('', $h->getValue($formatter));
+
+        $a = new ReflectionProperty($formatter, 'appname');
+        $a->setAccessible(true);
+
+        self::assertSame('', $a->getValue($formatter));
     }
 
     /**
@@ -102,6 +122,8 @@ final class LogglyFormatterFactoryTest extends TestCase
         $batchMode     = JsonFormatter::BATCH_MODE_NEWLINES;
         $appendNewline = false;
         $include       = true;
+        $hostname      = 'abc';
+        $appname       = 'xyz';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -111,11 +133,11 @@ final class LogglyFormatterFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new LogglyFormatterFactory();
+        $factory = new LogmaticFormatterFactory();
 
-        $formatter = $factory($container, '', ['batchMode' => $batchMode, 'appendNewline' => $appendNewline, 'includeStacktraces' => $include]);
+        $formatter = $factory($container, '', ['batchMode' => $batchMode, 'appendNewline' => $appendNewline, 'includeStacktraces' => $include, 'hostname' => $hostname, 'appName' => $appname]);
 
-        self::assertInstanceOf(LogglyFormatter::class, $formatter);
+        self::assertInstanceOf(LogmaticFormatter::class, $formatter);
         self::assertSame($batchMode, $formatter->getBatchMode());
         self::assertFalse($formatter->isAppendingNewlines());
 
@@ -128,6 +150,16 @@ final class LogglyFormatterFactoryTest extends TestCase
         $st->setAccessible(true);
 
         self::assertTrue($st->getValue($formatter));
+
+        $h = new ReflectionProperty($formatter, 'hostname');
+        $h->setAccessible(true);
+
+        self::assertSame($hostname, $h->getValue($formatter));
+
+        $a = new ReflectionProperty($formatter, 'appname');
+        $a->setAccessible(true);
+
+        self::assertSame($appname, $a->getValue($formatter));
     }
 
     /**
@@ -140,6 +172,8 @@ final class LogglyFormatterFactoryTest extends TestCase
         $batchMode     = JsonFormatter::BATCH_MODE_JSON;
         $appendNewline = false;
         $include       = true;
+        $hostname      = 'abc';
+        $appname       = 'xyz';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -149,11 +183,11 @@ final class LogglyFormatterFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new LogglyFormatterFactory();
+        $factory = new LogmaticFormatterFactory();
 
-        $formatter = $factory($container, '', ['batchMode' => $batchMode, 'appendNewline' => $appendNewline, 'includeStacktraces' => $include]);
+        $formatter = $factory($container, '', ['batchMode' => $batchMode, 'appendNewline' => $appendNewline, 'includeStacktraces' => $include, 'hostname' => $hostname, 'appName' => $appname]);
 
-        self::assertInstanceOf(LogglyFormatter::class, $formatter);
+        self::assertInstanceOf(LogmaticFormatter::class, $formatter);
         self::assertSame($batchMode, $formatter->getBatchMode());
         self::assertFalse($formatter->isAppendingNewlines());
 
@@ -166,5 +200,15 @@ final class LogglyFormatterFactoryTest extends TestCase
         $st->setAccessible(true);
 
         self::assertTrue($st->getValue($formatter));
+
+        $h = new ReflectionProperty($formatter, 'hostname');
+        $h->setAccessible(true);
+
+        self::assertSame($hostname, $h->getValue($formatter));
+
+        $a = new ReflectionProperty($formatter, 'appname');
+        $a->setAccessible(true);
+
+        self::assertSame($appname, $a->getValue($formatter));
     }
 }
