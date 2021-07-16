@@ -41,7 +41,7 @@ final class UidProcessorFactory implements FactoryInterface
         $length = 7;
 
         if (is_array($options) && array_key_exists('length', $options)) {
-            $length = (int) $options['length'];
+            $length = $options['length'];
         }
 
         return new UidProcessor($length);

@@ -25,3 +25,4 @@ parameters:
     - '~MongoDB\\Client~'
     - '~PhpAmqpLib\\Channel\\AMQPChannel~'
     - '~Call to deprecated method getType\(\) of class Monolog\\Formatter\\ElasticaFormatter~'
+    - '~Parameter #2 \$extraFields of class Monolog\\Processor\\WebProcessor constructor expects~'

@@ -28,7 +28,7 @@ final class IntrospectionProcessorFactory implements FactoryInterface
     /**
      * @param string                                              $requestedName
      * @param array<string, (int|string|array<int, string>)>|null $options
-     * @phpstan-param array{level?: (string|LogLevel::*), skipClassesPartials?: array<int, string>, skipStackFramesCount?: int}|null $options
+     * @phpstan-param array{level?: (string|LogLevel::*), skipClassesPartials?: array<int, string>|string, skipStackFramesCount?: int}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -53,7 +53,7 @@ final class IntrospectionProcessorFactory implements FactoryInterface
             }
 
             if (array_key_exists('skipStackFramesCount', $options)) {
-                $skipFrameCount = (int) $options['skipStackFramesCount'];
+                $skipFrameCount = $options['skipStackFramesCount'];
             }
         }
 
