@@ -35,9 +35,9 @@ final class PushoverHandlerFactory implements FactoryInterface
     use AddProcessorTrait;
 
     /**
-     * @param string                                $requestedName
-     * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{token?: string, users?: array<string>, title?: string, level?: (string|LogLevel::*), bubble?: bool, useSSL?: bool, highPriorityLevel?: (string|LogLevel::*), emergencyLevel?: (string|LogLevel::*), retry?: int, expire?: int}|null $options
+     * @param string                                              $requestedName
+     * @param array<string, (string|int|bool|array<string>)>|null $options
+     * @phpstan-param array{token?: string, users?: array<string>|string, title?: string, level?: (string|LogLevel::*), bubble?: bool, useSSL?: bool, highPriorityLevel?: (string|LogLevel::*), emergencyLevel?: (string|LogLevel::*), retry?: int, expire?: int}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -60,8 +60,8 @@ final class PushoverHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No users provided');
         }
 
-        $token             = (string) $options['token'];
-        $users             = (array) $options['users'];
+        $token             = $options['token'];
+        $users             = $options['users'];
         $title             = null;
         $level             = LogLevel::DEBUG;
         $bubble            = true;
@@ -72,7 +72,7 @@ final class PushoverHandlerFactory implements FactoryInterface
         $expire            = 25200;
 
         if (array_key_exists('title', $options)) {
-            $title = (string) $options['title'];
+            $title = $options['title'];
         }
 
         if (array_key_exists('level', $options)) {
@@ -80,11 +80,11 @@ final class PushoverHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         if (array_key_exists('useSSL', $options)) {
-            $useSSL = (bool) $options['useSSL'];
+            $useSSL = $options['useSSL'];
         }
 
         if (array_key_exists('highPriorityLevel', $options)) {
@@ -96,11 +96,11 @@ final class PushoverHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('retry', $options)) {
-            $retry = (int) $options['retry'];
+            $retry = $options['retry'];
         }
 
         if (array_key_exists('expire', $options)) {
-            $expire = (int) $options['expire'];
+            $expire = $options['expire'];
         }
 
         $handler = new PushoverHandler(
