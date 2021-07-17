@@ -106,7 +106,7 @@ final class StreamHandlerFactory implements FactoryInterface
     /**
      * @param bool|int|resource|string $stream
      *
-     * @return resource|string
+     * @return resource|string|null
      *
      * @throws ServiceNotFoundException
      */
@@ -117,7 +117,7 @@ final class StreamHandlerFactory implements FactoryInterface
         }
 
         if (!is_string($stream)) {
-            throw new ServiceNotFoundException('invalid stream given');
+            return null;
         }
 
         if ($container->has($stream)) {

@@ -146,9 +146,9 @@ final class StreamHandlerFactoryTest extends TestCase
 
         $factory = new StreamHandlerFactory();
 
-        $this->expectException(ServiceNotFoundException::class);
+        $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('invalid stream given');
+        $this->expectExceptionMessage(sprintf('Could not create %s', StreamHandler::class));
 
         $factory($container, '', ['stream' => $stream]);
     }
@@ -799,9 +799,6 @@ final class StreamHandlerFactoryTest extends TestCase
         $type           = 'elastica';
         $options        = ['abc' => 'def'];
         $formatter      = ['type' => $type, 'options' => $options];
-        $formatterClass = $this->getMockBuilder(LineFormatter::class)
-            ->disableOriginalConstructor()
-            ->getMock();
 
         $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -1088,5 +1085,71 @@ final class StreamHandlerFactoryTest extends TestCase
         self::assertSame($processor2, $processors[0]);
         self::assertSame($processor1, $processors[1]);
         self::assertSame($processor3, $processors[2]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ServiceNotFoundException
+     */
+    public function testInvoceWithConfigAndProcessors4(): void
+    {
+        $streamName     = 'xyz';
+        $stream         = 'http://test.test';
+        $level          = LogLevel::ALERT;
+        $bubble         = false;
+        $filePermission = 0755;
+        $useLocking     = false;
+        $processor3     = static fn (array $record): array => $record;
+        $processors     = [
+            [
+                'enabled' => true,
+                'type' => 'xyz',
+                'options' => ['efg' => 'ijk'],
+            ],
+            [
+                'enabled' => false,
+                'type' => 'def',
+            ],
+            ['type' => 'abc'],
+            $processor3,
+        ];
+
+        $monologProcessorPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologProcessorPluginManager->expects(self::never())
+            ->method('has');
+        $monologProcessorPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::once())
+            ->method('has')
+            ->with($streamName)
+            ->willReturn(true);
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([$streamName], [MonologProcessorPluginManager::class])
+            ->willReturnCallback(
+                static function (string $var) use ($streamName, $stream) {
+                    if ($var === $streamName) {
+                        return $stream;
+                    }
+
+                    throw new ServiceNotFoundException();
+                }
+            );
+
+        $factory = new StreamHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not find service %s', MonologProcessorPluginManager::class)
+        );
+
+        $factory($container, '', ['stream' => $streamName, 'level' => $level, 'bubble' => $bubble, 'filePermission' => $filePermission, 'useLocking' => $useLocking, 'processors' => $processors]);
     }
 }
