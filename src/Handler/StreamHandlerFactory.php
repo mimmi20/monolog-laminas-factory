@@ -42,7 +42,7 @@ final class StreamHandlerFactory implements FactoryInterface
     /**
      * @param string                                         $requestedName
      * @param array<string, (string|int|bool|resource)>|null $options
-     * @phpstan-param array{stream: (string|resource), level?: (string|LogLevel::*), bubble?: bool, filePermission?: int, useLocking?: bool}|null $options
+     * @phpstan-param array{stream?: (bool|int|string|resource), level?: (string|LogLevel::*), bubble?: bool, filePermission?: int, useLocking?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -72,15 +72,15 @@ final class StreamHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         if (array_key_exists('filePermission', $options)) {
-            $filePermission = (int) $options['filePermission'];
+            $filePermission = $options['filePermission'];
         }
 
         if (array_key_exists('useLocking', $options)) {
-            $useLocking = (bool) $options['useLocking'];
+            $useLocking = $options['useLocking'];
         }
 
         try {
@@ -104,7 +104,7 @@ final class StreamHandlerFactory implements FactoryInterface
     }
 
     /**
-     * @param resource|string $stream
+     * @param bool|int|resource|string $stream
      *
      * @return resource|string
      *
@@ -128,6 +128,6 @@ final class StreamHandlerFactory implements FactoryInterface
             }
         }
 
-        return (string) $stream;
+        return $stream;
     }
 }

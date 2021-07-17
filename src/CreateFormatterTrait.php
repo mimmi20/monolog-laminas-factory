@@ -13,14 +13,12 @@ declare(strict_types = 1);
 namespace Mimmi20\LoggerFactory;
 
 use Laminas\ServiceManager\AbstractPluginManager;
-use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Monolog\Formatter\FormatterInterface;
+use Psr\Container\ContainerExceptionInterface;
 
 use function array_key_exists;
-use function assert;
-use function is_array;
 use function sprintf;
 
 trait CreateFormatterTrait
@@ -38,10 +36,6 @@ trait CreateFormatterTrait
             return $formatterConfig;
         }
 
-        if (!is_array($formatterConfig)) {
-            throw new ServiceNotCreatedException('Options must be an Array');
-        }
-
         if (array_key_exists('enabled', $formatterConfig) && !$formatterConfig['enabled']) {
             return null;
         }
@@ -51,16 +45,16 @@ trait CreateFormatterTrait
         }
 
         try {
-            $formatter = $monologFormatterPluginManager->get(
+            return $monologFormatterPluginManager->get(
                 $formatterConfig['type'],
                 $formatterConfig['options'] ?? []
             );
-        } catch (ServiceNotFoundException | InvalidServiceException $e) {
-            throw new ServiceNotFoundException(sprintf('Could not find service %s', $formatterConfig['type']), 0, $e);
+        } catch (ContainerExceptionInterface $e) {
+            throw new ServiceNotFoundException(
+                sprintf('Could not find service %s', $formatterConfig['type']),
+                0,
+                $e
+            );
         }
-
-        assert($formatter instanceof FormatterInterface);
-
-        return $formatter;
     }
 }

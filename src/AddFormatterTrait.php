@@ -54,7 +54,11 @@ trait AddFormatterTrait
         try {
             $monologFormatterPluginManager = $container->get(MonologFormatterPluginManager::class);
         } catch (ContainerExceptionInterface $e) {
-            throw new ServiceNotFoundException(sprintf('Could not find service %s', MonologFormatterPluginManager::class), 0, $e);
+            throw new ServiceNotFoundException(
+                sprintf('Could not find service %s', MonologFormatterPluginManager::class),
+                0,
+                $e
+            );
         }
 
         $formatter = $this->createFormatter($options['formatter'], $monologFormatterPluginManager);

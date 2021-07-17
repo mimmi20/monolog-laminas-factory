@@ -13,12 +13,11 @@ declare(strict_types = 1);
 namespace Mimmi20\LoggerFactory;
 
 use Laminas\ServiceManager\AbstractPluginManager;
-use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function is_callable;
 use function sprintf;
@@ -51,16 +50,16 @@ trait CreateProcessorTrait
         }
 
         try {
-            $processor = $monologProcessorPluginManager->get(
+            return $monologProcessorPluginManager->get(
                 $processorConfig['type'],
                 $processorConfig['options'] ?? []
             );
-        } catch (ServiceNotFoundException | InvalidServiceException $e) {
-            throw new ServiceNotFoundException(sprintf('Could not find service %s', $processorConfig['type']), 0, $e);
+        } catch (ContainerExceptionInterface $e) {
+            throw new ServiceNotFoundException(
+                sprintf('Could not find service %s', $processorConfig['type']),
+                0,
+                $e
+            );
         }
-
-        assert(is_callable($processor));
-
-        return $processor;
     }
 }
