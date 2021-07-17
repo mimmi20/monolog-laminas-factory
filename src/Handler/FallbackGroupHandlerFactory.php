@@ -19,7 +19,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\FallbackGroupHandler;
-use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\ProcessableHandlerInterface;
 
@@ -36,7 +35,7 @@ final class FallbackGroupHandlerFactory
     /**
      * @param string                                            $requestedName
      * @param array<string, (array<string>|iterable|bool)>|null $options
-     * @phpstan-param array{handlers?: bool|array<array{type: string, enabled?: bool, options?: array<mixed>}>, bubble?: bool}|null $options
+     * @phpstan-param array{handlers?: bool|array<array{type?: string, enabled?: bool, options?: array<mixed>}>, bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -65,10 +64,8 @@ final class FallbackGroupHandlerFactory
         );
 
         assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
         assert($handler instanceof ProcessableHandlerInterface);
 
-        $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);
 
         return $handler;

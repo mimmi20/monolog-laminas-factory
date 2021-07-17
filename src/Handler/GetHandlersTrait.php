@@ -25,7 +25,7 @@ trait GetHandlersTrait
     use GetHandlerTrait;
 
     /**
-     * @phpstan-param array{handlers?: bool|array<array{type: string, enabled?: bool, options?: array<mixed>}>} $options
+     * @phpstan-param array{handlers?: bool|array<array{type?: string, enabled?: bool, options?: array<mixed>}>} $options
      *
      * @return array<int, HandlerInterface>
      *
@@ -51,9 +51,9 @@ trait GetHandlersTrait
             $return[] = $handler;
         }
 
-        if (empty($return)) {
+        if ([] === $return) {
             throw new ServiceNotCreatedException(
-                'No handlers specified'
+                'No active handlers specified'
             );
         }
 
