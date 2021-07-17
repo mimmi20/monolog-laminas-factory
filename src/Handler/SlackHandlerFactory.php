@@ -62,8 +62,8 @@ final class SlackHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No channel provided');
         }
 
-        $token              = (string) $options['token'];
-        $channel            = (string) $options['channel'];
+        $token              = $options['token'];
+        $channel            = $options['channel'];
         $userName           = null;
         $useAttachment      = true;
         $iconEmoji          = null;
@@ -74,15 +74,15 @@ final class SlackHandlerFactory implements FactoryInterface
         $excludeFields      = [];
 
         if (array_key_exists('userName', $options)) {
-            $userName = (string) $options['userName'];
+            $userName = $options['userName'];
         }
 
         if (array_key_exists('useAttachment', $options)) {
-            $useAttachment = (bool) $options['useAttachment'];
+            $useAttachment = $options['useAttachment'];
         }
 
         if (array_key_exists('iconEmoji', $options)) {
-            $iconEmoji = (string) $options['iconEmoji'];
+            $iconEmoji = $options['iconEmoji'];
         }
 
         if (array_key_exists('level', $options)) {
@@ -90,19 +90,19 @@ final class SlackHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         if (array_key_exists('useShortAttachment', $options)) {
-            $useShortAttachment = (bool) $options['useShortAttachment'];
+            $useShortAttachment = $options['useShortAttachment'];
         }
 
         if (array_key_exists('includeContextAndExtra', $options)) {
-            $includeContext = (bool) $options['includeContextAndExtra'];
+            $includeContext = $options['includeContextAndExtra'];
         }
 
         if (array_key_exists('excludeFields', $options)) {
-            $excludeFields = (array) $options['excludeFields'];
+            $excludeFields = $options['excludeFields'];
         }
 
         try {
