@@ -41,4 +41,48 @@ final class FallbackGroupHandlerFactoryTest extends TestCase
 
         $factory($container, '');
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithEmptyConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new FallbackGroupHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No Service names provided for the required handler classes');
+
+        $factory($container, '', []);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithEmptyConfig2(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new FallbackGroupHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No Service names provided for the required handler classes');
+
+        $factory($container, '', ['handlers' => true]);
+    }
 }

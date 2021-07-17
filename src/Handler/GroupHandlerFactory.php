@@ -37,7 +37,7 @@ final class GroupHandlerFactory implements FactoryInterface
     /**
      * @param string                                            $requestedName
      * @param array<string, (array<string>|iterable|bool)>|null $options
-     * @phpstan-param array{handlers: array<array{type: string, enabled?: bool, options?: array<mixed>}>, bubble?: bool}|null $options
+     * @phpstan-param array{handlers?: bool|array<array{type: string, enabled?: bool, options?: array<mixed>}>, bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
