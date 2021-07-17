@@ -58,6 +58,10 @@ final class SamplingHandlerFactory implements FactoryInterface
 
         $handler = $this->getHandler($container, $options['handler']);
 
+        if (null === $handler) {
+            throw new ServiceNotCreatedException('forwarded handlers could not be disabled');
+        }
+
         $factor = null;
 
         if (array_key_exists('factor', $options)) {

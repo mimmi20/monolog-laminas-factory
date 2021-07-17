@@ -40,7 +40,13 @@ trait GetHandlersTrait
         $return = [];
 
         foreach ($options['handlers'] as $handler) {
-            $return[] = $this->getHandler($container, $handler);
+            $handler = $this->getHandler($container, $handler);
+
+            if (null === $handler) {
+                continue;
+            }
+
+            $return[] = $handler;
         }
 
         if (empty($return)) {

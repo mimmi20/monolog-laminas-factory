@@ -60,7 +60,12 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No handler provided');
         }
 
-        $handler            = $this->getHandler($container, $options['handler']);
+        $handler = $this->getHandler($container, $options['handler']);
+
+        if (null === $handler) {
+            throw new ServiceNotCreatedException('forwarded handlers could not be disabled');
+        }
+
         $activationStrategy = null;
 
         if (array_key_exists('activationStrategy', $options)) {

@@ -60,6 +60,10 @@ final class OverflowHandlerFactory implements FactoryInterface
 
         $handler = $this->getHandler($container, $options['handler']);
 
+        if (null === $handler) {
+            throw new ServiceNotCreatedException('forwarded handlers could not be disabled');
+        }
+
         $thresholdMap = [
             Logger::DEBUG => $options['thresholdMap']['debug'] ?? 0,
             Logger::INFO => $options['thresholdMap']['info'] ?? 0,

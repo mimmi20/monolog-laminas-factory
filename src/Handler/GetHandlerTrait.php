@@ -40,14 +40,14 @@ trait GetHandlerTrait
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
      * @throws ContainerException         if any other error occurs
      */
-    private function getHandler(ContainerInterface $container, array $options): HandlerInterface
+    private function getHandler(ContainerInterface $container, array $options): ?HandlerInterface
     {
         if (!array_key_exists('type', $options)) {
             throw new ServiceNotCreatedException('Options must contain a type for the handler');
         }
 
         if (array_key_exists('enabled', $options) && !$options['enabled']) {
-            throw new ServiceNotCreatedException('forwarded handlers could not be disabled');
+            return null;
         }
 
         try {

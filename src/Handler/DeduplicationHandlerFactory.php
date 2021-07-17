@@ -59,6 +59,10 @@ final class DeduplicationHandlerFactory implements FactoryInterface
 
         $handler = $this->getHandler($container, $options['handler']);
 
+        if (null === $handler) {
+            throw new ServiceNotCreatedException('forwarded handlers could not be disabled');
+        }
+
         $deduplicationStore = $options['deduplicationStore'] ?? null;
         $deduplicationLevel = $options['deduplicationLevel'] ?? LogLevel::ERROR;
         $time               = (int) ($options['time'] ?? 60);

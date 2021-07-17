@@ -59,6 +59,10 @@ final class FilterHandlerFactory implements FactoryInterface
 
         $handler = $this->getHandler($container, $options['handler']);
 
+        if (null === $handler) {
+            throw new ServiceNotCreatedException('forwarded handlers could not be disabled');
+        }
+
         $minLevelOrList = $options['minLevelOrList'] ?? LogLevel::DEBUG;
         $maxLevel       = $options['maxLevel'] ?? LogLevel::EMERGENCY;
 

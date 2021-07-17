@@ -59,6 +59,10 @@ final class BufferHandlerFactory implements FactoryInterface
 
         $handler = $this->getHandler($container, $options['handler']);
 
+        if (null === $handler) {
+            throw new ServiceNotCreatedException('forwarded handlers could not be disabled');
+        }
+
         $bufferLimit = (int) ($options['bufferLimit'] ?? 0);
 
         $level = LogLevel::DEBUG;
