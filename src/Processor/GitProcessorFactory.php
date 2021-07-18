@@ -17,18 +17,23 @@ use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Monolog\Logger;
 use Monolog\Processor\GitProcessor;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
 use function is_array;
 
+/**
+ * @phpstan-import-type Level from Logger
+ * @phpstan-import-type LevelName from Logger
+ */
 final class GitProcessorFactory implements FactoryInterface
 {
     /**
      * @param string                           $requestedName
      * @param array<string, (int|string)>|null $options
-     * @phpstan-param array{level?: (string|LogLevel::*)}|null $options
+     * @phpstan-param array{level?: (Level|LevelName|LogLevel::*)}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service

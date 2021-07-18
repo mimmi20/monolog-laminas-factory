@@ -10,15 +10,15 @@
 
 declare(strict_types = 1);
 
-namespace Mimmi20\LoggerFactory\Processor;
+namespace Mimmi20\LoggerFactory\Handler\FingersCrossed;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Monolog\Handler\FingersCrossed\ChannelLevelActivationStrategy;
 use Monolog\Logger;
-use Monolog\Processor\IntrospectionProcessor;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
@@ -28,12 +28,12 @@ use function is_array;
  * @phpstan-import-type Level from Logger
  * @phpstan-import-type LevelName from Logger
  */
-final class IntrospectionProcessorFactory implements FactoryInterface
+final class ChannelLevelActivationStrategyFactory implements FactoryInterface
 {
     /**
-     * @param string                                              $requestedName
-     * @param array<string, (int|string|array<int, string>)>|null $options
-     * @phpstan-param array{level?: (Level|LevelName|LogLevel::*), skipClassesPartials?: array<int, string>|string, skipStackFramesCount?: int}|null $options
+     * @param string                                                  $requestedName
+     * @param array<string, array<string,int|string>|int|string>|null $options
+     * @phpstan-param array{defaultActionLevel?: Level|LevelName|LogLevel::*, channelToActionLevel?: array<Level|LevelName|LogLevel::*>}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -42,30 +42,21 @@ final class IntrospectionProcessorFactory implements FactoryInterface
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      */
-    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): IntrospectionProcessor
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): ChannelLevelActivationStrategy
     {
-        $level          = LogLevel::DEBUG;
-        $skipPartials   = [];
-        $skipFrameCount = 0;
+        $defaultActionLevel   = LogLevel::DEBUG;
+        $channelToActionLevel = [];
 
         if (is_array($options)) {
-            if (array_key_exists('level', $options)) {
-                $level = $options['level'];
+            if (array_key_exists('defaultActionLevel', $options)) {
+                $defaultActionLevel = $options['defaultActionLevel'];
             }
 
-            if (array_key_exists('skipClassesPartials', $options)) {
-                $skipPartials = (array) $options['skipClassesPartials'];
-            }
-
-            if (array_key_exists('skipStackFramesCount', $options)) {
-                $skipFrameCount = $options['skipStackFramesCount'];
+            if (array_key_exists('channelToActionLevel', $options)) {
+                $channelToActionLevel = $options['channelToActionLevel'];
             }
         }
 
-        return new IntrospectionProcessor(
-            $level,
-            $skipPartials,
-            $skipFrameCount
-        );
+        return new ChannelLevelActivationStrategy($defaultActionLevel, $channelToActionLevel);
     }
 }

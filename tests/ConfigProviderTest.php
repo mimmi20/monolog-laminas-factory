@@ -15,6 +15,7 @@ namespace Mimmi20Test\LoggerFactory;
 use Laminas\Log\Logger;
 use Laminas\Log\LoggerInterface;
 use Mimmi20\LoggerFactory\ConfigProvider;
+use Mimmi20\LoggerFactory\Handler\FingersCrossed\ActivationStrategyPluginManager;
 use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
 use Mimmi20\LoggerFactory\MonologHandlerPluginManager;
 use Mimmi20\LoggerFactory\MonologPluginManager;
@@ -45,12 +46,13 @@ final class ConfigProviderTest extends TestCase
         self::assertArrayHasKey('factories', $dependencyConfig);
         $factories = $dependencyConfig['factories'];
         self::assertIsArray($factories);
-        self::assertCount(5, $factories);
+        self::assertCount(6, $factories);
         self::assertArrayHasKey(Logger::class, $factories);
         self::assertArrayHasKey(MonologPluginManager::class, $factories);
         self::assertArrayHasKey(MonologHandlerPluginManager::class, $factories);
         self::assertArrayHasKey(MonologProcessorPluginManager::class, $factories);
         self::assertArrayHasKey(MonologFormatterPluginManager::class, $factories);
+        self::assertArrayHasKey(ActivationStrategyPluginManager::class, $factories);
 
         self::assertArrayHasKey('aliases', $dependencyConfig);
         $aliases = $dependencyConfig['aliases'];

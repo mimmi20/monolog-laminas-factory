@@ -23,12 +23,17 @@ use Monolog\Handler\BufferHandler;
 use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\ProcessableHandlerInterface;
+use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
 use function assert;
 use function is_array;
 
+/**
+ * @phpstan-import-type Level from Logger
+ * @phpstan-import-type LevelName from Logger
+ */
 final class BufferHandlerFactory implements FactoryInterface
 {
     use AddFormatterTrait;
@@ -38,7 +43,7 @@ final class BufferHandlerFactory implements FactoryInterface
     /**
      * @param string                           $requestedName
      * @param array<string, (string|int)>|null $options
-     * @phpstan-param array{handler?: bool|array{type?: string, enabled?: bool, options?: array<mixed>}, bufferLimit?: int, level?: (string|LogLevel::*), bubble?: bool, flushOnOverflow?: bool}|null $options
+     * @phpstan-param array{handler?: bool|array{type?: string, enabled?: bool, options?: array<mixed>}, bufferLimit?: int, level?: (Level|LevelName|LogLevel::*), bubble?: bool, flushOnOverflow?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service

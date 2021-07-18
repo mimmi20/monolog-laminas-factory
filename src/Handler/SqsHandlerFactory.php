@@ -24,6 +24,7 @@ use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Handler\SqsHandler;
+use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Log\LogLevel;
 
@@ -32,6 +33,10 @@ use function assert;
 use function is_array;
 use function is_string;
 
+/**
+ * @phpstan-import-type Level from Logger
+ * @phpstan-import-type LevelName from Logger
+ */
 final class SqsHandlerFactory implements FactoryInterface
 {
     use AddFormatterTrait;
@@ -40,7 +45,7 @@ final class SqsHandlerFactory implements FactoryInterface
     /**
      * @param string                                          $requestedName
      * @param array<string, (string|int|bool|SqsClient)>|null $options
-     * @phpstan-param array{sqsClient: (string|SqsClient), queueUrl?: string, level?: (string|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{sqsClient: (string|SqsClient), queueUrl?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service

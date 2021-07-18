@@ -16,12 +16,19 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Mimmi20\LoggerFactory\Handler\FingersCrossed\ActivationStrategyPluginManager;
 use Mimmi20\LoggerFactory\Handler\FingersCrossedHandlerFactory;
 use Mimmi20\LoggerFactory\MonologHandlerPluginManager;
 use Monolog\Handler\ChromePHPHandler;
+use Monolog\Handler\FingersCrossed\ChannelLevelActivationStrategy;
+use Monolog\Handler\FingersCrossed\ErrorLevelActivationStrategy;
 use Monolog\Handler\FingersCrossedHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LogLevel;
+use ReflectionException;
+use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function sprintf;
@@ -204,6 +211,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     * @throws ReflectionException
      * @throws InvalidArgumentException
      */
     public function testInvoceWithHandlerConfig(): void
@@ -239,5 +247,526 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true]]);
 
         self::assertInstanceOf(FingersCrossedHandler::class, $handler);
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $as = new ReflectionProperty($handler, 'activationStrategy');
+        $as->setAccessible(true);
+
+        self::assertInstanceOf(ErrorLevelActivationStrategy::class, $as->getValue($handler));
+
+        $bs = new ReflectionProperty($handler, 'bufferSize');
+        $bs->setAccessible(true);
+
+        self::assertSame(0, $bs->getValue($handler));
+
+        $b = new ReflectionProperty($handler, 'bubble');
+        $b->setAccessible(true);
+
+        self::assertTrue($b->getValue($handler));
+
+        $sb = new ReflectionProperty($handler, 'stopBuffering');
+        $sb->setAccessible(true);
+
+        self::assertTrue($sb->getValue($handler));
+
+        $ptl = new ReflectionProperty($handler, 'passthruLevel');
+        $ptl->setAccessible(true);
+
+        self::assertNull($ptl->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithHandlerConfig2(): void
+    {
+        $type = 'abc';
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new FingersCrossedHandlerFactory();
+
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => null, 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
+
+        self::assertInstanceOf(FingersCrossedHandler::class, $handler);
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $as = new ReflectionProperty($handler, 'activationStrategy');
+        $as->setAccessible(true);
+
+        self::assertInstanceOf(ErrorLevelActivationStrategy::class, $as->getValue($handler));
+
+        $bs = new ReflectionProperty($handler, 'bufferSize');
+        $bs->setAccessible(true);
+
+        self::assertSame(42, $bs->getValue($handler));
+
+        $b = new ReflectionProperty($handler, 'bubble');
+        $b->setAccessible(true);
+
+        self::assertFalse($b->getValue($handler));
+
+        $sb = new ReflectionProperty($handler, 'stopBuffering');
+        $sb->setAccessible(true);
+
+        self::assertFalse($sb->getValue($handler));
+
+        $ptl = new ReflectionProperty($handler, 'passthruLevel');
+        $ptl->setAccessible(true);
+
+        self::assertSame(Logger::WARNING, $ptl->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithHandlerConfig3(): void
+    {
+        $type = 'abc';
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new FingersCrossedHandlerFactory();
+
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => Logger::WARNING, 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
+
+        self::assertInstanceOf(FingersCrossedHandler::class, $handler);
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $as = new ReflectionProperty($handler, 'activationStrategy');
+        $as->setAccessible(true);
+
+        self::assertInstanceOf(ErrorLevelActivationStrategy::class, $as->getValue($handler));
+
+        $bs = new ReflectionProperty($handler, 'bufferSize');
+        $bs->setAccessible(true);
+
+        self::assertSame(42, $bs->getValue($handler));
+
+        $b = new ReflectionProperty($handler, 'bubble');
+        $b->setAccessible(true);
+
+        self::assertFalse($b->getValue($handler));
+
+        $sb = new ReflectionProperty($handler, 'stopBuffering');
+        $sb->setAccessible(true);
+
+        self::assertFalse($sb->getValue($handler));
+
+        $ptl = new ReflectionProperty($handler, 'passthruLevel');
+        $ptl->setAccessible(true);
+
+        self::assertSame(Logger::WARNING, $ptl->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithHandlerConfig4(): void
+    {
+        $type     = 'abc';
+        $strategy = $this->getMockBuilder(ChannelLevelActivationStrategy::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new FingersCrossedHandlerFactory();
+
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => $strategy, 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
+
+        self::assertInstanceOf(FingersCrossedHandler::class, $handler);
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $as = new ReflectionProperty($handler, 'activationStrategy');
+        $as->setAccessible(true);
+
+        self::assertSame($strategy, $as->getValue($handler));
+
+        $bs = new ReflectionProperty($handler, 'bufferSize');
+        $bs->setAccessible(true);
+
+        self::assertSame(42, $bs->getValue($handler));
+
+        $b = new ReflectionProperty($handler, 'bubble');
+        $b->setAccessible(true);
+
+        self::assertFalse($b->getValue($handler));
+
+        $sb = new ReflectionProperty($handler, 'stopBuffering');
+        $sb->setAccessible(true);
+
+        self::assertFalse($sb->getValue($handler));
+
+        $ptl = new ReflectionProperty($handler, 'passthruLevel');
+        $ptl->setAccessible(true);
+
+        self::assertSame(Logger::WARNING, $ptl->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithHandlerConfig5(): void
+    {
+        $type     = 'abc';
+        $strategy = LogLevel::WARNING;
+
+        $activationStrategyPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $activationStrategyPluginManager->expects(self::once())
+            ->method('has')
+            ->with($strategy)
+            ->willReturn(false);
+        $activationStrategyPluginManager->expects(self::never())
+            ->method('get');
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([MonologHandlerPluginManager::class], [ActivationStrategyPluginManager::class])
+            ->willReturnOnConsecutiveCalls($monologHandlerPluginManager, $activationStrategyPluginManager);
+
+        $factory = new FingersCrossedHandlerFactory();
+
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => $strategy, 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
+
+        self::assertInstanceOf(FingersCrossedHandler::class, $handler);
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $as = new ReflectionProperty($handler, 'activationStrategy');
+        $as->setAccessible(true);
+
+        self::assertInstanceOf(ErrorLevelActivationStrategy::class, $as->getValue($handler));
+
+        $bs = new ReflectionProperty($handler, 'bufferSize');
+        $bs->setAccessible(true);
+
+        self::assertSame(42, $bs->getValue($handler));
+
+        $b = new ReflectionProperty($handler, 'bubble');
+        $b->setAccessible(true);
+
+        self::assertFalse($b->getValue($handler));
+
+        $sb = new ReflectionProperty($handler, 'stopBuffering');
+        $sb->setAccessible(true);
+
+        self::assertFalse($sb->getValue($handler));
+
+        $ptl = new ReflectionProperty($handler, 'passthruLevel');
+        $ptl->setAccessible(true);
+
+        self::assertSame(Logger::WARNING, $ptl->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithHandlerConfig6(): void
+    {
+        $type          = 'abc';
+        $strategy      = 'xyz';
+        $strategyClass = $this->getMockBuilder(ChannelLevelActivationStrategy::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $activationStrategyPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $activationStrategyPluginManager->expects(self::once())
+            ->method('has')
+            ->with($strategy)
+            ->willReturn(true);
+        $activationStrategyPluginManager->expects(self::once())
+            ->method('get')
+            ->with($strategy)
+            ->willReturn($strategyClass);
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([MonologHandlerPluginManager::class], [ActivationStrategyPluginManager::class])
+            ->willReturnOnConsecutiveCalls($monologHandlerPluginManager, $activationStrategyPluginManager);
+
+        $factory = new FingersCrossedHandlerFactory();
+
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => $strategy, 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
+
+        self::assertInstanceOf(FingersCrossedHandler::class, $handler);
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $as = new ReflectionProperty($handler, 'activationStrategy');
+        $as->setAccessible(true);
+
+        self::assertSame($strategyClass, $as->getValue($handler));
+
+        $bs = new ReflectionProperty($handler, 'bufferSize');
+        $bs->setAccessible(true);
+
+        self::assertSame(42, $bs->getValue($handler));
+
+        $b = new ReflectionProperty($handler, 'bubble');
+        $b->setAccessible(true);
+
+        self::assertFalse($b->getValue($handler));
+
+        $sb = new ReflectionProperty($handler, 'stopBuffering');
+        $sb->setAccessible(true);
+
+        self::assertFalse($sb->getValue($handler));
+
+        $ptl = new ReflectionProperty($handler, 'passthruLevel');
+        $ptl->setAccessible(true);
+
+        self::assertSame(Logger::WARNING, $ptl->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ServiceNotFoundException
+     */
+    public function testInvoceWithHandlerConfig7(): void
+    {
+        $type     = 'abc';
+        $strategy = 'xyz';
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $activationStrategyPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $activationStrategyPluginManager->expects(self::never())
+            ->method('has');
+        $activationStrategyPluginManager->expects(self::never())
+            ->method('get');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([MonologHandlerPluginManager::class], [ActivationStrategyPluginManager::class])
+            ->willReturnCallback(
+                static function (string $with) use ($monologHandlerPluginManager) {
+                    if (MonologHandlerPluginManager::class === $with) {
+                        return $monologHandlerPluginManager;
+                    }
+
+                    throw new ServiceNotFoundException();
+                }
+            );
+
+        $factory = new FingersCrossedHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not load service %s', ActivationStrategyPluginManager::class));
+
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => $strategy, 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithHandlerConfig8(): void
+    {
+        $type     = 'abc';
+        $strategy = 'xyz';
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $activationStrategyPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $activationStrategyPluginManager->expects(self::once())
+            ->method('has')
+            ->with($strategy)
+            ->willReturn(true);
+        $activationStrategyPluginManager->expects(self::once())
+            ->method('get')
+            ->with($strategy)
+            ->willThrowException(new ServiceNotFoundException());
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([MonologHandlerPluginManager::class], [ActivationStrategyPluginManager::class])
+            ->willReturnOnConsecutiveCalls($monologHandlerPluginManager, $activationStrategyPluginManager);
+
+        $factory = new FingersCrossedHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Could not load ActivationStrategy class');
+
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => $strategy, 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
     }
 }

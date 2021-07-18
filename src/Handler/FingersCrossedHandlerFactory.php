@@ -19,19 +19,27 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
+use Mimmi20\LoggerFactory\Handler\FingersCrossed\ActivationStrategyPluginManager;
 use Monolog\Handler\FingersCrossed\ActivationStrategyInterface;
 use Monolog\Handler\FingersCrossedHandler;
 use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\ProcessableHandlerInterface;
+use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
 use function assert;
 use function is_array;
+use function is_int;
 use function is_string;
+use function sprintf;
 
+/**
+ * @phpstan-import-type Level from Logger
+ * @phpstan-import-type LevelName from Logger
+ */
 final class FingersCrossedHandlerFactory implements FactoryInterface
 {
     use AddFormatterTrait;
@@ -41,7 +49,7 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
     /**
      * @param string                                                       $requestedName
      * @param array<string, (int|string|ActivationStrategyInterface)>|null $options
-     * @phpstan-param array{handler?: bool|array{type?: string, enabled?: bool, options?: array<mixed>}, activationStrategy?: (int|string|ActivationStrategyInterface), bufferSize?: int, bubble?: bool, stopBuffering?: bool, passthruLevel?: (string|LogLevel::*)}|null $options
+     * @phpstan-param array{handler?: bool|array{type?: string, enabled?: bool, options?: array<mixed>}, activationStrategy?: (null|Level|LevelName|LogLevel::*|ActivationStrategyInterface|array{type?: string, options?: array<mixed>}), bufferSize?: int, bubble?: bool, stopBuffering?: bool, passthruLevel?: (Level|LevelName|LogLevel::*)}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -71,21 +79,30 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
         }
 
         $activationStrategy = null;
+        $bufferSize         = 0;
+        $bubble             = true;
+        $stopBuffering      = true;
+        $passthruLevel      = null;
 
         if (array_key_exists('activationStrategy', $options)) {
             $activationStrategy = $this->getActivationStrategy($container, $options['activationStrategy']);
         }
 
-        $bufferSize = $options['bufferSize'] ?? 0;
-
-        $bubble = true;
+        if (array_key_exists('bufferSize', $options)) {
+            $bufferSize = $options['bufferSize'];
+        }
 
         if (array_key_exists('bubble', $options)) {
             $bubble = $options['bubble'];
         }
 
-        $stopBuffering = ($options['stopBuffering'] ?? true);
-        $passthruLevel = $options['passthruLevel'] ?? null;
+        if (array_key_exists('stopBuffering', $options)) {
+            $stopBuffering = $options['stopBuffering'];
+        }
+
+        if (array_key_exists('passthruLevel', $options)) {
+            $passthruLevel = $options['passthruLevel'];
+        }
 
         $handler = new FingersCrossedHandler(
             $handler,
@@ -107,22 +124,51 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
     }
 
     /**
-     * @param ActivationStrategyInterface|int|string $activationStrategy
+     * @param ActivationStrategyInterface|array<string, array<mixed>|string>|int|string $activationStrategy
+     * @phpstan-param Level|LevelName|LogLevel::*|ActivationStrategyInterface|array{type?: string, options?: array<mixed>}|null $activationStrategy
      *
-     * @return mixed|null
+     * @return ActivationStrategyInterface|int|string|null
+     * @phpstan-return (Level|LevelName|LogLevel::*|ActivationStrategyInterface|null)
      *
-     * @throws ServiceNotFoundException if unable to resolve the service
+     * @throws ServiceNotFoundException   if unable to resolve the service
+     * @throws ServiceNotCreatedException if an exception is raised when creating a service
      */
     private function getActivationStrategy(ContainerInterface $container, $activationStrategy)
     {
-        if (!$activationStrategy) {
+        if (null === $activationStrategy) {
             return null;
         }
 
-        if (is_string($activationStrategy) && $container->has($activationStrategy)) {
+        if (is_int($activationStrategy) || $activationStrategy instanceof ActivationStrategyInterface) {
+            return $activationStrategy;
+        }
+
+        try {
+            $activationStrategyPluginManager = $container->get(ActivationStrategyPluginManager::class);
+        } catch (ContainerExceptionInterface $e) {
+            throw new ServiceNotFoundException(
+                sprintf('Could not load service %s', ActivationStrategyPluginManager::class),
+                0,
+                $e
+            );
+        }
+
+        if (is_array($activationStrategy)) {
+            if (!array_key_exists('type', $activationStrategy)) {
+                throw new ServiceNotCreatedException('Options must contain a type for the ActivationStrategy');
+            }
+
             try {
-                return $container->get($activationStrategy);
-            } catch (ContainerExceptionInterface $e) {
+                return $activationStrategyPluginManager->get($activationStrategy['type'], $activationStrategy['options'] ?? []);
+            } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
+                throw new ServiceNotFoundException('Could not load ActivationStrategy class', 0, $e);
+            }
+        }
+
+        if (is_string($activationStrategy) && $activationStrategyPluginManager->has($activationStrategy)) {
+            try {
+                return $activationStrategyPluginManager->get($activationStrategy);
+            } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
                 throw new ServiceNotFoundException('Could not load ActivationStrategy class', 0, $e);
             }
         }

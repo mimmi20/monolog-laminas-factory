@@ -44,6 +44,8 @@ use Mimmi20\LoggerFactory\Handler\ElasticaHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\ErrorLogHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\FallbackGroupHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\FilterHandlerFactory;
+use Mimmi20\LoggerFactory\Handler\FingersCrossed\ActivationStrategyPluginManager;
+use Mimmi20\LoggerFactory\Handler\FingersCrossed\ActivationStrategyPluginManagerFactory;
 use Mimmi20\LoggerFactory\Handler\FingersCrossedHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\FirePHPHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\FleepHookHandlerFactory;
@@ -207,6 +209,7 @@ final class ConfigProvider
                 LoggerInterface::class => Logger::class,
             ],
             'factories' => [
+                ActivationStrategyPluginManager::class => ActivationStrategyPluginManagerFactory::class,
                 Logger::class => LoggerFactory::class,
                 MonologPluginManager::class => MonologPluginManagerFactory::class,
                 MonologHandlerPluginManager::class => MonologHandlerPluginManagerFactory::class,

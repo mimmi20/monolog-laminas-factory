@@ -23,12 +23,17 @@ use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Handler\SlackWebhookHandler;
+use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
 use function assert;
 use function is_array;
 
+/**
+ * @phpstan-import-type Level from Logger
+ * @phpstan-import-type LevelName from Logger
+ */
 final class SlackWebhookHandlerFactory implements FactoryInterface
 {
     use AddFormatterTrait;
@@ -37,7 +42,7 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{webhookUrl?: string, channel?: string, userName?: string, useAttachment?: bool, iconEmoji?: string, useShortAttachment?: bool, includeContextAndExtra?: bool, level?: (string|LogLevel::*), bubble?: bool, excludeFields?: array<string>}|null $options
+     * @phpstan-param array{webhookUrl?: string, channel?: string, userName?: string, useAttachment?: bool, iconEmoji?: string, useShortAttachment?: bool, includeContextAndExtra?: bool, level?: (Level|LevelName|LogLevel::*), bubble?: bool, excludeFields?: array<string>}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service

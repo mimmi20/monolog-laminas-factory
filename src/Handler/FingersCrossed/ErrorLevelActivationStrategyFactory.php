@@ -10,14 +10,14 @@
 
 declare(strict_types = 1);
 
-namespace Mimmi20\LoggerFactory\Handler;
+namespace Mimmi20\LoggerFactory\Handler\FingersCrossed;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Monolog\Handler\NullHandler;
+use Monolog\Handler\FingersCrossed\ErrorLevelActivationStrategy;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
@@ -28,12 +28,12 @@ use function is_array;
  * @phpstan-import-type Level from Logger
  * @phpstan-import-type LevelName from Logger
  */
-final class NullHandlerFactory implements FactoryInterface
+final class ErrorLevelActivationStrategyFactory implements FactoryInterface
 {
     /**
      * @param string                         $requestedName
      * @param array<string, int|string>|null $options
-     * @phpstan-param array{level?: (Level|LevelName|LogLevel::*)}|null $options
+     * @phpstan-param array{actionLevel?: Level|LevelName|LogLevel::*}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -42,14 +42,14 @@ final class NullHandlerFactory implements FactoryInterface
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      */
-    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): NullHandler
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): ErrorLevelActivationStrategy
     {
-        $level = LogLevel::DEBUG;
+        $actionLevel = LogLevel::DEBUG;
 
-        if (is_array($options) && array_key_exists('level', $options)) {
-            $level = $options['level'];
+        if (is_array($options) && array_key_exists('actionLevel', $options)) {
+            $actionLevel = $options['actionLevel'];
         }
 
-        return new NullHandler($level);
+        return new ErrorLevelActivationStrategy($actionLevel);
     }
 }
