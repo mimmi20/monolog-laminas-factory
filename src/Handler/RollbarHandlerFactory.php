@@ -14,6 +14,7 @@ namespace Mimmi20\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
+use InvalidArgumentException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -30,6 +31,7 @@ use Rollbar\RollbarLogger;
 use function array_key_exists;
 use function assert;
 use function is_array;
+use function sprintf;
 
 final class RollbarHandlerFactory implements FactoryInterface
 {
@@ -39,7 +41,7 @@ final class RollbarHandlerFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{access_token?: string, enabled?: bool, transmit?: bool, log_payload?: bool, verbose?: string, allow_exec?: bool, level?: (string|LogLevel::*), bubble?: bool, environment?: string, root?: string}|null $options
+     * @phpstan-param array{access_token?: string, enabled?: bool, transmit?: bool, log_payload?: bool, verbose?: (Config::VERBOSE_NONE|LogLevel::*), environment?: string, level?: (string|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -58,14 +60,14 @@ final class RollbarHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No access token provided');
         }
 
-        $token      = $options['access_token'];
-        $enabled    = true;
-        $transmit   = true;
-        $logPayload = true;
-        $allowExec  = true;
-        $verbose    = Config::VERBOSE_NONE;
-        $level      = LogLevel::DEBUG;
-        $bubble     = true;
+        $token       = $options['access_token'];
+        $enabled     = true;
+        $transmit    = true;
+        $logPayload  = true;
+        $verbose     = Config::VERBOSE_NONE;
+        $level       = LogLevel::DEBUG;
+        $bubble      = true;
+        $environment = 'production';
 
         if (array_key_exists('enabled', $options)) {
             $enabled = $options['enabled'];
@@ -83,10 +85,6 @@ final class RollbarHandlerFactory implements FactoryInterface
             $verbose = $options['verbose'];
         }
 
-        if (array_key_exists('allow_exec', $options)) {
-            $allowExec = $options['allow_exec'];
-        }
-
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
         }
@@ -95,25 +93,31 @@ final class RollbarHandlerFactory implements FactoryInterface
             $bubble = $options['bubble'];
         }
 
-        $rollbarConfig = [
-            'access_token' => $token,
-            'enabled' => $enabled,
-            'transmit' => $transmit,
-            'log_payload' => $logPayload,
-            'verbose' => $verbose,
-            'allow_exec' => $allowExec,
-        ];
-
         if (array_key_exists('environment', $options)) {
-            $rollbarConfig['environment'] = $options['environment'];
+            $environment = $options['environment'];
         }
 
-        if (array_key_exists('root', $options)) {
-            $rollbarConfig['root'] = $options['root'];
+        try {
+            $rollbarLogger = new RollbarLogger(
+                [
+                    'access_token' => $token,
+                    'enabled' => $enabled,
+                    'transmit' => $transmit,
+                    'log_payload' => $logPayload,
+                    'verbose' => $verbose,
+                    'environment' => $environment,
+                ]
+            );
+        } catch (InvalidArgumentException $e) {
+            throw new ServiceNotCreatedException(
+                sprintf('Could not create service %s', RollbarLogger::class),
+                0,
+                $e
+            );
         }
 
         $handler = new RollbarHandler(
-            new RollbarLogger($rollbarConfig),
+            $rollbarLogger,
             $level,
             $bubble
         );

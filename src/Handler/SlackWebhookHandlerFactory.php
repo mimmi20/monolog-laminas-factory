@@ -56,8 +56,12 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No webhookUrl provided');
         }
 
+        if (!array_key_exists('channel', $options)) {
+            throw new ServiceNotCreatedException('No channel provided');
+        }
+
         $webhookUrl         = $options['webhookUrl'];
-        $channel            = null;
+        $channel            = $options['channel'];
         $userName           = null;
         $useAttachment      = true;
         $iconEmoji          = null;
