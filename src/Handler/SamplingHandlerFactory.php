@@ -56,10 +56,14 @@ final class SamplingHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No handler provided');
         }
 
+        if (!is_array($options['handler'])) {
+            throw new ServiceNotCreatedException('HandlerConfig must be an Array');
+        }
+
         $handler = $this->getHandler($container, $options['handler']);
 
         if (null === $handler) {
-            throw new ServiceNotCreatedException('forwarded handlers could not be disabled');
+            throw new ServiceNotCreatedException('No active handler specified');
         }
 
         $factor = null;

@@ -155,6 +155,7 @@ final class RollbarHandlerFactoryTest extends TestCase
         $token       = 'tokentokentokentokentokentokenab';
         $verbose     = LogLevel::ALERT;
         $environment = 'test';
+        $level       = LogLevel::ERROR;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -166,12 +167,12 @@ final class RollbarHandlerFactoryTest extends TestCase
 
         $factory = new RollbarHandlerFactory();
 
-        $handler = $factory($container, '', ['access_token' => $token, 'enabled' => false, 'transmit' => false, 'log_payload' => false, 'verbose' => $verbose, 'environment' => $environment]);
+        $handler = $factory($container, '', ['access_token' => $token, 'enabled' => false, 'transmit' => false, 'log_payload' => false, 'verbose' => $verbose, 'environment' => $environment, 'bubble' => false, 'level' => $level]);
 
         self::assertInstanceOf(RollbarHandler::class, $handler);
 
-        self::assertSame(Logger::DEBUG, $handler->getLevel());
-        self::assertTrue($handler->getBubble());
+        self::assertSame(Logger::ERROR, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
 
         $rollbarloggerP = new ReflectionProperty($handler, 'rollbarLogger');
         $rollbarloggerP->setAccessible(true);

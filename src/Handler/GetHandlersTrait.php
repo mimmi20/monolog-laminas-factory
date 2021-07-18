@@ -25,7 +25,7 @@ trait GetHandlersTrait
     use GetHandlerTrait;
 
     /**
-     * @phpstan-param array{handlers?: bool|array<array{type?: string, enabled?: bool, options?: array<mixed>}>} $options
+     * @phpstan-param array{handlers?: bool|array<string|array{type?: string, enabled?: bool, options?: array<mixed>}>} $options
      *
      * @return array<int, HandlerInterface>
      *
@@ -42,6 +42,10 @@ trait GetHandlersTrait
         $return = [];
 
         foreach ($options['handlers'] as $handler) {
+            if (!is_array($handler)) {
+                throw new ServiceNotCreatedException('HandlerConfig must be an Array');
+            }
+
             $handler = $this->getHandler($container, $handler);
 
             if (null === $handler) {

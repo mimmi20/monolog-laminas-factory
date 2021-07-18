@@ -41,7 +41,7 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
     /**
      * @param string                                                       $requestedName
      * @param array<string, (int|string|ActivationStrategyInterface)>|null $options
-     * @phpstan-param array{handler: array{type: string, enabled?: bool, options?: array<mixed>}, activationStrategy?: (int|string|ActivationStrategyInterface), bufferSize?: int, bubble?: bool, stopBuffering?: bool, passthruLevel?: (string|LogLevel::*)}|null $options
+     * @phpstan-param array{handler?: array{type: string, enabled?: bool, options?: array<mixed>}, activationStrategy?: (int|string|ActivationStrategyInterface), bufferSize?: int, bubble?: bool, stopBuffering?: bool, passthruLevel?: (string|LogLevel::*)}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -60,10 +60,14 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No handler provided');
         }
 
+        if (!is_array($options['handler'])) {
+            throw new ServiceNotCreatedException('HandlerConfig must be an Array');
+        }
+
         $handler = $this->getHandler($container, $options['handler']);
 
         if (null === $handler) {
-            throw new ServiceNotCreatedException('forwarded handlers could not be disabled');
+            throw new ServiceNotCreatedException('No active handler specified');
         }
 
         $activationStrategy = null;

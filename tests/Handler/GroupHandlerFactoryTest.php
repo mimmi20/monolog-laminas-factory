@@ -125,6 +125,28 @@ final class GroupHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
+    public function testInvoceWithStringHandlers(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new GroupHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('HandlerConfig must be an Array');
+
+        $factory($container, '', ['handlers' => ['test']]);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testInvoceWithHandlerWithoutType(): void
     {
         $handlers = [[]];
