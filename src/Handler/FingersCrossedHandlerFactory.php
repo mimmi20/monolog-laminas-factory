@@ -41,7 +41,7 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
     /**
      * @param string                                                       $requestedName
      * @param array<string, (int|string|ActivationStrategyInterface)>|null $options
-     * @phpstan-param array{handler?: array{type: string, enabled?: bool, options?: array<mixed>}, activationStrategy?: (int|string|ActivationStrategyInterface), bufferSize?: int, bubble?: bool, stopBuffering?: bool, passthruLevel?: (string|LogLevel::*)}|null $options
+     * @phpstan-param array{handler?: bool|array{type?: string, enabled?: bool, options?: array<mixed>}, activationStrategy?: (int|string|ActivationStrategyInterface), bufferSize?: int, bubble?: bool, stopBuffering?: bool, passthruLevel?: (string|LogLevel::*)}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -76,15 +76,15 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
             $activationStrategy = $this->getActivationStrategy($container, $options['activationStrategy']);
         }
 
-        $bufferSize = (int) ($options['bufferSize'] ?? 0);
+        $bufferSize = $options['bufferSize'] ?? 0;
 
         $bubble = true;
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
-        $stopBuffering = (bool) ($options['stopBuffering'] ?? true);
+        $stopBuffering = ($options['stopBuffering'] ?? true);
         $passthruLevel = $options['passthruLevel'] ?? null;
 
         $handler = new FingersCrossedHandler(

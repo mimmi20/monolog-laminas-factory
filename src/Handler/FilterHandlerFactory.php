@@ -38,7 +38,7 @@ final class FilterHandlerFactory implements FactoryInterface
     /**
      * @param string                                                    $requestedName
      * @param array<string, (string|int|array<(int|string)>|bool)>|null $options
-     * @phpstan-param array{handler: array{type: string, enabled?: bool, options?: array<mixed>}, minLevelOrList?: (array<(string|LogLevel::*)>|string|LogLevel::*), maxLevel?: (string|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{handler?: bool|array{type?: string, enabled?: bool, options?: array<mixed>}, minLevelOrList?: (array<(string|LogLevel::*)>|string|LogLevel::*), maxLevel?: (string|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service

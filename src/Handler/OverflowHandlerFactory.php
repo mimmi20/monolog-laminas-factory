@@ -22,7 +22,6 @@ use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\OverflowHandler;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
@@ -39,7 +38,7 @@ final class OverflowHandlerFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{handler: array{type: string, enabled?: bool, options?: array<mixed>}, thresholdMap: array{debug?: int, info?: int, notice?: int, warning?: int, error?: int, critical?: int, alert?: int, emergency?: int}, level?: (string|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{handler?: bool|array{type?: string, enabled?: bool, options?: array<mixed>}, thresholdMap?: array{debug?: int, info?: int, notice?: int, warning?: int, error?: int, critical?: int, alert?: int, emergency?: int}, level?: (string|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -100,10 +99,8 @@ final class OverflowHandlerFactory implements FactoryInterface
 
         assert($handler instanceof HandlerInterface);
         assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
-        $this->addProcessor($container, $handler, $options);
 
         return $handler;
     }

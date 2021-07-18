@@ -37,7 +37,7 @@ final class SamplingHandlerFactory implements FactoryInterface
     /**
      * @param string                           $requestedName
      * @param array<string, (string|int)>|null $options
-     * @phpstan-param array{handler: array{type: string, enabled?: bool, options?: array<mixed>}, factor?: int}|null $options
+     * @phpstan-param array{handler?: bool|array{type?: string, enabled?: bool, options?: array<mixed>}, factor?: int}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -69,7 +69,7 @@ final class SamplingHandlerFactory implements FactoryInterface
         $factor = null;
 
         if (array_key_exists('factor', $options)) {
-            $factor = (int) $options['factor'];
+            $factor = $options['factor'];
         }
 
         if (null === $factor || 1 > $factor) {
