@@ -15,8 +15,10 @@ namespace Mimmi20Test\LoggerFactory\Formatter;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Formatter\ElasticaFormatterFactory;
+use Monolog\Formatter\ElasticaFormatter;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 final class ElasticaFormatterFactoryTest extends TestCase
 {
@@ -62,5 +64,56 @@ final class ElasticaFormatterFactoryTest extends TestCase
         $this->expectExceptionMessage('No index provided');
 
         $factory($container, '', []);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithIndex(): void
+    {
+        $index = 'abc';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new ElasticaFormatterFactory();
+
+        $formatter = $factory($container, '', ['index' => $index]);
+
+        self::assertInstanceOf(ElasticaFormatter::class, $formatter);
+        self::assertSame($index, $formatter->getIndex());
+        self::assertSame('', $formatter->getType());
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithIndexAndType(): void
+    {
+        $index = 'abc';
+        $type  = 'xyz';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new ElasticaFormatterFactory();
+
+        $formatter = $factory($container, '', ['index' => $index, 'type' => $type]);
+
+        self::assertInstanceOf(ElasticaFormatter::class, $formatter);
+        self::assertSame($index, $formatter->getIndex());
+        self::assertSame($type, $formatter->getType());
     }
 }

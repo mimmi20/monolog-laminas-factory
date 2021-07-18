@@ -25,7 +25,7 @@ trait GetHandlersTrait
     use GetHandlerTrait;
 
     /**
-     * @phpstan-param array{handlers?: array<array{type: string, enabled?: bool, options?: array<mixed>}>} $options
+     * @phpstan-param array{handlers?: bool|array<string|array{type?: string, enabled?: bool, options?: array<mixed>}>} $options
      *
      * @return array<int, HandlerInterface>
      *
@@ -34,18 +34,30 @@ trait GetHandlersTrait
     private function getHandlers(ContainerInterface $container, array $options): array
     {
         if (!array_key_exists('handlers', $options) || !is_array($options['handlers'])) {
-            throw new ServiceNotCreatedException('No Service names provided for the required handler classes');
+            throw new ServiceNotCreatedException(
+                'No Service names provided for the required handler classes'
+            );
         }
 
         $return = [];
 
         foreach ($options['handlers'] as $handler) {
-            $return[] = $this->getHandler($container, $handler);
+            if (!is_array($handler)) {
+                throw new ServiceNotCreatedException('HandlerConfig must be an Array');
+            }
+
+            $handler = $this->getHandler($container, $handler);
+
+            if (null === $handler) {
+                continue;
+            }
+
+            $return[] = $handler;
         }
 
-        if (empty($return)) {
+        if ([] === $return) {
             throw new ServiceNotCreatedException(
-                'No handlers specified'
+                'No active handlers specified'
             );
         }
 

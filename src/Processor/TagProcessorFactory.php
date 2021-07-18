@@ -25,9 +25,9 @@ use function is_array;
 final class TagProcessorFactory implements FactoryInterface
 {
     /**
-     * @param string                                    $requestedName
-     * @param array<string, array<string, string>>|null $options
-     * @phpstan-param array{tags?: array<string, string>}|null $options
+     * @param string                            $requestedName
+     * @param array<string, array<string>>|null $options
+     * @phpstan-param array{tags?: array<string>}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service

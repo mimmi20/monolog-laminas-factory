@@ -24,6 +24,7 @@ use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\MissingExtensionException;
 use Monolog\Handler\ProcessableHandlerInterface;
+use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
@@ -31,6 +32,10 @@ use function assert;
 use function is_array;
 use function sprintf;
 
+/**
+ * @phpstan-import-type Level from Logger
+ * @phpstan-import-type LevelName from Logger
+ */
 final class FleepHookHandlerFactory implements FactoryInterface
 {
     use AddFormatterTrait;
@@ -39,7 +44,7 @@ final class FleepHookHandlerFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{token?: string, level?: (string|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{token?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service

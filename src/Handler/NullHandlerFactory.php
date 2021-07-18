@@ -18,16 +18,22 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\Handler\NullHandler;
+use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
 use function is_array;
 
+/**
+ * @phpstan-import-type Level from Logger
+ * @phpstan-import-type LevelName from Logger
+ */
 final class NullHandlerFactory implements FactoryInterface
 {
     /**
-     * @param string            $requestedName
-     * @param array<mixed>|null $options
+     * @param string                         $requestedName
+     * @param array<string, int|string>|null $options
+     * @phpstan-param array{level?: (Level|LevelName|LogLevel::*)}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service

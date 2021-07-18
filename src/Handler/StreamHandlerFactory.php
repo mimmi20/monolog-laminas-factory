@@ -24,6 +24,7 @@ use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Log\LogLevel;
 
@@ -34,6 +35,10 @@ use function is_resource;
 use function is_string;
 use function sprintf;
 
+/**
+ * @phpstan-import-type Level from Logger
+ * @phpstan-import-type LevelName from Logger
+ */
 final class StreamHandlerFactory implements FactoryInterface
 {
     use AddFormatterTrait;
@@ -42,7 +47,7 @@ final class StreamHandlerFactory implements FactoryInterface
     /**
      * @param string                                         $requestedName
      * @param array<string, (string|int|bool|resource)>|null $options
-     * @phpstan-param array{stream: (string|resource), level?: (string|LogLevel::*), bubble?: bool, filePermission?: int, useLocking?: bool}|null $options
+     * @phpstan-param array{stream?: (bool|int|string|resource), level?: (Level|LevelName|LogLevel::*), bubble?: bool, filePermission?: int, useLocking?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -72,15 +77,15 @@ final class StreamHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         if (array_key_exists('filePermission', $options)) {
-            $filePermission = (int) $options['filePermission'];
+            $filePermission = $options['filePermission'];
         }
 
         if (array_key_exists('useLocking', $options)) {
-            $useLocking = (bool) $options['useLocking'];
+            $useLocking = $options['useLocking'];
         }
 
         try {
@@ -104,9 +109,9 @@ final class StreamHandlerFactory implements FactoryInterface
     }
 
     /**
-     * @param resource|string $stream
+     * @param bool|int|resource|string $stream
      *
-     * @return resource|string
+     * @return resource|string|null
      *
      * @throws ServiceNotFoundException
      */
@@ -117,7 +122,7 @@ final class StreamHandlerFactory implements FactoryInterface
         }
 
         if (!is_string($stream)) {
-            throw new ServiceNotFoundException('invalid stream given');
+            return null;
         }
 
         if ($container->has($stream)) {
@@ -128,6 +133,6 @@ final class StreamHandlerFactory implements FactoryInterface
             }
         }
 
-        return (string) $stream;
+        return $stream;
     }
 }

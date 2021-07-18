@@ -23,12 +23,17 @@ use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Handler\SlackWebhookHandler;
+use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
 use function assert;
 use function is_array;
 
+/**
+ * @phpstan-import-type Level from Logger
+ * @phpstan-import-type LevelName from Logger
+ */
 final class SlackWebhookHandlerFactory implements FactoryInterface
 {
     use AddFormatterTrait;
@@ -37,7 +42,7 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{webhookUrl?: string, channel?: string, userName?: string, useAttachment?: bool, iconEmoji?: string, useShortAttachment?: bool, includeContextAndExtra?: bool, level?: (string|LogLevel::*), bubble?: bool, excludeFields?: array<string>}|null $options
+     * @phpstan-param array{webhookUrl?: string, channel?: string, userName?: string, useAttachment?: bool, iconEmoji?: string, useShortAttachment?: bool, includeContextAndExtra?: bool, level?: (Level|LevelName|LogLevel::*), bubble?: bool, excludeFields?: array<string>}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -56,8 +61,12 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No webhookUrl provided');
         }
 
-        $webhookUrl         = (string) $options['webhookUrl'];
-        $channel            = null;
+        if (!array_key_exists('channel', $options)) {
+            throw new ServiceNotCreatedException('No channel provided');
+        }
+
+        $webhookUrl         = $options['webhookUrl'];
+        $channel            = $options['channel'];
         $userName           = null;
         $useAttachment      = true;
         $iconEmoji          = null;
@@ -68,27 +77,27 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
         $excludeFields      = [];
 
         if (array_key_exists('channel', $options)) {
-            $channel = (string) $options['channel'];
+            $channel = $options['channel'];
         }
 
         if (array_key_exists('userName', $options)) {
-            $userName = (string) $options['userName'];
+            $userName = $options['userName'];
         }
 
         if (array_key_exists('useAttachment', $options)) {
-            $useAttachment = (bool) $options['useAttachment'];
+            $useAttachment = $options['useAttachment'];
         }
 
         if (array_key_exists('iconEmoji', $options)) {
-            $iconEmoji = (string) $options['iconEmoji'];
+            $iconEmoji = $options['iconEmoji'];
         }
 
         if (array_key_exists('useShortAttachment', $options)) {
-            $useShortAttachment = (bool) $options['useShortAttachment'];
+            $useShortAttachment = $options['useShortAttachment'];
         }
 
         if (array_key_exists('includeContextAndExtra', $options)) {
-            $includeContext = (bool) $options['includeContextAndExtra'];
+            $includeContext = $options['includeContextAndExtra'];
         }
 
         if (array_key_exists('level', $options)) {
@@ -96,11 +105,11 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         if (array_key_exists('excludeFields', $options)) {
-            $excludeFields = (array) $options['excludeFields'];
+            $excludeFields = $options['excludeFields'];
         }
 
         $handler = new SlackWebhookHandler(

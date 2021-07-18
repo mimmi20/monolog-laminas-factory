@@ -23,12 +23,17 @@ use Monolog\Handler\CouchDBHandler;
 use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\ProcessableHandlerInterface;
+use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
 use function assert;
 use function is_array;
 
+/**
+ * @phpstan-import-type Level from Logger
+ * @phpstan-import-type LevelName from Logger
+ */
 final class CouchDBHandlerFactory implements FactoryInterface
 {
     use AddFormatterTrait;
@@ -37,7 +42,7 @@ final class CouchDBHandlerFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{host?: string, port?: int, dbname?: string, username?: string, password?: string, level?: (string|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{host?: string, port?: int, dbname?: string, username?: string, password?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -51,31 +56,30 @@ final class CouchDBHandlerFactory implements FactoryInterface
         $host     = 'localhost';
         $port     = 5984;
         $dbname   = 'logger';
-        $userName = '';
-        $password = '';
-
-        $level  = LogLevel::DEBUG;
-        $bubble = true;
+        $userName = null;
+        $password = null;
+        $level    = LogLevel::DEBUG;
+        $bubble   = true;
 
         if (is_array($options)) {
             if (array_key_exists('host', $options)) {
-                $host = (string) $options['host'];
+                $host = $options['host'];
             }
 
             if (array_key_exists('port', $options)) {
-                $port = (int) $options['port'];
+                $port = $options['port'];
             }
 
             if (array_key_exists('dbname', $options)) {
-                $dbname = (string) $options['dbname'];
+                $dbname = $options['dbname'];
             }
 
             if (array_key_exists('username', $options)) {
-                $userName = (string) $options['username'];
+                $userName = $options['username'];
             }
 
             if (array_key_exists('password', $options)) {
-                $password = (string) $options['password'];
+                $password = $options['password'];
             }
 
             if (array_key_exists('level', $options)) {
@@ -83,7 +87,7 @@ final class CouchDBHandlerFactory implements FactoryInterface
             }
 
             if (array_key_exists('bubble', $options)) {
-                $bubble = (bool) $options['bubble'];
+                $bubble = $options['bubble'];
             }
         }
 

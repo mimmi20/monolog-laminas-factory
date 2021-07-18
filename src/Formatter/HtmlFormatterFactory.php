@@ -41,7 +41,7 @@ final class HtmlFormatterFactory implements FactoryInterface
         $dateFormat = null;
 
         if (is_array($options) && array_key_exists('dateFormat', $options)) {
-            $dateFormat = (string) $options['dateFormat'];
+            $dateFormat = $options['dateFormat'];
         }
 
         return new HtmlFormatter($dateFormat);

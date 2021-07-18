@@ -28,9 +28,9 @@ use function is_string;
 final class WebProcessorFactory implements FactoryInterface
 {
     /**
-     * @param string                                                                                     $requestedName
-     * @param array<string, (array<(int|string), string>|ArrayAccess<(int|string), string>|string)>|null $options
-     * @phpstan-param array{extraFields?: array<string, string>, serverData?: (array<string, string>|ArrayAccess<string, string>|string)}|null $options
+     * @param string                                                                                         $requestedName
+     * @param array<string, (array<(int|string), string>|ArrayAccess<(int|string), string>|int|string)>|null $options
+     * @phpstan-param array{extraFields?: array<int|string, string>|string, serverData?: (array<string, string>|ArrayAccess<string, string>|int|string)}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -45,7 +45,7 @@ final class WebProcessorFactory implements FactoryInterface
         $extraFields = null;
 
         if (is_array($options)) {
-            $serverData = $this->getServerDataService($container, $options);
+            $serverData = $this->getServerDataService($container, $options['serverData'] ?? []);
 
             if (array_key_exists('extraFields', $options)) {
                 $extraFields = (array) $options['extraFields'];
@@ -59,34 +59,35 @@ final class WebProcessorFactory implements FactoryInterface
     }
 
     /**
-     * @param array<string, (array<string, mixed>|ArrayAccess<string, mixed>|string|null)> $options
+     * @param array<string, mixed>|ArrayAccess<string, mixed>|int|string $serverData
+     * @phpstan-param array<string, string>|ArrayAccess<string, string>|int|string $serverData
      *
-     * @return array<string, mixed>|ArrayAccess<string, mixed>|null
+     * @return array<string, string>|ArrayAccess<string, string>|null
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
      */
-    public function getServerDataService(ContainerInterface $container, array $options)
+    public function getServerDataService(ContainerInterface $container, $serverData)
     {
-        if (empty($options['serverData'])) {
+        if (empty($serverData)) {
             return null;
         }
 
         if (
-            is_array($options['serverData'])
-            || $options['serverData'] instanceof ArrayAccess
+            is_array($serverData)
+            || $serverData instanceof ArrayAccess
         ) {
-            return $options['serverData'];
+            return $serverData;
         }
 
-        if (!is_string($options['serverData']) || !$container->has($options['serverData'])) {
+        if (!is_string($serverData) || !$container->has($serverData)) {
             throw new ServiceNotFoundException(
                 'No serverData service found'
             );
         }
 
         try {
-            return $container->get($options['serverData']);
+            return $container->get($serverData);
         } catch (ContainerExceptionInterface $e) {
             throw new ServiceNotCreatedException('Could not load ServerData', 0, $e);
         }

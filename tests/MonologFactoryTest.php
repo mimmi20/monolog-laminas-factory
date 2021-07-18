@@ -378,6 +378,61 @@ final class MonologFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithHandlers6(): void
+    {
+        $requestedName = Logger::class;
+        $timezone      = new DateTimeZone('Europe/Berlin');
+        $options       = [
+            'name' => 'xyz',
+            'timezone' => $timezone,
+            'handlers' => [
+                ['enabled' => false],
+                [
+                    'enabled' => true,
+                    'type' => 'xyz',
+                    'options' => ['abc' => 'def'],
+                ],
+                'xyz',
+                $this->createMock(HandlerInterface::class),
+            ],
+        ];
+
+        $handler = $this->createMock(HandlerInterface::class);
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with('xyz', ['abc' => 'def'])
+            ->willReturn($handler);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new MonologFactory();
+
+        $logger = $factory($container, $requestedName, $options);
+
+        self::assertInstanceOf(Logger::class, $logger);
+        self::assertSame($timezone, $logger->getTimezone());
+        self::assertIsArray($logger->getHandlers());
+        self::assertCount(3, $logger->getHandlers());
+    }
+
+    /**
+     * @throws Exception
      */
     public function testInvoceWithProcessors(): void
     {
@@ -568,5 +623,58 @@ final class MonologFactoryTest extends TestCase
         self::assertSame($timezone, $logger->getTimezone());
         self::assertIsArray($logger->getProcessors());
         self::assertCount(3, $logger->getProcessors());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithProcessors6(): void
+    {
+        $requestedName = Logger::class;
+        $timezone      = new DateTimeZone('Europe/Berlin');
+        $options       = [
+            'name' => 'xyz',
+            'timezone' => $timezone,
+            'processors' => [
+                'abc',
+                [
+                    'enabled' => true,
+                    'type' => 'xyz',
+                    'options' => ['efg' => 'ijk'],
+                ],
+                ['type' => 'abc'],
+                static fn (array $record): array => $record,
+            ],
+        ];
+
+        $processor = $this->createMock(ProcessorInterface::class);
+
+        $monologProcessorPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologProcessorPluginManager->expects(self::never())
+            ->method('has');
+        $monologProcessorPluginManager->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive(['abc', []], ['xyz', ['efg' => 'ijk']])
+            ->willReturn($processor);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologProcessorPluginManager::class)
+            ->willReturn($monologProcessorPluginManager);
+
+        $factory = new MonologFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionMessage('ProcessorConfig must be an Array');
+        $this->expectExceptionCode(0);
+
+        $factory($container, $requestedName, $options);
     }
 }

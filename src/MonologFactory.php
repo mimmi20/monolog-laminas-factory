@@ -16,7 +16,6 @@ use DateTimeZone;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\AbstractPluginManager;
-use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -113,7 +112,7 @@ final class MonologFactory implements FactoryInterface
                         $handlerArray['type'],
                         $handlerArray['options'] ?? []
                     );
-                } catch (ServiceNotFoundException | InvalidServiceException $e) {
+                } catch (ContainerExceptionInterface $e) {
                     throw new ServiceNotFoundException(sprintf('Could not find service %s', $handlerArray['type']), 0, $e);
                 }
 

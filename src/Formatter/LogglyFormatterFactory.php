@@ -28,7 +28,7 @@ final class LogglyFormatterFactory implements FactoryInterface
     /**
      * @param string                         $requestedName
      * @param array<string, (int|bool)>|null $options
-     * @phpstan-param array{batchMode?: JsonFormatter::BATCH_MODE_*, appendNewline?: bool}|null $options
+     * @phpstan-param array{batchMode?: JsonFormatter::BATCH_MODE_*, appendNewline?: bool, includeStacktraces?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -39,19 +39,25 @@ final class LogglyFormatterFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): LogglyFormatter
     {
-        $batchMode     =            LogglyFormatter::BATCH_MODE_NEWLINES;
+        $batchMode     = LogglyFormatter::BATCH_MODE_NEWLINES;
         $appendNewline = true;
 
         if (is_array($options)) {
             if (array_key_exists('batchMode', $options)) {
-                $batchMode = (int) $options['batchMode'];
+                $batchMode = $options['batchMode'];
             }
 
             if (array_key_exists('appendNewline', $options)) {
-                $appendNewline = (bool) $options['appendNewline'];
+                $appendNewline = $options['appendNewline'];
             }
         }
 
-        return new LogglyFormatter($batchMode, $appendNewline);
+        $formatter = new LogglyFormatter($batchMode, $appendNewline);
+
+        if (is_array($options) && array_key_exists('includeStacktraces', $options)) {
+            $formatter->includeStacktraces($options['includeStacktraces']);
+        }
+
+        return $formatter;
     }
 }

@@ -43,11 +43,11 @@ final class MongoDBFormatterFactory implements FactoryInterface
 
         if (is_array($options)) {
             if (array_key_exists('maxNestingLevel', $options)) {
-                $maxNestingLevel = (int) $options['maxNestingLevel'];
+                $maxNestingLevel = $options['maxNestingLevel'];
             }
 
             if (array_key_exists('exceptionTraceAsString', $options)) {
-                $exceptionTraceAsString = (bool) $options['exceptionTraceAsString'];
+                $exceptionTraceAsString = $options['exceptionTraceAsString'];
             }
         }
 

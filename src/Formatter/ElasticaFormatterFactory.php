@@ -48,10 +48,10 @@ final class ElasticaFormatterFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No index provided');
         }
 
-        $index = (string) $options['index'];
+        $index = $options['index'];
 
         if (array_key_exists('type', $options)) {
-            $type = (string) $options['type'];
+            $type = $options['type'];
         }
 
         return new ElasticaFormatter($index, $type);

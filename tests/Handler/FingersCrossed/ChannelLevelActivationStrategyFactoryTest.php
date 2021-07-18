@@ -1,0 +1,123 @@
+<?php
+/**
+ * This file is part of the mimmi20/monolog-laminas-factory package.
+ *
+ * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types = 1);
+
+namespace Mimmi20Test\LoggerFactory\Handler\FingersCrossed;
+
+use Interop\Container\ContainerInterface;
+use Mimmi20\LoggerFactory\Handler\FingersCrossed\ChannelLevelActivationStrategyFactory;
+use Monolog\Handler\FingersCrossed\ChannelLevelActivationStrategy;
+use Monolog\Logger;
+use PHPUnit\Framework\Exception;
+use PHPUnit\Framework\TestCase;
+use Psr\Log\LogLevel;
+use ReflectionException;
+use ReflectionProperty;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
+
+final class ChannelLevelActivationStrategyFactoryTest extends TestCase
+{
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithoutConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new ChannelLevelActivationStrategyFactory();
+
+        $strategy = $factory($container, '');
+
+        self::assertInstanceOf(ChannelLevelActivationStrategy::class, $strategy);
+
+        $dal = new ReflectionProperty($strategy, 'defaultActionLevel');
+        $dal->setAccessible(true);
+
+        self::assertSame(Logger::DEBUG, $dal->getValue($strategy));
+
+        $ctal = new ReflectionProperty($strategy, 'channelToActionLevel');
+        $ctal->setAccessible(true);
+
+        self::assertSame([], $ctal->getValue($strategy));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithEmptyConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new ChannelLevelActivationStrategyFactory();
+
+        $strategy = $factory($container, '', []);
+
+        self::assertInstanceOf(ChannelLevelActivationStrategy::class, $strategy);
+
+        $dal = new ReflectionProperty($strategy, 'defaultActionLevel');
+        $dal->setAccessible(true);
+
+        self::assertSame(Logger::DEBUG, $dal->getValue($strategy));
+
+        $ctal = new ReflectionProperty($strategy, 'channelToActionLevel');
+        $ctal->setAccessible(true);
+
+        self::assertSame([], $ctal->getValue($strategy));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new ChannelLevelActivationStrategyFactory();
+
+        $strategy = $factory($container, '', ['defaultActionLevel' => LogLevel::ALERT, 'channelToActionLevel' => ['abc' => LogLevel::CRITICAL, 'xyz' => LogLevel::WARNING]]);
+
+        self::assertInstanceOf(ChannelLevelActivationStrategy::class, $strategy);
+
+        $dal = new ReflectionProperty($strategy, 'defaultActionLevel');
+        $dal->setAccessible(true);
+
+        self::assertSame(Logger::ALERT, $dal->getValue($strategy));
+
+        $ctal = new ReflectionProperty($strategy, 'channelToActionLevel');
+        $ctal->setAccessible(true);
+
+        self::assertSame(['abc' => Logger::CRITICAL, 'xyz' => Logger::WARNING], $ctal->getValue($strategy));
+    }
+}

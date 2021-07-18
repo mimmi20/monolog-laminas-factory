@@ -12,11 +12,14 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory;
 
+use CMDISP\MonologMicrosoftTeams\TeamsLogHandler;
+use JK\Monolog\Processor\RequestHeaderProcessor;
 use Laminas\Log\Logger;
 use Laminas\Log\LoggerInterface;
 use Mimmi20\LoggerFactory\Formatter\ChromePHPFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\ElasticaFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\FlowdockFormatterFactory;
+use Mimmi20\LoggerFactory\Formatter\FluentdFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\GelfMessageFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\HtmlFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\JsonFormatterFactory;
@@ -41,6 +44,8 @@ use Mimmi20\LoggerFactory\Handler\ElasticaHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\ErrorLogHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\FallbackGroupHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\FilterHandlerFactory;
+use Mimmi20\LoggerFactory\Handler\FingersCrossed\ActivationStrategyPluginManager;
+use Mimmi20\LoggerFactory\Handler\FingersCrossed\ActivationStrategyPluginManagerFactory;
 use Mimmi20\LoggerFactory\Handler\FingersCrossedHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\FirePHPHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\FleepHookHandlerFactory;
@@ -64,6 +69,8 @@ use Mimmi20\LoggerFactory\Handler\ProcessHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\PsrHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\PushoverHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\RedisHandlerFactory;
+use Mimmi20\LoggerFactory\Handler\RedisPubSubHandlerFactory;
+use Mimmi20\LoggerFactory\Handler\RollbarHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\RotatingFileHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\SamplingHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\SendGridHandlerFactory;
@@ -75,6 +82,7 @@ use Mimmi20\LoggerFactory\Handler\StreamHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\SwiftMailerHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\SyslogHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\SyslogUdpHandlerFactory;
+use Mimmi20\LoggerFactory\Handler\TeamsLogHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\TelegramBotHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\TestHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\WhatFailureGroupHandlerFactory;
@@ -87,12 +95,14 @@ use Mimmi20\LoggerFactory\Processor\MemoryUsageProcessorFactory;
 use Mimmi20\LoggerFactory\Processor\MercurialProcessorFactory;
 use Mimmi20\LoggerFactory\Processor\ProcessIdProcessorFactory;
 use Mimmi20\LoggerFactory\Processor\PsrLogMessageProcessorFactory;
+use Mimmi20\LoggerFactory\Processor\RequestHeaderProcessorFactory;
 use Mimmi20\LoggerFactory\Processor\TagProcessorFactory;
 use Mimmi20\LoggerFactory\Processor\UidProcessorFactory;
 use Mimmi20\LoggerFactory\Processor\WebProcessorFactory;
 use Monolog\Formatter\ChromePHPFormatter;
 use Monolog\Formatter\ElasticaFormatter;
 use Monolog\Formatter\FlowdockFormatter;
+use Monolog\Formatter\FluentdFormatter;
 use Monolog\Formatter\GelfMessageFormatter;
 use Monolog\Formatter\HtmlFormatter;
 use Monolog\Formatter\JsonFormatter;
@@ -140,6 +150,8 @@ use Monolog\Handler\ProcessHandler;
 use Monolog\Handler\PsrHandler;
 use Monolog\Handler\PushoverHandler;
 use Monolog\Handler\RedisHandler;
+use Monolog\Handler\RedisPubSubHandler;
+use Monolog\Handler\RollbarHandler;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\SamplingHandler;
 use Monolog\Handler\SendGridHandler;
@@ -197,6 +209,7 @@ final class ConfigProvider
                 LoggerInterface::class => Logger::class,
             ],
             'factories' => [
+                ActivationStrategyPluginManager::class => ActivationStrategyPluginManagerFactory::class,
                 Logger::class => LoggerFactory::class,
                 MonologPluginManager::class => MonologPluginManagerFactory::class,
                 MonologHandlerPluginManager::class => MonologHandlerPluginManagerFactory::class,
@@ -249,6 +262,8 @@ final class ConfigProvider
                 'psr' => PsrHandler::class,
                 'pushover' => PushoverHandler::class,
                 'redis' => RedisHandler::class,
+                'redispubsub' => RedisPubSubHandler::class,
+                'rollbar' => RollbarHandler::class,
                 'rotating' => RotatingFileHandler::class,
                 'sampling' => SamplingHandler::class,
                 'sendgrid' => SendGridHandler::class,
@@ -260,6 +275,7 @@ final class ConfigProvider
                 'swiftmailer' => SwiftMailerHandler::class,
                 'syslog' => SyslogHandler::class,
                 'syslogudp' => SyslogUdpHandler::class,
+                'teams' => TeamsLogHandler::class,
                 'telegrambot' => TelegramBotHandler::class,
                 'test' => TestHandler::class,
                 'whatfailuregrouphandler' => WhatFailureGroupHandler::class,
@@ -302,6 +318,8 @@ final class ConfigProvider
                 PsrHandler::class => PsrHandlerFactory::class,
                 PushoverHandler::class => PushoverHandlerFactory::class,
                 RedisHandler::class => RedisHandlerFactory::class,
+                RedisPubSubHandler::class => RedisPubSubHandlerFactory::class,
+                RollbarHandler::class => RollbarHandlerFactory::class,
                 RotatingFileHandler::class => RotatingFileHandlerFactory::class,
                 SamplingHandler::class => SamplingHandlerFactory::class,
                 SendGridHandler::class => SendGridHandlerFactory::class,
@@ -313,6 +331,7 @@ final class ConfigProvider
                 SwiftMailerHandler::class => SwiftMailerHandlerFactory::class,
                 SyslogHandler::class => SyslogHandlerFactory::class,
                 SyslogUdpHandler::class => SyslogUdpHandlerFactory::class,
+                TeamsLogHandler::class => TeamsLogHandlerFactory::class,
                 TelegramBotHandler::class => TelegramBotHandlerFactory::class,
                 TestHandler::class => TestHandlerFactory::class,
                 WhatFailureGroupHandler::class => WhatFailureGroupHandlerFactory::class,
@@ -336,6 +355,7 @@ final class ConfigProvider
                 'mercurial' => MercurialProcessor::class,
                 'processid' => ProcessIdProcessor::class,
                 'psrlogmessage' => PsrLogMessageProcessor::class,
+                'requestheader' => RequestHeaderProcessor::class,
                 'tags' => TagProcessor::class,
                 'uid' => UidProcessor::class,
                 'web' => WebProcessor::class,
@@ -349,6 +369,7 @@ final class ConfigProvider
                 MercurialProcessor::class => MercurialProcessorFactory::class,
                 ProcessIdProcessor::class => ProcessIdProcessorFactory::class,
                 PsrLogMessageProcessor::class => PsrLogMessageProcessorFactory::class,
+                RequestHeaderProcessor::class => RequestHeaderProcessorFactory::class,
                 TagProcessor::class => TagProcessorFactory::class,
                 UidProcessor::class => UidProcessorFactory::class,
                 WebProcessor::class => WebProcessorFactory::class,
@@ -366,6 +387,7 @@ final class ConfigProvider
                 'chromePHP' => ChromePHPFormatter::class,
                 'elastica' => ElasticaFormatter::class,
                 'flowdock' => FlowdockFormatter::class,
+                'fluentd' => FluentdFormatter::class,
                 'gelf' => GelfMessageFormatter::class,
                 'html' => HtmlFormatter::class,
                 'json' => JsonFormatter::class,
@@ -382,6 +404,7 @@ final class ConfigProvider
                 ChromePHPFormatter::class => ChromePHPFormatterFactory::class,
                 ElasticaFormatter::class => ElasticaFormatterFactory::class,
                 FlowdockFormatter::class => FlowdockFormatterFactory::class,
+                FluentdFormatter::class => FluentdFormatterFactory::class,
                 GelfMessageFormatter::class => GelfMessageFormatterFactory::class,
                 HtmlFormatter::class => HtmlFormatterFactory::class,
                 JsonFormatter::class => JsonFormatterFactory::class,

@@ -45,26 +45,26 @@ final class LineFormatterFactory implements FactoryInterface
 
         if (is_array($options)) {
             if (array_key_exists('format', $options)) {
-                $format = (string) $options['format'];
+                $format = $options['format'];
             }
 
             if (array_key_exists('dateFormat', $options)) {
-                $dateFormat = (string) $options['dateFormat'];
+                $dateFormat = $options['dateFormat'];
             }
 
             if (array_key_exists('allowInlineLineBreaks', $options)) {
-                $allowInlineLineBreaks = (bool) $options['allowInlineLineBreaks'];
+                $allowInlineLineBreaks = $options['allowInlineLineBreaks'];
             }
 
             if (array_key_exists('ignoreEmptyContextAndExtra', $options)) {
-                $ignoreEmptyContextAndExtra = (bool) $options['ignoreEmptyContextAndExtra'];
+                $ignoreEmptyContextAndExtra = $options['ignoreEmptyContextAndExtra'];
             }
         }
 
         $formatter = new LineFormatter($format, $dateFormat, $allowInlineLineBreaks, $ignoreEmptyContextAndExtra);
 
         if (is_array($options) && array_key_exists('includeStacktraces', $options)) {
-            $formatter->includeStacktraces((bool) $options['includeStacktraces']);
+            $formatter->includeStacktraces($options['includeStacktraces']);
         }
 
         return $formatter;

@@ -23,12 +23,17 @@ use Monolog\Handler\DeduplicationHandler;
 use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\ProcessableHandlerInterface;
+use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
 use function assert;
 use function is_array;
 
+/**
+ * @phpstan-import-type Level from Logger
+ * @phpstan-import-type LevelName from Logger
+ */
 final class DeduplicationHandlerFactory implements FactoryInterface
 {
     use AddFormatterTrait;
@@ -38,7 +43,7 @@ final class DeduplicationHandlerFactory implements FactoryInterface
     /**
      * @param string                           $requestedName
      * @param array<string, (string|int)>|null $options
-     * @phpstan-param array{handler: array{type: string, enabled?: bool, options?: array<mixed>}, deduplicationStore?: string, deduplicationLevel?: (string|LogLevel::*), time?: int, bubble?: bool}|null $options
+     * @phpstan-param array{handler?: bool|array{type?: string, enabled?: bool, options?: array<mixed>}, deduplicationStore?: string, deduplicationLevel?: (Level|LevelName|LogLevel::*), time?: int, bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -57,9 +62,17 @@ final class DeduplicationHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No handler provided');
         }
 
+        if (!is_array($options['handler'])) {
+            throw new ServiceNotCreatedException('HandlerConfig must be an Array');
+        }
+
         $handler = $this->getHandler($container, $options['handler']);
 
-        $deduplicationStore =            $options['deduplicationStore'] ?? null;
+        if (null === $handler) {
+            throw new ServiceNotCreatedException('No active handler specified');
+        }
+
+        $deduplicationStore = $options['deduplicationStore'] ?? null;
         $deduplicationLevel = $options['deduplicationLevel'] ?? LogLevel::ERROR;
         $time               = (int) ($options['time'] ?? 60);
 

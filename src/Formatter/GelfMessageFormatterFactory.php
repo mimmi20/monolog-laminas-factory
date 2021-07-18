@@ -45,19 +45,19 @@ final class GelfMessageFormatterFactory implements FactoryInterface
 
         if (is_array($options)) {
             if (array_key_exists('systemName', $options)) {
-                $systemName = (string) $options['systemName'];
+                $systemName = $options['systemName'];
             }
 
             if (array_key_exists('extraPrefix', $options)) {
-                $extraPrefix = (string) $options['extraPrefix'];
+                $extraPrefix = $options['extraPrefix'];
             }
 
             if (array_key_exists('contextPrefix', $options)) {
-                $contextPrefix = (string) $options['contextPrefix'];
+                $contextPrefix = $options['contextPrefix'];
             }
 
             if (array_key_exists('maxLength', $options)) {
-                $maxLength = (int) $options['maxLength'];
+                $maxLength = $options['maxLength'];
             }
         }
 

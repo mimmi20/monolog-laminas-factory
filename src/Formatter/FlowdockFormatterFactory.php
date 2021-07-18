@@ -50,8 +50,8 @@ final class FlowdockFormatterFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No sourceEmail provided');
         }
 
-        $source      = (string) $options['source'];
-        $sourceEmail = (string) $options['sourceEmail'];
+        $source      = $options['source'];
+        $sourceEmail = $options['sourceEmail'];
 
         return new FlowdockFormatter($source, $sourceEmail);
     }
