@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory\Handler;
 
+use CMDISP\MonologMicrosoftTeams\TeamsLogHandler;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -22,14 +23,13 @@ use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\ProcessableHandlerInterface;
-use Monolog\Handler\SlackWebhookHandler;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
 use function assert;
 use function is_array;
 
-final class SlackWebhookHandlerFactory implements FactoryInterface
+final class TeamsLogHandlerFactory implements FactoryInterface
 {
     use AddFormatterTrait;
     use AddProcessorTrait;
@@ -37,7 +37,7 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{webhookUrl?: string, channel?: string, userName?: string, useAttachment?: bool, iconEmoji?: string, useShortAttachment?: bool, includeContextAndExtra?: bool, level?: (string|LogLevel::*), bubble?: bool, excludeFields?: array<string>}|null $options
+     * @phpstan-param array{url?: string, level?: (string|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -46,50 +46,19 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      */
-    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): SlackWebhookHandler
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): TeamsLogHandler
     {
         if (!is_array($options)) {
             throw new ServiceNotCreatedException('Options must be an Array');
         }
 
-        if (!array_key_exists('webhookUrl', $options)) {
-            throw new ServiceNotCreatedException('No webhookUrl provided');
+        if (!array_key_exists('url', $options)) {
+            throw new ServiceNotCreatedException('No url provided');
         }
 
-        $webhookUrl         = $options['webhookUrl'];
-        $channel            = null;
-        $userName           = null;
-        $useAttachment      = true;
-        $iconEmoji          = null;
-        $useShortAttachment = false;
-        $includeContext     = false;
-        $level              = LogLevel::DEBUG;
-        $bubble             = true;
-        $excludeFields      = [];
-
-        if (array_key_exists('channel', $options)) {
-            $channel = $options['channel'];
-        }
-
-        if (array_key_exists('userName', $options)) {
-            $userName = $options['userName'];
-        }
-
-        if (array_key_exists('useAttachment', $options)) {
-            $useAttachment = $options['useAttachment'];
-        }
-
-        if (array_key_exists('iconEmoji', $options)) {
-            $iconEmoji = $options['iconEmoji'];
-        }
-
-        if (array_key_exists('useShortAttachment', $options)) {
-            $useShortAttachment = $options['useShortAttachment'];
-        }
-
-        if (array_key_exists('includeContextAndExtra', $options)) {
-            $includeContext = $options['includeContextAndExtra'];
-        }
+        $url    = $options['url'];
+        $level  = LogLevel::DEBUG;
+        $bubble = true;
 
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
@@ -99,21 +68,10 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
             $bubble = $options['bubble'];
         }
 
-        if (array_key_exists('excludeFields', $options)) {
-            $excludeFields = $options['excludeFields'];
-        }
-
-        $handler = new SlackWebhookHandler(
-            $webhookUrl,
-            $channel,
-            $userName,
-            $useAttachment,
-            $iconEmoji,
-            $useShortAttachment,
-            $includeContext,
+        $handler = new TeamsLogHandler(
+            $url,
             $level,
-            $bubble,
-            $excludeFields
+            $bubble
         );
 
         assert($handler instanceof HandlerInterface);

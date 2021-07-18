@@ -14,11 +14,11 @@ namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Mimmi20\LoggerFactory\Handler\SlackWebhookHandlerFactory;
+use Mimmi20\LoggerFactory\Handler\RollbarHandlerFactory;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 
-final class SlackWebhookHandlerFactoryTest extends TestCase
+final class RollbarHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
@@ -33,34 +33,12 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new SlackWebhookHandlerFactory();
+        $factory = new RollbarHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage('Options must be an Array');
 
         $factory($container, '');
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testInvoceWithEmptyConfig(): void
-    {
-        $container = $this->getMockBuilder(ContainerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects(self::never())
-            ->method('has');
-        $container->expects(self::never())
-            ->method('get');
-
-        $factory = new SlackWebhookHandlerFactory();
-
-        $this->expectException(ServiceNotCreatedException::class);
-        $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('No webhookUrl provided');
-
-        $factory($container, '', []);
     }
 }

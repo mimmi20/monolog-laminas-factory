@@ -22,14 +22,16 @@ use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\ProcessableHandlerInterface;
-use Monolog\Handler\SlackWebhookHandler;
+use Monolog\Handler\RollbarHandler;
 use Psr\Log\LogLevel;
+use Rollbar\Config;
+use Rollbar\RollbarLogger;
 
 use function array_key_exists;
 use function assert;
 use function is_array;
 
-final class SlackWebhookHandlerFactory implements FactoryInterface
+final class RollbarHandlerFactory implements FactoryInterface
 {
     use AddFormatterTrait;
     use AddProcessorTrait;
@@ -37,7 +39,7 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{webhookUrl?: string, channel?: string, userName?: string, useAttachment?: bool, iconEmoji?: string, useShortAttachment?: bool, includeContextAndExtra?: bool, level?: (string|LogLevel::*), bubble?: bool, excludeFields?: array<string>}|null $options
+     * @phpstan-param array{access_token?: string, enabled?: bool, transmit?: bool, log_payload?: bool, verbose?: string, allow_exec?: bool, level?: (string|LogLevel::*), bubble?: bool, environment?: string, root?: string}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -46,49 +48,43 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      */
-    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): SlackWebhookHandler
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): RollbarHandler
     {
         if (!is_array($options)) {
             throw new ServiceNotCreatedException('Options must be an Array');
         }
 
-        if (!array_key_exists('webhookUrl', $options)) {
-            throw new ServiceNotCreatedException('No webhookUrl provided');
+        if (!array_key_exists('access_token', $options)) {
+            throw new ServiceNotCreatedException('No access token provided');
         }
 
-        $webhookUrl         = $options['webhookUrl'];
-        $channel            = null;
-        $userName           = null;
-        $useAttachment      = true;
-        $iconEmoji          = null;
-        $useShortAttachment = false;
-        $includeContext     = false;
-        $level              = LogLevel::DEBUG;
-        $bubble             = true;
-        $excludeFields      = [];
+        $token      = $options['access_token'];
+        $enabled    = true;
+        $transmit   = true;
+        $logPayload = true;
+        $allowExec  = true;
+        $verbose    = Config::VERBOSE_NONE;
+        $level      = LogLevel::DEBUG;
+        $bubble     = true;
 
-        if (array_key_exists('channel', $options)) {
-            $channel = $options['channel'];
+        if (array_key_exists('enabled', $options)) {
+            $enabled = $options['enabled'];
         }
 
-        if (array_key_exists('userName', $options)) {
-            $userName = $options['userName'];
+        if (array_key_exists('transmit', $options)) {
+            $transmit = $options['transmit'];
         }
 
-        if (array_key_exists('useAttachment', $options)) {
-            $useAttachment = $options['useAttachment'];
+        if (array_key_exists('log_payload', $options)) {
+            $logPayload = $options['log_payload'];
         }
 
-        if (array_key_exists('iconEmoji', $options)) {
-            $iconEmoji = $options['iconEmoji'];
+        if (array_key_exists('verbose', $options)) {
+            $verbose = $options['verbose'];
         }
 
-        if (array_key_exists('useShortAttachment', $options)) {
-            $useShortAttachment = $options['useShortAttachment'];
-        }
-
-        if (array_key_exists('includeContextAndExtra', $options)) {
-            $includeContext = $options['includeContextAndExtra'];
+        if (array_key_exists('allow_exec', $options)) {
+            $allowExec = $options['allow_exec'];
         }
 
         if (array_key_exists('level', $options)) {
@@ -99,21 +95,27 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
             $bubble = $options['bubble'];
         }
 
-        if (array_key_exists('excludeFields', $options)) {
-            $excludeFields = $options['excludeFields'];
+        $rollbarConfig = [
+            'access_token' => $token,
+            'enabled' => $enabled,
+            'transmit' => $transmit,
+            'log_payload' => $logPayload,
+            'verbose' => $verbose,
+            'allow_exec' => $allowExec,
+        ];
+
+        if (array_key_exists('environment', $options)) {
+            $rollbarConfig['environment'] = $options['environment'];
         }
 
-        $handler = new SlackWebhookHandler(
-            $webhookUrl,
-            $channel,
-            $userName,
-            $useAttachment,
-            $iconEmoji,
-            $useShortAttachment,
-            $includeContext,
+        if (array_key_exists('root', $options)) {
+            $rollbarConfig['root'] = $options['root'];
+        }
+
+        $handler = new RollbarHandler(
+            new RollbarLogger($rollbarConfig),
             $level,
-            $bubble,
-            $excludeFields
+            $bubble
         );
 
         assert($handler instanceof HandlerInterface);

@@ -27,3 +27,5 @@ parameters:
     - '~Call to deprecated method getType\(\) of class Monolog\\Formatter\\ElasticaFormatter~'
     - '~Parameter #2 \$extraFields of class Monolog\\Processor\\WebProcessor constructor expects~'
     - '~Parameter #1 \$stream of class Monolog\\Handler\\StreamHandler constructor expects~'
+    - '~Parameter #2 \$level of class CMDISP\\MonologMicrosoftTeams\\TeamsLogHandler constructor expects~'
+    - '~InvalidArgumentException is never thrown in the corresponding try block~'

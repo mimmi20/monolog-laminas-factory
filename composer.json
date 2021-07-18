@@ -18,9 +18,11 @@
   },
   "require-dev": {
     "aws/aws-sdk-php": "^3.185.15",
+    "cmdisp/monolog-microsoft-teams": "^1.2.0",
     "doctrine/couchdb": "1.0.0-beta4",
     "graylog2/gelf-php": "^1.7.0",
     "infection/infection": "^0.23.0",
+    "jk/monolog-request-header-processor": "^1.0.0",
     "laminas/laminas-config": "^3.5.0",
     "laminas/laminas-dependency-plugin": "^2.1.2",
     "laminas/laminas-modulemanager": "^2.10.2",
@@ -34,6 +36,7 @@
     "phpstan/phpstan-phpunit": "^0.12.21",
     "phpunit/phpunit": "^9.5.6",
     "predis/predis": "^1.1.7",
+    "rollbar/rollbar": "^2.1.0",
     "ruflin/elastica": "^7.1.1",
     "swiftmailer/swiftmailer": "^6.2.7"
   },
