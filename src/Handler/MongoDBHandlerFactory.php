@@ -85,8 +85,8 @@ final class MongoDBHandlerFactory implements FactoryInterface
             }
         }
 
-        $database   = (string) $options['database'];
-        $collection = (string) $options['collection'];
+        $database   = $options['database'];
+        $collection = $options['collection'];
         $level      = LogLevel::DEBUG;
         $bubble     = true;
 
@@ -95,7 +95,7 @@ final class MongoDBHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new MongoDBHandler(

@@ -20,8 +20,12 @@ use Mimmi20\LoggerFactory\Handler\OverflowHandlerFactory;
 use Mimmi20\LoggerFactory\MonologHandlerPluginManager;
 use Monolog\Handler\ChromePHPHandler;
 use Monolog\Handler\OverflowHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LogLevel;
+use ReflectionException;
+use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function sprintf;
@@ -204,11 +208,22 @@ final class OverflowHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     * @throws ReflectionException
      * @throws InvalidArgumentException
      */
     public function testInvoceWithHandlerConfig(): void
     {
-        $type = 'abc';
+        $type                 = 'abc';
+        $thresholdMapExpected = [
+            Logger::DEBUG => 0,
+            Logger::INFO => 0,
+            Logger::NOTICE => 0,
+            Logger::WARNING => 0,
+            Logger::ERROR => 0,
+            Logger::CRITICAL => 0,
+            Logger::ALERT => 0,
+            Logger::EMERGENCY => 0,
+        ];
 
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
@@ -239,5 +254,92 @@ final class OverflowHandlerFactoryTest extends TestCase
         $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true]]);
 
         self::assertInstanceOf(OverflowHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $thm = new ReflectionProperty($handler, 'thresholdMap');
+        $thm->setAccessible(true);
+
+        self::assertSame($thresholdMapExpected, $thm->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithHandlerConfig2(): void
+    {
+        $type                 = 'abc';
+        $thresholdMapExpected = [
+            Logger::DEBUG => 9,
+            Logger::INFO => 99,
+            Logger::NOTICE => 2,
+            Logger::WARNING => 42,
+            Logger::ERROR => 11,
+            Logger::CRITICAL => 22,
+            Logger::ALERT => 17,
+            Logger::EMERGENCY => 8,
+        ];
+
+        $thresholdMapSet = [
+            LogLevel::DEBUG => 9,
+            LogLevel::INFO => 99,
+            LogLevel::NOTICE => 2,
+            LogLevel::WARNING => 42,
+            LogLevel::ERROR => 11,
+            LogLevel::CRITICAL => 22,
+            LogLevel::ALERT => 17,
+            LogLevel::EMERGENCY => 8,
+        ];
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new OverflowHandlerFactory();
+
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'thresholdMap' => $thresholdMapSet, 'level' => LogLevel::ALERT, 'bubble' => false]);
+
+        self::assertInstanceOf(OverflowHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $thm = new ReflectionProperty($handler, 'thresholdMap');
+        $thm->setAccessible(true);
+
+        self::assertSame($thresholdMapExpected, $thm->getValue($handler));
     }
 }

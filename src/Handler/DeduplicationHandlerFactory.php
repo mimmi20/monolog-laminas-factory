@@ -72,14 +72,25 @@ final class DeduplicationHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No active handler specified');
         }
 
-        $deduplicationStore = $options['deduplicationStore'] ?? null;
-        $deduplicationLevel = $options['deduplicationLevel'] ?? LogLevel::ERROR;
-        $time               = (int) ($options['time'] ?? 60);
+        $deduplicationStore = null;
+        $deduplicationLevel = LogLevel::ERROR;
+        $time               = 60;
+        $bubble             = true;
 
-        $bubble = true;
+        if (array_key_exists('deduplicationStore', $options)) {
+            $deduplicationStore = $options['deduplicationStore'];
+        }
+
+        if (array_key_exists('deduplicationLevel', $options)) {
+            $deduplicationLevel = $options['deduplicationLevel'];
+        }
+
+        if (array_key_exists('time', $options)) {
+            $time = $options['time'];
+        }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new DeduplicationHandler(

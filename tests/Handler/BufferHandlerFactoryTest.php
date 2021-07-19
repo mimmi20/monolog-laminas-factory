@@ -20,8 +20,12 @@ use Mimmi20\LoggerFactory\Handler\BufferHandlerFactory;
 use Mimmi20\LoggerFactory\MonologHandlerPluginManager;
 use Monolog\Handler\BufferHandler;
 use Monolog\Handler\ChromePHPHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LogLevel;
+use ReflectionException;
+use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function sprintf;
@@ -204,6 +208,7 @@ final class BufferHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     * @throws ReflectionException
      * @throws InvalidArgumentException
      */
     public function testInvoceWithHandlerConfig(): void
@@ -239,5 +244,82 @@ final class BufferHandlerFactoryTest extends TestCase
         $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true]]);
 
         self::assertInstanceOf(BufferHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $bl = new ReflectionProperty($handler, 'bufferLimit');
+        $bl->setAccessible(true);
+
+        self::assertSame(0, $bl->getValue($handler));
+
+        $fof = new ReflectionProperty($handler, 'flushOnOverflow');
+        $fof->setAccessible(true);
+
+        self::assertTrue($fof->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithHandlerConfig2(): void
+    {
+        $type        = 'abc';
+        $bufferLimit = 42;
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new BufferHandlerFactory();
+
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'bufferLimit' => $bufferLimit, 'level' => LogLevel::ALERT, 'bubble' => false, 'flushOnOverflow' => false]);
+
+        self::assertInstanceOf(BufferHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $bl = new ReflectionProperty($handler, 'bufferLimit');
+        $bl->setAccessible(true);
+
+        self::assertSame($bufferLimit, $bl->getValue($handler));
+
+        $fof = new ReflectionProperty($handler, 'flushOnOverflow');
+        $fof->setAccessible(true);
+
+        self::assertFalse($fof->getValue($handler));
     }
 }

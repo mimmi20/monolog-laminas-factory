@@ -125,7 +125,7 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
 
     /**
      * @param ActivationStrategyInterface|array<string, array<mixed>|string>|int|string $activationStrategy
-     * @phpstan-param Level|LevelName|LogLevel::*|ActivationStrategyInterface|array{type?: string, options?: array<mixed>}|null $activationStrategy
+     * @phpstan-param (Level|LevelName|LogLevel::*|ActivationStrategyInterface|array{type?: string, options?: array<mixed>}|null) $activationStrategy
      *
      * @return ActivationStrategyInterface|int|string|null
      * @phpstan-return (Level|LevelName|LogLevel::*|ActivationStrategyInterface|null)

@@ -63,7 +63,7 @@ final class LogmaticHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No token provided');
         }
 
-        $token    = (string) $options['token'];
+        $token    = $options['token'];
         $hostname = '';
         $appname  = '';
         $useSSL   = true;
@@ -71,15 +71,15 @@ final class LogmaticHandlerFactory implements FactoryInterface
         $bubble   = true;
 
         if (array_key_exists('hostname', $options)) {
-            $hostname = (string) $options['hostname'];
+            $hostname = $options['hostname'];
         }
 
         if (array_key_exists('appname', $options)) {
-            $appname = (string) $options['appname'];
+            $appname = $options['appname'];
         }
 
         if (array_key_exists('useSSL', $options)) {
-            $useSSL = (bool) $options['useSSL'];
+            $useSSL = $options['useSSL'];
         }
 
         if (array_key_exists('level', $options)) {
@@ -87,7 +87,7 @@ final class LogmaticHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         try {

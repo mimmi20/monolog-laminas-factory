@@ -72,26 +72,25 @@ final class OverflowHandlerFactory implements FactoryInterface
         }
 
         $thresholdMap = [
-            Logger::DEBUG => $options['thresholdMap']['debug'] ?? 0,
-            Logger::INFO => $options['thresholdMap']['info'] ?? 0,
-            Logger::NOTICE => $options['thresholdMap']['notice'] ?? 0,
-            Logger::WARNING => $options['thresholdMap']['warning'] ?? 0,
-            Logger::ERROR => $options['thresholdMap']['error'] ?? 0,
-            Logger::CRITICAL => $options['thresholdMap']['critical'] ?? 0,
-            Logger::ALERT => $options['thresholdMap']['alert'] ?? 0,
-            Logger::EMERGENCY => $options['thresholdMap']['emergency'] ?? 0,
+            Logger::DEBUG => $options['thresholdMap'][LogLevel::DEBUG] ?? 0,
+            Logger::INFO => $options['thresholdMap'][LogLevel::INFO] ?? 0,
+            Logger::NOTICE => $options['thresholdMap'][LogLevel::NOTICE] ?? 0,
+            Logger::WARNING => $options['thresholdMap'][LogLevel::WARNING] ?? 0,
+            Logger::ERROR => $options['thresholdMap'][LogLevel::ERROR] ?? 0,
+            Logger::CRITICAL => $options['thresholdMap'][LogLevel::CRITICAL] ?? 0,
+            Logger::ALERT => $options['thresholdMap'][LogLevel::ALERT] ?? 0,
+            Logger::EMERGENCY => $options['thresholdMap'][LogLevel::EMERGENCY] ?? 0,
         ];
 
-        $level = LogLevel::DEBUG;
+        $level  = LogLevel::DEBUG;
+        $bubble = true;
 
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
         }
 
-        $bubble = true;
-
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new OverflowHandler(

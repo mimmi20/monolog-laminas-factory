@@ -72,13 +72,20 @@ final class FilterHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No active handler specified');
         }
 
-        $minLevelOrList = $options['minLevelOrList'] ?? LogLevel::DEBUG;
-        $maxLevel       = $options['maxLevel'] ?? LogLevel::EMERGENCY;
+        $minLevelOrList = LogLevel::DEBUG;
+        $maxLevel       = LogLevel::EMERGENCY;
+        $bubble         = true;
 
-        $bubble = true;
+        if (array_key_exists('minLevelOrList', $options)) {
+            $minLevelOrList = $options['minLevelOrList'];
+        }
+
+        if (array_key_exists('maxLevel', $options)) {
+            $maxLevel = $options['maxLevel'];
+        }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new FilterHandler(
