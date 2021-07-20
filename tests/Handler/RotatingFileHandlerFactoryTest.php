@@ -41,4 +41,26 @@ final class RotatingFileHandlerFactoryTest extends TestCase
 
         $factory($container, '');
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithEmptyConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new RotatingFileHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No filename provided');
+
+        $factory($container, '', []);
+    }
 }
