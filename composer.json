@@ -36,7 +36,7 @@
     "phpstan/phpstan-phpunit": "^0.12.21",
     "phpunit/phpunit": "^9.5.7",
     "predis/predis": "^1.1.7",
-    "rollbar/rollbar": "^2.1.0 || ^3.0.0",
+    "rollbar/rollbar": "^2.1.0",
     "ruflin/elastica": "^7.1.1",
     "swiftmailer/swiftmailer": "^6.2.7"
   },

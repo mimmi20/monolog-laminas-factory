@@ -23,7 +23,7 @@ updates:
     ignore:
       - dependency-name: "rollbar/rollbar"
         versions:
-          - ">= 0"
+          - ">= 3"
 #      - dependency-name: phpunit/phpunit
 #        versions:
 #          - ">= 0"
