@@ -7,7 +7,7 @@ on:
 name: "Continuous Integration"
 
 env:
-  PHP_EXTENSIONS: "json, opcache, openssl"
+  PHP_EXTENSIONS: "json, opcache, openssl, mbstring, mongodb"
   PHP_INI_VALUES: "opcache.enable=1, opcache.enable_cli=1, opcache.fast_shutdown=0, zend.assertions=1, assert.exception=On"
 
 jobs:
@@ -395,8 +395,8 @@ jobs:
         uses: "codecov/codecov-action@v2.0.1"
         with:
           file: ".build/coverage/clover.xml"
-          flags: "phpunit,php-${{ matrix.php-version }},${{ matrix.coverage-drivers }}"
-          verbose: true
+          flags: "phpunit,php-${{ matrix.php-version }},${{ matrix.coverage-drivers }},${{ matrix.operating-system }}"
+          verbose: false
 
       - name: "Run mutation tests with infection/infection"
         run: "vendor/bin/infection -s --min-covered-msi=87 --min-msi=82 --coverage=.build/coverage --logger-github"
