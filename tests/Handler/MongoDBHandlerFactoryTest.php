@@ -17,7 +17,6 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\MongoDBHandlerFactory;
 use MongoDB\Client;
-use MongoDB\Driver\Manager;
 use Monolog\Handler\MongoDBHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -219,82 +218,11 @@ final class MongoDBHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfig6(): void
     {
-        if (!class_exists(Manager::class)) {
-            self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
-        }
-
-        $client      = 'test-client';
-        $clientClass = $this->getMockBuilder(Manager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $database    = 'test-database';
-        $collection  = 'test-collection';
-
-        $container = $this->getMockBuilder(ContainerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects(self::never())
-            ->method('has');
-        $container->expects(self::once())
-            ->method('get')
-            ->with($client)
-            ->willReturn($clientClass);
-
-        $factory = new MongoDBHandlerFactory();
-
-        $handler = $factory($container, '', ['client' => $client, 'database' => $database, 'collection' => $collection]);
-
-        self::assertInstanceOf(MongoDBHandler::class, $handler);
-
-        self::assertSame(Logger::DEBUG, $handler->getLevel());
-        self::assertTrue($handler->getBubble());
-    }
-
-    /**
-     * @throws Exception
-     * @throws InvalidArgumentException
-     */
-    public function testInvoceWithConfig7(): void
-    {
         if (!class_exists(Client::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Client::class));
         }
 
         $client     = $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $database   = 'test-database';
-        $collection = 'test-collection';
-
-        $container = $this->getMockBuilder(ContainerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects(self::never())
-            ->method('has');
-        $container->expects(self::never())
-            ->method('get');
-
-        $factory = new MongoDBHandlerFactory();
-
-        $handler = $factory($container, '', ['client' => $client, 'database' => $database, 'collection' => $collection]);
-
-        self::assertInstanceOf(MongoDBHandler::class, $handler);
-
-        self::assertSame(Logger::DEBUG, $handler->getLevel());
-        self::assertTrue($handler->getBubble());
-    }
-
-    /**
-     * @throws Exception
-     * @throws InvalidArgumentException
-     */
-    public function testInvoceWithConfig8(): void
-    {
-        if (!class_exists(Manager::class)) {
-            self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
-        }
-
-        $client     = $this->getMockBuilder(Manager::class)
             ->disableOriginalConstructor()
             ->getMock();
         $database   = 'test-database';
