@@ -18,7 +18,7 @@
     "monolog/monolog": "^2.3.1"
   },
   "require-dev": {
-    "aws/aws-sdk-php": "^3.185.16",
+    "aws/aws-sdk-php": "^3.185.17",
     "cmdisp/monolog-microsoft-teams": "^1.2.0",
     "doctrine/couchdb": "1.0.0-beta4",
     "graylog2/gelf-php": "^1.7.0",
@@ -32,7 +32,7 @@
     "pepakriz/phpstan-exception-rules": "^0.11.7",
     "php-console/php-console": "^3.1.8",
     "phpstan/extension-installer": "^1.1.0",
-    "phpstan/phpstan": "^0.12.92",
+    "phpstan/phpstan": "^0.12.93",
     "phpstan/phpstan-deprecation-rules": "^0.12.6",
     "phpstan/phpstan-phpunit": "^0.12.21",
     "phpunit/phpunit": "^9.5.7",
