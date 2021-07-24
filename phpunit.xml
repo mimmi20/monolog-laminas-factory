@@ -16,7 +16,7 @@
     failOnRisky="true"
     failOnSkipped="false"
     failOnWarning="true"
-    verbose="true"
+    verbose="false"
     bootstrap="vendor/autoload.php"
     enforceTimeLimit="false"
     executionOrder="default"
