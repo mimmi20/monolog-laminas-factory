@@ -220,4 +220,68 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
 
         $factory($container, '', ['connector' => $connectorName, 'level' => $level, 'bubble' => $bubble, 'options' => ['enabled' => false, 'abc' => 'xyz']]);
     }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceConfig6(): void
+    {
+        $connector = $this->getMockBuilder(Connector::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new PHPConsoleHandlerFactory();
+
+        $handler = $factory($container, '', ['connector' => $connector]);
+
+        self::assertInstanceOf(PHPConsoleHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+        self::assertSame($connector, $handler->getConnector());
+        self::assertIsArray($handler->getOptions());
+        self::assertTrue($handler->getOptions()['enabled']);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceConfig7(): void
+    {
+        $connector = $this->getMockBuilder(Connector::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $level     = LogLevel::ALERT;
+        $bubble    = false;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new PHPConsoleHandlerFactory();
+
+        $handler = $factory($container, '', ['connector' => $connector, 'level' => $level, 'bubble' => $bubble, 'options' => ['enabled' => false]]);
+
+        self::assertInstanceOf(PHPConsoleHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+        self::assertSame($connector, $handler->getConnector());
+        self::assertIsArray($handler->getOptions());
+        self::assertFalse($handler->getOptions()['enabled']);
+    }
 }

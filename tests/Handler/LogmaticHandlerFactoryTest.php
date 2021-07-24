@@ -96,6 +96,11 @@ final class LogmaticHandlerFactoryTest extends TestCase
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
         self::assertSame('ssl://api.logmatic.io:10515/v1/', $handler->getConnectionString());
+        self::assertSame(60.0, $handler->getTimeout());
+        self::assertSame(60.0, $handler->getWritingTimeout());
+        self::assertSame(60.0, $handler->getConnectionTimeout());
+        //self::assertSame(0, $handler->getChunkSize());
+        self::assertFalse($handler->isPersistent());
 
         $lt = new ReflectionProperty($handler, 'logToken');
         $lt->setAccessible(true);
@@ -120,9 +125,13 @@ final class LogmaticHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfig2(): void
     {
-        $token    = 'token';
-        $hostname = 'test-host';
-        $appname  = 'test-app';
+        $token        = 'token';
+        $hostname     = 'test-host';
+        $appname      = 'test-app';
+        $timeout      = 42.0;
+        $writeTimeout = 120.0;
+        $persistent   = true;
+        $chunkSize    = 100;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -134,13 +143,18 @@ final class LogmaticHandlerFactoryTest extends TestCase
 
         $factory = new LogmaticHandlerFactory();
 
-        $handler = $factory($container, '', ['token' => $token, 'hostname' => $hostname, 'appname' => $appname, 'useSSL' => false, 'level' => LogLevel::ALERT, 'bubble' => false]);
+        $handler = $factory($container, '', ['token' => $token, 'hostname' => $hostname, 'appname' => $appname, 'useSSL' => false, 'level' => LogLevel::ALERT, 'bubble' => false, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
 
         self::assertInstanceOf(LogmaticHandler::class, $handler);
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame('api.logmatic.io:10514/v1/', $handler->getConnectionString());
+        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($writeTimeout, $handler->getWritingTimeout());
+        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame($chunkSize, $handler->getChunkSize());
+        self::assertTrue($handler->isPersistent());
 
         $lt = new ReflectionProperty($handler, 'logToken');
         $lt->setAccessible(true);

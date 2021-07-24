@@ -20,9 +20,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Handler\RedisPubSubHandler;
 use Monolog\Logger;
 use Predis\Client;
@@ -31,7 +28,6 @@ use Psr\Log\LogLevel;
 use Redis;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function is_string;
 use function sprintf;
@@ -48,7 +44,7 @@ final class RedisPubSubHandlerFactory implements FactoryInterface
     /**
      * @param string                                             $requestedName
      * @param array<string, (string|int|bool|Client|Redis)>|null $options
-     * @phpstan-param array{client: (string|Client|Redis), key?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool, capSize?: int}|null $options
+     * @phpstan-param array{client?: (bool|string|Client|Redis), key?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool, capSize?: int}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -79,18 +75,20 @@ final class RedisPubSubHandlerFactory implements FactoryInterface
             }
         }
 
-        $key = (string) ($options['key'] ?? '');
+        $key    = '';
+        $level  = LogLevel::DEBUG;
+        $bubble = true;
 
-        $level = LogLevel::DEBUG;
+        if (array_key_exists('key', $options)) {
+            $key = $options['key'];
+        }
 
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
         }
 
-        $bubble = true;
-
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         try {
@@ -107,10 +105,6 @@ final class RedisPubSubHandlerFactory implements FactoryInterface
                 $e
             );
         }
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

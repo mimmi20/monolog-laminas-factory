@@ -123,6 +123,11 @@ final class PushoverHandlerFactoryTest extends TestCase
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
         self::assertSame('ssl://api.pushover.net:443', $handler->getConnectionString());
+        self::assertSame(60.0, $handler->getTimeout());
+        self::assertSame(60.0, $handler->getWritingTimeout());
+        self::assertSame(60.0, $handler->getConnectionTimeout());
+        //self::assertSame(0, $handler->getChunkSize());
+        self::assertFalse($handler->isPersistent());
 
         $tk = new ReflectionProperty($handler, 'token');
         $tk->setAccessible(true);
@@ -167,11 +172,15 @@ final class PushoverHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfigAndUsers2(): void
     {
-        $token  = 'token';
-        $users  = ['abc', 'xyz'];
-        $title  = 'title';
-        $retry  = 24;
-        $expire = 42;
+        $token        = 'token';
+        $users        = ['abc', 'xyz'];
+        $title        = 'title';
+        $retry        = 24;
+        $expire       = 42;
+        $timeout      = 42.0;
+        $writeTimeout = 120.0;
+        $persistent   = true;
+        $chunkSize    = 100;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -183,13 +192,18 @@ final class PushoverHandlerFactoryTest extends TestCase
 
         $factory = new PushoverHandlerFactory();
 
-        $handler = $factory($container, '', ['token' => $token, 'users' => $users, 'title' => $title, 'level' => LogLevel::ALERT, 'bubble' => false, 'useSSL' => false, 'highPriorityLevel' => LogLevel::ERROR, 'emergencyLevel' => LogLevel::ALERT, 'retry' => $retry, 'expire' => $expire]);
+        $handler = $factory($container, '', ['token' => $token, 'users' => $users, 'title' => $title, 'level' => LogLevel::ALERT, 'bubble' => false, 'useSSL' => false, 'highPriorityLevel' => LogLevel::ERROR, 'emergencyLevel' => LogLevel::ALERT, 'retry' => $retry, 'expire' => $expire, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
 
         self::assertInstanceOf(PushoverHandler::class, $handler);
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame('api.pushover.net:80', $handler->getConnectionString());
+        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($writeTimeout, $handler->getWritingTimeout());
+        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame($chunkSize, $handler->getChunkSize());
+        self::assertTrue($handler->isPersistent());
 
         $tk = new ReflectionProperty($handler, 'token');
         $tk->setAccessible(true);

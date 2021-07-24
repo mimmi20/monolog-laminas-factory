@@ -24,6 +24,7 @@ use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
+use function ini_get;
 use function is_array;
 
 /**
@@ -38,7 +39,7 @@ final class PushoverHandlerFactory implements FactoryInterface
     /**
      * @param string                                              $requestedName
      * @param array<string, (string|int|bool|array<string>)>|null $options
-     * @phpstan-param array{token?: string, users?: array<string>|string, title?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool, useSSL?: bool, highPriorityLevel?: (Level|LevelName|LogLevel::*), emergencyLevel?: (Level|LevelName|LogLevel::*), retry?: int, expire?: int}|null $options
+     * @phpstan-param array{token?: string, users?: array<string>|string, title?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool, useSSL?: bool, highPriorityLevel?: (Level|LevelName|LogLevel::*), emergencyLevel?: (Level|LevelName|LogLevel::*), retry?: int, expire?: int, timeout?: float, writeTimeout?: float, persistent?: bool, chunkSize?: int}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -71,6 +72,8 @@ final class PushoverHandlerFactory implements FactoryInterface
         $emergencyLevel    = LogLevel::EMERGENCY;
         $retry             = 30;
         $expire            = 25200;
+        $timeout           = (float) ini_get('default_socket_timeout');
+        $writeTimeout      = (float) ini_get('default_socket_timeout');
 
         if (array_key_exists('title', $options)) {
             $title = $options['title'];
@@ -104,6 +107,14 @@ final class PushoverHandlerFactory implements FactoryInterface
             $expire = $options['expire'];
         }
 
+        if (array_key_exists('timeout', $options)) {
+            $timeout = $options['timeout'];
+        }
+
+        if (array_key_exists('writeTimeout', $options)) {
+            $writeTimeout = $options['writeTimeout'];
+        }
+
         $handler = new PushoverHandler(
             $token,
             $users,
@@ -116,6 +127,23 @@ final class PushoverHandlerFactory implements FactoryInterface
             $retry,
             $expire
         );
+
+        if (!empty($timeout)) {
+            $handler->setConnectionTimeout($timeout);
+        }
+
+        if (!empty($writeTimeout)) {
+            $handler->setTimeout($writeTimeout);
+            $handler->setWritingTimeout($writeTimeout);
+        }
+
+        if (array_key_exists('persistent', $options)) {
+            $handler->setPersistent($options['persistent']);
+        }
+
+        if (array_key_exists('chunkSize', $options)) {
+            $handler->setChunkSize($options['chunkSize']);
+        }
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

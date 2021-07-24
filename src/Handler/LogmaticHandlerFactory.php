@@ -25,6 +25,7 @@ use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
+use function ini_get;
 use function is_array;
 use function sprintf;
 
@@ -40,7 +41,7 @@ final class LogmaticHandlerFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{token?: string, hostname?: string, appname?: string, useSSL?: bool, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{token?: string, hostname?: string, appname?: string, useSSL?: bool, level?: (Level|LevelName|LogLevel::*), bubble?: bool, timeout?: float, writeTimeout?: float, persistent?: bool, chunkSize?: int}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -59,12 +60,14 @@ final class LogmaticHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No token provided');
         }
 
-        $token    = $options['token'];
-        $hostname = '';
-        $appname  = '';
-        $useSSL   = true;
-        $level    = LogLevel::DEBUG;
-        $bubble   = true;
+        $token        = $options['token'];
+        $hostname     = '';
+        $appname      = '';
+        $useSSL       = true;
+        $level        = LogLevel::DEBUG;
+        $bubble       = true;
+        $timeout      = (float) ini_get('default_socket_timeout');
+        $writeTimeout = (float) ini_get('default_socket_timeout');
 
         if (array_key_exists('hostname', $options)) {
             $hostname = $options['hostname'];
@@ -86,6 +89,14 @@ final class LogmaticHandlerFactory implements FactoryInterface
             $bubble = $options['bubble'];
         }
 
+        if (array_key_exists('timeout', $options)) {
+            $timeout = $options['timeout'];
+        }
+
+        if (array_key_exists('writeTimeout', $options)) {
+            $writeTimeout = $options['writeTimeout'];
+        }
+
         try {
             $handler = new LogmaticHandler(
                 $token,
@@ -101,6 +112,23 @@ final class LogmaticHandlerFactory implements FactoryInterface
                 0,
                 $e
             );
+        }
+
+        if (!empty($timeout)) {
+            $handler->setConnectionTimeout($timeout);
+        }
+
+        if (!empty($writeTimeout)) {
+            $handler->setTimeout($writeTimeout);
+            $handler->setWritingTimeout($writeTimeout);
+        }
+
+        if (array_key_exists('persistent', $options)) {
+            $handler->setPersistent($options['persistent']);
+        }
+
+        if (array_key_exists('chunkSize', $options)) {
+            $handler->setChunkSize($options['chunkSize']);
         }
 
         $this->addFormatter($container, $handler, $options);
