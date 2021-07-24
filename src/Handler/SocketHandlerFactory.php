@@ -19,15 +19,11 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Handler\SocketHandler;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function ini_get;
 use function is_array;
 
@@ -43,7 +39,7 @@ final class SocketHandlerFactory implements FactoryInterface
     /**
      * @param string                                      $requestedName
      * @param array<string, (string|int|bool|float)>|null $options
-     * @phpstan-param array{connectionString?: string, timeout?: float, writeTimeout?: float, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{connectionString?: string, timeout?: float, writeTimeout?: float, level?: (Level|LevelName|LogLevel::*), bubble?: bool, persistent?: bool, chunkSize?: int}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -62,18 +58,18 @@ final class SocketHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No connectionString provided');
         }
 
-        $connectionString = (string) $options['connectionString'];
+        $connectionString = $options['connectionString'];
         $timeout          = (float) ini_get('default_socket_timeout');
         $writeTimeout     = (float) ini_get('default_socket_timeout');
         $level            = LogLevel::DEBUG;
         $bubble           = true;
 
         if (array_key_exists('timeout', $options)) {
-            $timeout = (float) $options['timeout'];
+            $timeout = $options['timeout'];
         }
 
         if (array_key_exists('writeTimeout', $options)) {
-            $writeTimeout = (float) $options['writeTimeout'];
+            $writeTimeout = $options['writeTimeout'];
         }
 
         if (array_key_exists('level', $options)) {
@@ -81,7 +77,7 @@ final class SocketHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new SocketHandler(
@@ -99,9 +95,13 @@ final class SocketHandlerFactory implements FactoryInterface
             $handler->setWritingTimeout($writeTimeout);
         }
 
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
+        if (array_key_exists('persistent', $options)) {
+            $handler->setPersistent($options['persistent']);
+        }
+
+        if (array_key_exists('chunkSize', $options)) {
+            $handler->setChunkSize($options['chunkSize']);
+        }
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

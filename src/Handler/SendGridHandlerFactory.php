@@ -77,21 +77,20 @@ final class SendGridHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('The required subject is missing');
         }
 
-        $apiUser = (string) $options['apiUser'];
-        $apiKey  = (string) $options['apiKey'];
-        $from    = (string) $options['from'];
+        $apiUser = $options['apiUser'];
+        $apiKey  = $options['apiKey'];
+        $from    = $options['from'];
         $to      = $options['to'];
-        $subject = (string) $options['subject'];
-
-        $level  = LogLevel::DEBUG;
-        $bubble = true;
+        $subject = $options['subject'];
+        $level   = LogLevel::DEBUG;
+        $bubble  = true;
 
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new SendGridHandler(

@@ -19,10 +19,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\PHPConsoleHandler;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use PhpConsole\Connector;
 use PhpConsole\Storage;
@@ -31,7 +28,6 @@ use Psr\Log\LogLevel;
 use RuntimeException;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function is_string;
 use function sprintf;
@@ -48,7 +44,7 @@ final class PHPConsoleHandlerFactory implements FactoryInterface
     /**
      * @param string                                          $requestedName
      * @param array<string, (string|int|bool|Connector)>|null $options
-     * @phpstan-param array{connector: (string|Connector), options?: array{enabled?: bool, classesPartialsTraceIgnore?: array<string>, debugTagsKeysInContext?: array<(int|string)>, useOwnErrorsHandler?: bool, useOwnExceptionsHandler?: bool, sourcesBasePath?: string, registerHelper?: bool, serverEncoding?: string, headersLimit?: int, password?: string, enableSslOnlyMode?: bool, ipMasks?: array<mixed>, enableEvalListener?: bool, dumperDetectCallbacks?: bool, dumperLevelLimit?: int, dumperItemsCountLimit?: int, dumperItemSizeLimit?: int, dumperDumpSizeLimit?: int, detectDumpTraceAndSource?: bool, dataStorage?: Storage}, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{connector?: (bool|string|Connector), options?: array{enabled?: bool, classesPartialsTraceIgnore?: array<string>, debugTagsKeysInContext?: array<(int|string)>, useOwnErrorsHandler?: bool, useOwnExceptionsHandler?: bool, sourcesBasePath?: string, registerHelper?: bool, serverEncoding?: string, headersLimit?: int, password?: string, enableSslOnlyMode?: bool, ipMasks?: array<mixed>, enableEvalListener?: bool, dumperDetectCallbacks?: bool, dumperLevelLimit?: int, dumperItemsCountLimit?: int, dumperItemSizeLimit?: int, dumperDumpSizeLimit?: int, detectDumpTraceAndSource?: bool, dataStorage?: Storage}, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -79,18 +75,20 @@ final class PHPConsoleHandlerFactory implements FactoryInterface
             }
         }
 
-        $consoleOptions = (array) ($options['options'] ?? []);
+        $consoleOptions = [];
+        $level          = LogLevel::DEBUG;
+        $bubble         = true;
 
-        $level = LogLevel::DEBUG;
+        if (array_key_exists('options', $options)) {
+            $consoleOptions = (array) $options['options'];
+        }
 
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
         }
 
-        $bubble = true;
-
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         try {
@@ -107,10 +105,6 @@ final class PHPConsoleHandlerFactory implements FactoryInterface
                 $e
             );
         }
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);
