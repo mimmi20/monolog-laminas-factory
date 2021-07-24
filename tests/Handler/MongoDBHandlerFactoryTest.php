@@ -17,6 +17,8 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\MongoDBHandlerFactory;
 use MongoDB\Client;
+use MongoDB\Driver\Exception\RuntimeException;
+use MongoDB\Driver\Manager;
 use Monolog\Handler\MongoDBHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -225,6 +227,77 @@ final class MongoDBHandlerFactoryTest extends TestCase
         $client     = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $database   = 'test-database';
+        $collection = 'test-collection';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new MongoDBHandlerFactory();
+
+        $handler = $factory($container, '', ['client' => $client, 'database' => $database, 'collection' => $collection]);
+
+        self::assertInstanceOf(MongoDBHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     */
+    public function testInvoceWithConfig7(): void
+    {
+        if (!class_exists(Manager::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
+        }
+
+        $client      = 'test-client';
+        $clientClass = new Manager('mongodb://example.com:27017');
+        $database    = 'test-database';
+        $collection  = 'test-collection';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($client)
+            ->willReturn($clientClass);
+
+        $factory = new MongoDBHandlerFactory();
+
+        $handler = $factory($container, '', ['client' => $client, 'database' => $database, 'collection' => $collection]);
+
+        self::assertInstanceOf(MongoDBHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     */
+    public function testInvoceWithConfig8(): void
+    {
+        if (!class_exists(Manager::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
+        }
+
+        $client     = new Manager('mongodb://example.com:27017');
         $database   = 'test-database';
         $collection = 'test-collection';
 
