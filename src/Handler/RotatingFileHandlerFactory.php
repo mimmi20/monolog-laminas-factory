@@ -20,15 +20,11 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function sprintf;
 
@@ -44,7 +40,7 @@ final class RotatingFileHandlerFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{filename?: string, maxFiles?: int, level?: (Level|LevelName|LogLevel::*), bubble?: bool, filePermission?: int, useLocking?: bool}|null $options
+     * @phpstan-param array{filename?: string, maxFiles?: int, level?: (Level|LevelName|LogLevel::*), bubble?: bool, filePermission?: int, useLocking?: bool, dateFormat?: string, filenameFormat?: string}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -63,15 +59,17 @@ final class RotatingFileHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No filename provided');
         }
 
-        $filename       = (string) $options['filename'];
+        $filename       = $options['filename'];
         $maxFiles       = 0;
         $level          = LogLevel::DEBUG;
         $bubble         = true;
         $filePermission = null;
         $useLocking     = false;
+        $filenameFormat = '{filename}-{date}';
+        $dateFormat     = RotatingFileHandler::FILE_PER_DAY;
 
         if (array_key_exists('maxFiles', $options)) {
-            $maxFiles = (int) $options['maxFiles'];
+            $maxFiles = $options['maxFiles'];
         }
 
         if (array_key_exists('level', $options)) {
@@ -79,7 +77,7 @@ final class RotatingFileHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         if (array_key_exists('filePermission', $options)) {
@@ -87,7 +85,7 @@ final class RotatingFileHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('useLocking', $options)) {
-            $useLocking = (bool) $options['useLocking'];
+            $useLocking = $options['useLocking'];
         }
 
         try {
@@ -100,9 +98,17 @@ final class RotatingFileHandlerFactory implements FactoryInterface
             );
         }
 
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
+        if (array_key_exists('filenameFormat', $options) || array_key_exists('dateFormat', $options)) {
+            if (array_key_exists('filenameFormat', $options)) {
+                $filenameFormat = $options['filenameFormat'];
+            }
+
+            if (array_key_exists('dateFormat', $options)) {
+                $dateFormat = $options['dateFormat'];
+            }
+
+            $handler->setFilenameFormat($filenameFormat, $dateFormat);
+        }
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

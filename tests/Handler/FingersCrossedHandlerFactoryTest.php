@@ -906,4 +906,52 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => ['type' => $strategyName, 'options' => $strategyOptions], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithHandlerConfig11(): void
+    {
+        $type = 'abc';
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $activationStrategyPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $activationStrategyPluginManager->expects(self::never())
+            ->method('has');
+        $activationStrategyPluginManager->expects(self::never())
+            ->method('get');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([MonologHandlerPluginManager::class], [ActivationStrategyPluginManager::class])
+            ->willReturnOnConsecutiveCalls($monologHandlerPluginManager, $activationStrategyPluginManager);
+
+        $factory = new FingersCrossedHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Options must contain a type for the ActivationStrategy');
+
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => [], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
+    }
 }

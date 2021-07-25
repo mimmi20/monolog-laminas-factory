@@ -26,6 +26,8 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function sprintf;
+
 final class RedisPubSubHandlerFactoryTest extends TestCase
 {
     /**
@@ -207,5 +209,115 @@ final class RedisPubSubHandlerFactoryTest extends TestCase
         $ck->setAccessible(true);
 
         self::assertSame($key, $ck->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithClient3(): void
+    {
+        $client = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new RedisPubSubHandlerFactory();
+
+        $handler = $factory($container, '', ['client' => $client]);
+
+        self::assertInstanceOf(RedisPubSubHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $rc = new ReflectionProperty($handler, 'redisClient');
+        $rc->setAccessible(true);
+
+        self::assertSame($client, $rc->getValue($handler));
+
+        $ck = new ReflectionProperty($handler, 'channelKey');
+        $ck->setAccessible(true);
+
+        self::assertSame('', $ck->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithClient4(): void
+    {
+        $client = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $key    = 'test-key';
+        $level  = LogLevel::ALERT;
+        $bubble = false;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new RedisPubSubHandlerFactory();
+
+        $handler = $factory($container, '', ['client' => $client, 'key' => $key, 'level' => $level, 'bubble' => $bubble]);
+
+        self::assertInstanceOf(RedisPubSubHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $rc = new ReflectionProperty($handler, 'redisClient');
+        $rc->setAccessible(true);
+
+        self::assertSame($client, $rc->getValue($handler));
+
+        $ck = new ReflectionProperty($handler, 'channelKey');
+        $ck->setAccessible(true);
+
+        self::assertSame($key, $ck->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithClient5(): void
+    {
+        $clientName = 'abc';
+        $key        = 'test-key';
+        $level      = LogLevel::ALERT;
+        $bubble     = false;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($clientName)
+            ->willReturn(true);
+
+        $factory = new RedisPubSubHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not load class %s', RedisPubSubHandler::class));
+
+        $factory($container, '', ['client' => $clientName, 'key' => $key, 'level' => $level, 'bubble' => $bubble]);
     }
 }

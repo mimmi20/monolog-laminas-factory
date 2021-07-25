@@ -26,6 +26,8 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function sprintf;
+
 final class RedisHandlerFactoryTest extends TestCase
 {
     /**
@@ -218,5 +220,123 @@ final class RedisHandlerFactoryTest extends TestCase
         $cs->setAccessible(true);
 
         self::assertSame($capSize, $cs->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithClient3(): void
+    {
+        $client = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new RedisHandlerFactory();
+
+        $handler = $factory($container, '', ['client' => $client]);
+
+        self::assertInstanceOf(RedisHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $rc = new ReflectionProperty($handler, 'redisClient');
+        $rc->setAccessible(true);
+
+        self::assertSame($client, $rc->getValue($handler));
+
+        $ck = new ReflectionProperty($handler, 'redisKey');
+        $ck->setAccessible(true);
+
+        self::assertSame('', $ck->getValue($handler));
+
+        $cs = new ReflectionProperty($handler, 'capSize');
+        $cs->setAccessible(true);
+
+        self::assertSame(0, $cs->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithClient4(): void
+    {
+        $client  = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $key     = 'test-key';
+        $level   = LogLevel::ALERT;
+        $bubble  = false;
+        $capSize = 42;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new RedisHandlerFactory();
+
+        $handler = $factory($container, '', ['client' => $client, 'key' => $key, 'level' => $level, 'bubble' => $bubble, 'capSize' => $capSize]);
+
+        self::assertInstanceOf(RedisHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $rc = new ReflectionProperty($handler, 'redisClient');
+        $rc->setAccessible(true);
+
+        self::assertSame($client, $rc->getValue($handler));
+
+        $ck = new ReflectionProperty($handler, 'redisKey');
+        $ck->setAccessible(true);
+
+        self::assertSame($key, $ck->getValue($handler));
+
+        $cs = new ReflectionProperty($handler, 'capSize');
+        $cs->setAccessible(true);
+
+        self::assertSame($capSize, $cs->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithClient5(): void
+    {
+        $clientName = 'abc';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($clientName)
+            ->willReturn(true);
+
+        $factory = new RedisHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not load class %s', RedisHandler::class));
+
+        $factory($container, '', ['client' => $clientName]);
     }
 }

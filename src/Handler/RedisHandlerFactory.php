@@ -14,6 +14,7 @@ namespace Mimmi20\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
+use InvalidArgumentException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -29,6 +30,7 @@ use Redis;
 use function array_key_exists;
 use function is_array;
 use function is_string;
+use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -94,13 +96,21 @@ final class RedisHandlerFactory implements FactoryInterface
             $capSize = $options['capSize'];
         }
 
-        $handler = new RedisHandler(
-            $client,
-            $key,
-            $level,
-            $bubble,
-            $capSize
-        );
+        try {
+            $handler = new RedisHandler(
+                $client,
+                $key,
+                $level,
+                $bubble,
+                $capSize
+            );
+        } catch (InvalidArgumentException $e) {
+            throw new ServiceNotFoundException(
+                sprintf('Could not load class %s', RedisHandler::class),
+                0,
+                $e
+            );
+        }
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

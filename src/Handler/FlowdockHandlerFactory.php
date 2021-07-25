@@ -20,15 +20,11 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\FlowdockHandler;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\MissingExtensionException;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function ini_get;
 use function is_array;
 use function sprintf;
@@ -64,7 +60,7 @@ final class FlowdockHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No apiToken provided');
         }
 
-        $apiToken     = (string) $options['apiToken'];
+        $apiToken     = $options['apiToken'];
         $level        = LogLevel::DEBUG;
         $bubble       = true;
         $timeout      = (float) ini_get('default_socket_timeout');
@@ -75,7 +71,7 @@ final class FlowdockHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         if (array_key_exists('timeout', $options)) {
@@ -116,10 +112,6 @@ final class FlowdockHandlerFactory implements FactoryInterface
         if (array_key_exists('chunkSize', $options)) {
             $handler->setChunkSize($options['chunkSize']);
         }
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);
