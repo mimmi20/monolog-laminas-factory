@@ -20,10 +20,15 @@ use Mimmi20\LoggerFactory\Handler\FilterHandlerFactory;
 use Mimmi20\LoggerFactory\MonologHandlerPluginManager;
 use Monolog\Handler\ChromePHPHandler;
 use Monolog\Handler\FilterHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LogLevel;
+use ReflectionException;
+use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function array_flip;
 use function sprintf;
 
 final class FilterHandlerFactoryTest extends TestCase
@@ -204,11 +209,22 @@ final class FilterHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     * @throws ReflectionException
      * @throws InvalidArgumentException
      */
     public function testInvoceWithHandlerConfig(): void
     {
-        $type = 'abc';
+        $type   = 'abc';
+        $levels = [
+            Logger::DEBUG => 0,
+            Logger::INFO => 1,
+            Logger::NOTICE => 2,
+            Logger::WARNING => 3,
+            Logger::ERROR => 4,
+            Logger::CRITICAL => 5,
+            Logger::ALERT => 6,
+            Logger::EMERGENCY => 7,
+        ];
 
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
@@ -239,5 +255,142 @@ final class FilterHandlerFactoryTest extends TestCase
         $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true]]);
 
         self::assertInstanceOf(FilterHandler::class, $handler);
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $bb = new ReflectionProperty($handler, 'bubble');
+        $bb->setAccessible(true);
+
+        self::assertTrue($bb->getValue($handler));
+
+        $al = new ReflectionProperty($handler, 'acceptedLevels');
+        $al->setAccessible(true);
+
+        self::assertSame($levels, $al->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithHandlerConfig2(): void
+    {
+        $type   = 'abc';
+        $levels = [
+            Logger::WARNING => 0,
+            Logger::ERROR => 1,
+            Logger::CRITICAL => 2,
+        ];
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new FilterHandlerFactory();
+
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'minLevelOrList' => LogLevel::WARNING, 'maxLevel' => LogLevel::CRITICAL, 'bubble' => false]);
+
+        self::assertInstanceOf(FilterHandler::class, $handler);
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $bb = new ReflectionProperty($handler, 'bubble');
+        $bb->setAccessible(true);
+
+        self::assertFalse($bb->getValue($handler));
+
+        $al = new ReflectionProperty($handler, 'acceptedLevels');
+        $al->setAccessible(true);
+
+        self::assertSame($levels, $al->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithHandlerConfig3(): void
+    {
+        $type   = 'abc';
+        $levels = [
+            Logger::NOTICE,
+            Logger::WARNING,
+            Logger::ERROR,
+            Logger::CRITICAL,
+            Logger::ALERT,
+        ];
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new FilterHandlerFactory();
+
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'minLevelOrList' => $levels]);
+
+        self::assertInstanceOf(FilterHandler::class, $handler);
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $bb = new ReflectionProperty($handler, 'bubble');
+        $bb->setAccessible(true);
+
+        self::assertTrue($bb->getValue($handler));
+
+        $al = new ReflectionProperty($handler, 'acceptedLevels');
+        $al->setAccessible(true);
+
+        self::assertSame(array_flip($levels), $al->getValue($handler));
     }
 }

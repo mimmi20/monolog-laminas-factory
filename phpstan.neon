@@ -30,3 +30,4 @@ parameters:
     - '~Parameter #2 \$level of class CMDISP\\MonologMicrosoftTeams\\TeamsLogHandler constructor expects~'
     - '~Parameter #2 \$channelToActionLevel of class Monolog\\Handler\\FingersCrossed\\ChannelLevelActivationStrategy constructor expects~'
     - '~InvalidArgumentException is never thrown in the corresponding try block~'
+#    - '~(Unused|Missing) @throws MongoDB\\Driver\\Exception\\(InvalidArgument|Runtime)Exception annotation~'

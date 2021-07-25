@@ -20,14 +20,10 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\BufferHandler;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 
 /**
@@ -72,21 +68,26 @@ final class BufferHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No active handler specified');
         }
 
-        $bufferLimit = (int) ($options['bufferLimit'] ?? 0);
+        $bufferLimit     = 0;
+        $level           = LogLevel::DEBUG;
+        $bubble          = true;
+        $flushOnOverflow = true;
 
-        $level = LogLevel::DEBUG;
+        if (array_key_exists('bufferLimit', $options)) {
+            $bufferLimit = $options['bufferLimit'];
+        }
 
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
         }
 
-        $bubble = true;
-
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
-        $flushOnOverflow = (bool) ($options['flushOnOverflow'] ?? true);
+        if (array_key_exists('flushOnOverflow', $options)) {
+            $flushOnOverflow = $options['flushOnOverflow'];
+        }
 
         $handler = new BufferHandler(
             $handler,
@@ -95,10 +96,6 @@ final class BufferHandlerFactory implements FactoryInterface
             $bubble,
             $flushOnOverflow
         );
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

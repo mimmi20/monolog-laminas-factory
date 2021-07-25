@@ -20,14 +20,10 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\DeduplicationHandler;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 
 /**
@@ -72,14 +68,25 @@ final class DeduplicationHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No active handler specified');
         }
 
-        $deduplicationStore = $options['deduplicationStore'] ?? null;
-        $deduplicationLevel = $options['deduplicationLevel'] ?? LogLevel::ERROR;
-        $time               = (int) ($options['time'] ?? 60);
+        $deduplicationStore = null;
+        $deduplicationLevel = LogLevel::ERROR;
+        $time               = 60;
+        $bubble             = true;
 
-        $bubble = true;
+        if (array_key_exists('deduplicationStore', $options)) {
+            $deduplicationStore = $options['deduplicationStore'];
+        }
+
+        if (array_key_exists('deduplicationLevel', $options)) {
+            $deduplicationLevel = $options['deduplicationLevel'];
+        }
+
+        if (array_key_exists('time', $options)) {
+            $time = $options['time'];
+        }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new DeduplicationHandler(
@@ -89,10 +96,6 @@ final class DeduplicationHandlerFactory implements FactoryInterface
             $time,
             $bubble
         );
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

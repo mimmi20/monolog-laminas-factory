@@ -22,15 +22,11 @@ use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Mimmi20\LoggerFactory\Handler\FingersCrossed\ActivationStrategyPluginManager;
 use Monolog\Handler\FingersCrossed\ActivationStrategyInterface;
 use Monolog\Handler\FingersCrossedHandler;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function is_int;
 use function is_string;
@@ -113,10 +109,6 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
             $passthruLevel
         );
 
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
-
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);
 
@@ -125,7 +117,7 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
 
     /**
      * @param ActivationStrategyInterface|array<string, array<mixed>|string>|int|string $activationStrategy
-     * @phpstan-param Level|LevelName|LogLevel::*|ActivationStrategyInterface|array{type?: string, options?: array<mixed>}|null $activationStrategy
+     * @phpstan-param (Level|LevelName|LogLevel::*|ActivationStrategyInterface|array{type?: string, options?: array<mixed>}|null) $activationStrategy
      *
      * @return ActivationStrategyInterface|int|string|null
      * @phpstan-return (Level|LevelName|LogLevel::*|ActivationStrategyInterface|null)

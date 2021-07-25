@@ -14,14 +14,12 @@ namespace Mimmi20\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
+use InvalidArgumentException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Handler\RedisHandler;
 use Monolog\Logger;
 use Predis\Client;
@@ -30,9 +28,9 @@ use Psr\Log\LogLevel;
 use Redis;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function is_string;
+use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -46,7 +44,7 @@ final class RedisHandlerFactory implements FactoryInterface
     /**
      * @param string                                             $requestedName
      * @param array<string, (string|int|bool|Client|Redis)>|null $options
-     * @phpstan-param array{client: (string|Client|Redis), key?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool, capSize?: int}|null $options
+     * @phpstan-param array{client?: (bool|string|Client|Redis), key?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool, capSize?: int}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -77,33 +75,42 @@ final class RedisHandlerFactory implements FactoryInterface
             }
         }
 
-        $key = (string) ($options['key'] ?? '');
+        $key     = '';
+        $level   = LogLevel::DEBUG;
+        $bubble  = true;
+        $capSize = 0;
 
-        $level = LogLevel::DEBUG;
+        if (array_key_exists('key', $options)) {
+            $key = $options['key'];
+        }
 
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
         }
 
-        $bubble = true;
-
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
-        $capSize = (int) ($options['capSize'] ?? 0);
+        if (array_key_exists('capSize', $options)) {
+            $capSize = $options['capSize'];
+        }
 
-        $handler = new RedisHandler(
-            $client,
-            $key,
-            $level,
-            $bubble,
-            $capSize
-        );
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
+        try {
+            $handler = new RedisHandler(
+                $client,
+                $key,
+                $level,
+                $bubble,
+                $capSize
+            );
+        } catch (InvalidArgumentException $e) {
+            throw new ServiceNotFoundException(
+                sprintf('Could not load class %s', RedisHandler::class),
+                0,
+                $e
+            );
+        }
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

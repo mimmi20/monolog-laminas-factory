@@ -122,6 +122,12 @@ final class SlackHandlerFactoryTest extends TestCase
         self::assertSame($token, $handler->getToken());
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
+        self::assertSame('ssl://slack.com:443', $handler->getConnectionString());
+        self::assertSame(60.0, $handler->getTimeout());
+        self::assertSame(60.0, $handler->getWritingTimeout());
+        self::assertSame(60.0, $handler->getConnectionTimeout());
+        //self::assertSame(0, $handler->getChunkSize());
+        self::assertFalse($handler->isPersistent());
 
         $slackRecord = $handler->getSlackRecord();
 
@@ -175,6 +181,10 @@ final class SlackHandlerFactoryTest extends TestCase
         $userName      = 'user';
         $iconEmoji     = 'icon';
         $excludeFields = ['abc', 'xyz'];
+        $timeout       = 42.0;
+        $writeTimeout  = 120.0;
+        $persistent    = true;
+        $chunkSize     = 100;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -186,12 +196,18 @@ final class SlackHandlerFactoryTest extends TestCase
 
         $factory = new SlackHandlerFactory();
 
-        $handler = $factory($container, '', ['token' => $token, 'channel' => $channel, 'userName' => $userName, 'useAttachment' => false, 'iconEmoji' => $iconEmoji, 'level' => LogLevel::ALERT, 'bubble' => false, 'useShortAttachment' => true, 'includeContextAndExtra' => true, 'excludeFields' => $excludeFields]);
+        $handler = $factory($container, '', ['token' => $token, 'channel' => $channel, 'userName' => $userName, 'useAttachment' => false, 'iconEmoji' => $iconEmoji, 'level' => LogLevel::ALERT, 'bubble' => false, 'useShortAttachment' => true, 'includeContextAndExtra' => true, 'excludeFields' => $excludeFields, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
 
         self::assertInstanceOf(SlackHandler::class, $handler);
         self::assertSame($token, $handler->getToken());
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
+        self::assertSame('ssl://slack.com:443', $handler->getConnectionString());
+        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($writeTimeout, $handler->getWritingTimeout());
+        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame($chunkSize, $handler->getChunkSize());
+        self::assertTrue($handler->isPersistent());
 
         $slackRecord = $handler->getSlackRecord();
 

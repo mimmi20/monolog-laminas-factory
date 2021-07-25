@@ -13,14 +13,15 @@
     beStrictAboutResourceUsageDuringSmallTests="true"
     failOnEmptyTestSuite="true"
     failOnIncomplete="true"
-    failOnRisky="true"
-    failOnSkipped="true"
+    failOnRisky="false"
+    failOnSkipped="false"
     failOnWarning="true"
     verbose="false"
     bootstrap="vendor/autoload.php"
     enforceTimeLimit="false"
     executionOrder="default"
     resolveDependencies="true"
+    colors="true"
     >
     <php>
         <ini name="error_reporting" value="-1"/>
@@ -32,13 +33,9 @@
         <directory>tests/</directory>
     </testsuite>
 
-    <coverage includeUncoveredFiles="true" processUncoveredFiles="true">
+    <coverage includeUncoveredFiles="true" processUncoveredFiles="true" pathCoverage="true">
         <include>
             <directory suffix=".php">src/</directory>
         </include>
     </coverage>
-
-    <logging>
-        <text outputFile="php://stdout"/>
-    </logging>
 </phpunit>

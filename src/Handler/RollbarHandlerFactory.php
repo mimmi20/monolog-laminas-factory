@@ -20,9 +20,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Handler\RollbarHandler;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
@@ -30,7 +27,6 @@ use Rollbar\Config;
 use Rollbar\RollbarLogger;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function sprintf;
 
@@ -126,10 +122,6 @@ final class RollbarHandlerFactory implements FactoryInterface
             $level,
             $bubble
         );
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

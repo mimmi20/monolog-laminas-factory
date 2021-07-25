@@ -21,17 +21,14 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\ElasticaHandler;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function is_string;
+use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -45,7 +42,7 @@ final class ElasticaHandlerFactory implements FactoryInterface
     /**
      * @param string                                       $requestedName
      * @param array<string, (string|int|bool|Client)>|null $options
-     * @phpstan-param array{client: (string|Client), index?: string, type?: string, ignoreError?: bool, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{client?: (bool|string|Client), index?: string, type?: string, ignoreError?: bool, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -72,24 +69,38 @@ final class ElasticaHandlerFactory implements FactoryInterface
             try {
                 $client = $container->get($options['client']);
             } catch (ContainerExceptionInterface $e) {
-                throw new ServiceNotFoundException('Could not load client class', 0, $e);
+                throw new ServiceNotFoundException(
+                    sprintf('Could not load client class for %s class', ElasticaHandler::class),
+                    0,
+                    $e
+                );
             }
         }
 
-        $index       = (string) ($options['index'] ?? 'monolog');
-        $type        = (string) ($options['type'] ?? 'record');
-        $ignoreError = (bool) ($options['ignoreError'] ?? false);
+        $index       = 'monolog';
+        $type        = 'record';
+        $ignoreError = false;
+        $level       = LogLevel::DEBUG;
+        $bubble      = true;
 
-        $level = LogLevel::DEBUG;
+        if (array_key_exists('index', $options)) {
+            $index = $options['index'];
+        }
+
+        if (array_key_exists('type', $options)) {
+            $type = $options['type'];
+        }
+
+        if (array_key_exists('ignoreError', $options)) {
+            $ignoreError = $options['ignoreError'];
+        }
 
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
         }
 
-        $bubble = true;
-
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new ElasticaHandler(
@@ -102,10 +113,6 @@ final class ElasticaHandlerFactory implements FactoryInterface
             $level,
             $bubble
         );
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

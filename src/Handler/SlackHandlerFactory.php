@@ -19,16 +19,13 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\MissingExtensionException;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Handler\SlackHandler;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
+use function ini_get;
 use function is_array;
 use function sprintf;
 
@@ -44,7 +41,7 @@ final class SlackHandlerFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{token?: string, channel?: string, userName?: string, useAttachment?: bool, iconEmoji?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool, useShortAttachment?: bool, includeContextAndExtra?: bool, excludeFields?: array<string>}|null $options
+     * @phpstan-param array{token?: string, channel?: string, userName?: string, useAttachment?: bool, iconEmoji?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool, useShortAttachment?: bool, includeContextAndExtra?: bool, excludeFields?: array<string>, timeout?: float, writeTimeout?: float, persistent?: bool, chunkSize?: int}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -77,6 +74,8 @@ final class SlackHandlerFactory implements FactoryInterface
         $useShortAttachment = false;
         $includeContext     = false;
         $excludeFields      = [];
+        $timeout            = (float) ini_get('default_socket_timeout');
+        $writeTimeout       = (float) ini_get('default_socket_timeout');
 
         if (array_key_exists('userName', $options)) {
             $userName = $options['userName'];
@@ -110,6 +109,14 @@ final class SlackHandlerFactory implements FactoryInterface
             $excludeFields = $options['excludeFields'];
         }
 
+        if (array_key_exists('timeout', $options)) {
+            $timeout = $options['timeout'];
+        }
+
+        if (array_key_exists('writeTimeout', $options)) {
+            $writeTimeout = $options['writeTimeout'];
+        }
+
         try {
             $handler = new SlackHandler(
                 $token,
@@ -131,9 +138,22 @@ final class SlackHandlerFactory implements FactoryInterface
             );
         }
 
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
+        if (!empty($timeout)) {
+            $handler->setConnectionTimeout($timeout);
+        }
+
+        if (!empty($writeTimeout)) {
+            $handler->setTimeout($writeTimeout);
+            $handler->setWritingTimeout($writeTimeout);
+        }
+
+        if (array_key_exists('persistent', $options)) {
+            $handler->setPersistent($options['persistent']);
+        }
+
+        if (array_key_exists('chunkSize', $options)) {
+            $handler->setChunkSize($options['chunkSize']);
+        }
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

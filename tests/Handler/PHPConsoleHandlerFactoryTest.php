@@ -14,9 +14,17 @@ namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\PHPConsoleHandlerFactory;
+use Monolog\Handler\PHPConsoleHandler;
+use Monolog\Logger;
+use PhpConsole\Connector;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LogLevel;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
+
+use function sprintf;
 
 final class PHPConsoleHandlerFactoryTest extends TestCase
 {
@@ -40,5 +48,240 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Options must be an Array');
 
         $factory($container, '');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceEmptyConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new PHPConsoleHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No Service name provided for the required connector class');
+
+        $factory($container, '', []);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new PHPConsoleHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No Service name provided for the required connector class');
+
+        $factory($container, '', ['connector' => true]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceConfig2(): void
+    {
+        $connector = 'abc';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($connector)
+            ->willThrowException(new ServiceNotFoundException());
+
+        $factory = new PHPConsoleHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Could not load connector class');
+
+        $factory($container, '', ['connector' => $connector]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceConfig3(): void
+    {
+        $connectorName = 'abc';
+        $connector     = $this->getMockBuilder(Connector::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($connectorName)
+            ->willReturn($connector);
+
+        $factory = new PHPConsoleHandlerFactory();
+
+        $handler = $factory($container, '', ['connector' => $connectorName]);
+
+        self::assertInstanceOf(PHPConsoleHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+        self::assertSame($connector, $handler->getConnector());
+        self::assertIsArray($handler->getOptions());
+        self::assertTrue($handler->getOptions()['enabled']);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceConfig4(): void
+    {
+        $connectorName = 'abc';
+        $connector     = $this->getMockBuilder(Connector::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $level         = LogLevel::ALERT;
+        $bubble        = false;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($connectorName)
+            ->willReturn($connector);
+
+        $factory = new PHPConsoleHandlerFactory();
+
+        $handler = $factory($container, '', ['connector' => $connectorName, 'level' => $level, 'bubble' => $bubble, 'options' => ['enabled' => false]]);
+
+        self::assertInstanceOf(PHPConsoleHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+        self::assertSame($connector, $handler->getConnector());
+        self::assertIsArray($handler->getOptions());
+        self::assertFalse($handler->getOptions()['enabled']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceConfig5(): void
+    {
+        $connectorName = 'abc';
+        $connector     = $this->getMockBuilder(Connector::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $level         = LogLevel::ALERT;
+        $bubble        = false;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($connectorName)
+            ->willReturn($connector);
+
+        $factory = new PHPConsoleHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', PHPConsoleHandler::class));
+
+        $factory($container, '', ['connector' => $connectorName, 'level' => $level, 'bubble' => $bubble, 'options' => ['enabled' => false, 'abc' => 'xyz']]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceConfig6(): void
+    {
+        $connector = $this->getMockBuilder(Connector::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new PHPConsoleHandlerFactory();
+
+        $handler = $factory($container, '', ['connector' => $connector]);
+
+        self::assertInstanceOf(PHPConsoleHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+        self::assertSame($connector, $handler->getConnector());
+        self::assertIsArray($handler->getOptions());
+        self::assertTrue($handler->getOptions()['enabled']);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceConfig7(): void
+    {
+        $connector = $this->getMockBuilder(Connector::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $level     = LogLevel::ALERT;
+        $bubble    = false;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new PHPConsoleHandlerFactory();
+
+        $handler = $factory($container, '', ['connector' => $connector, 'level' => $level, 'bubble' => $bubble, 'options' => ['enabled' => false]]);
+
+        self::assertInstanceOf(PHPConsoleHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+        self::assertSame($connector, $handler->getConnector());
+        self::assertIsArray($handler->getOptions());
+        self::assertFalse($handler->getOptions()['enabled']);
     }
 }
