@@ -15,7 +15,7 @@
     "php": "^7.4.3 || ^8.0.0",
     "ext-mbstring": "*",
     "laminas/laminas-log": "^2.13.1",
-    "monolog/monolog": "^2.3.1"
+    "monolog/monolog": "^2.3.2"
   },
   "require-dev": {
     "aws/aws-sdk-php": "^3.185.20",
