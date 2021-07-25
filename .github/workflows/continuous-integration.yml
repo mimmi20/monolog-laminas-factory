@@ -7,7 +7,7 @@ on:
 name: "Continuous Integration"
 
 env:
-  PHP_EXTENSIONS: "json, opcache, openssl, mbstring, mongodb"
+  PHP_EXTENSIONS: "json, opcache, openssl, mbstring, mongodb, amqp"
   PHP_INI_VALUES: "opcache.enable=1, opcache.enable_cli=1, opcache.fast_shutdown=0, zend.assertions=1, assert.exception=On"
 
 jobs:
