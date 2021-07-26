@@ -19,16 +19,14 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Handler\SwiftMailerHandler;
 use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Log\LogLevel;
+use Swift_Mailer;
+use Swift_Message;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function is_string;
 
@@ -45,7 +43,7 @@ final class SwiftMailerHandlerFactory implements FactoryInterface
     /**
      * @param string                                    $requestedName
      * @param array<string, (string|int|callable)>|null $options
-     * @phpstan-param array{mailer: (string|int), message: (string|callable), level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{mailer?: (bool|string|Swift_Mailer), message?: (string|callable|Swift_Message), level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -60,35 +58,36 @@ final class SwiftMailerHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('Options must be an Array');
         }
 
-        if (!array_key_exists('mailer', $options) || !is_string($options['mailer'])) {
+        if (!array_key_exists('mailer', $options)) {
             throw new ServiceNotCreatedException('No Service name provided for the required mailer class');
         }
 
-        try {
-            $mailer = $container->get($options['mailer']);
-        } catch (ContainerExceptionInterface $e) {
-            throw new ServiceNotFoundException('Could not load mailer class', 0, $e);
+        if ($options['mailer'] instanceof Swift_Mailer) {
+            $mailer = $options['mailer'];
+        } elseif (!is_string($options['mailer'])) {
+            throw new ServiceNotCreatedException('No Service name provided for the required mailer class');
+        } else {
+            try {
+                $mailer = $container->get($options['mailer']);
+            } catch (ContainerExceptionInterface $e) {
+                throw new ServiceNotFoundException('Could not load mailer class', 0, $e);
+            }
         }
 
         $message = $this->getSwiftMessage($container, $options['message'] ?? '');
 
-        $level = LogLevel::DEBUG;
+        $level  = LogLevel::DEBUG;
+        $bubble = true;
 
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
         }
 
-        $bubble = true;
-
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new SwiftMailerHandler($mailer, $message, $level, $bubble);
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

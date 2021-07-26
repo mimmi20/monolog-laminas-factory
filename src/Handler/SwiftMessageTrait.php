@@ -24,7 +24,7 @@ use function sprintf;
 trait SwiftMessageTrait
 {
     /**
-     * @param callable|string $message
+     * @param callable|string|Swift_Message $message
      *
      * @return callable|Swift_Message
      *
@@ -39,7 +39,7 @@ trait SwiftMessageTrait
             );
         }
 
-        if (is_callable($message)) {
+        if (is_callable($message) || $message instanceof Swift_Message) {
             return $message;
         }
 

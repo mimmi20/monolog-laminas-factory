@@ -19,15 +19,11 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Handler\TelegramBotHandler;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 
 /**
@@ -65,8 +61,8 @@ final class TelegramBotHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No channel provided');
         }
 
-        $apiKey  = (string) $options['apiKey'];
-        $channel = (string) $options['channel'];
+        $apiKey  = $options['apiKey'];
+        $channel = $options['channel'];
         $level   = LogLevel::DEBUG;
         $bubble  = true;
 
@@ -75,7 +71,7 @@ final class TelegramBotHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new TelegramBotHandler(
@@ -84,10 +80,6 @@ final class TelegramBotHandlerFactory implements FactoryInterface
             $level,
             $bubble
         );
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

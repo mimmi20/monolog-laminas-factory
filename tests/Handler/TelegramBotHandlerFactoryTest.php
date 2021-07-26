@@ -15,8 +15,14 @@ namespace Mimmi20Test\LoggerFactory\Handler;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Handler\TelegramBotHandlerFactory;
+use Monolog\Handler\TelegramBotHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LogLevel;
+use ReflectionException;
+use ReflectionProperty;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 final class TelegramBotHandlerFactoryTest extends TestCase
 {
@@ -40,5 +46,127 @@ final class TelegramBotHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Options must be an Array');
 
         $factory($container, '');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithEmptyConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new TelegramBotHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No apiKey provided');
+
+        $factory($container, '', []);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfig(): void
+    {
+        $apiKey = 'test-key';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new TelegramBotHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No channel provided');
+
+        $factory($container, '', ['apiKey' => $apiKey]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig2(): void
+    {
+        $apiKey  = 'test-key';
+        $channel = 'test-channel';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new TelegramBotHandlerFactory();
+
+        $handler = $factory($container, '', ['apiKey' => $apiKey, 'channel' => $channel]);
+
+        self::assertInstanceOf(TelegramBotHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $ak = new ReflectionProperty($handler, 'apiKey');
+        $ak->setAccessible(true);
+
+        self::assertSame($apiKey, $ak->getValue($handler));
+
+        $ch = new ReflectionProperty($handler, 'channel');
+        $ch->setAccessible(true);
+
+        self::assertSame($channel, $ch->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig3(): void
+    {
+        $apiKey  = 'test-key';
+        $channel = 'test-channel';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new TelegramBotHandlerFactory();
+
+        $handler = $factory($container, '', ['apiKey' => $apiKey, 'channel' => $channel, 'level' => LogLevel::ALERT, 'bubble' => false]);
+
+        self::assertInstanceOf(TelegramBotHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $ak = new ReflectionProperty($handler, 'apiKey');
+        $ak->setAccessible(true);
+
+        self::assertSame($apiKey, $ak->getValue($handler));
+
+        $ch = new ReflectionProperty($handler, 'channel');
+        $ch->setAccessible(true);
+
+        self::assertSame($channel, $ch->getValue($handler));
     }
 }

@@ -14,21 +14,20 @@ namespace Mimmi20\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
+use InvalidArgumentException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\MandrillHandler;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
+use Swift_Message;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
+use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -43,7 +42,7 @@ final class MandrillHandlerFactory implements FactoryInterface
     /**
      * @param string                                         $requestedName
      * @param array<string, (string|callable|int|bool)>|null $options
-     * @phpstan-param array{message: (string|callable), apiKey?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{message?: (string|callable|Swift_Message), apiKey?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -64,7 +63,7 @@ final class MandrillHandlerFactory implements FactoryInterface
 
         $message = $this->getSwiftMessage($container, $options['message'] ?? '');
 
-        $apiKey = (string) $options['apiKey'];
+        $apiKey = $options['apiKey'];
         $level  = LogLevel::DEBUG;
         $bubble = true;
 
@@ -73,19 +72,23 @@ final class MandrillHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
-        $handler = new MandrillHandler(
-            $apiKey,
-            $message,
-            $level,
-            $bubble
-        );
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
+        try {
+            $handler = new MandrillHandler(
+                $apiKey,
+                $message,
+                $level,
+                $bubble
+            );
+        } catch (InvalidArgumentException $e) {
+            throw new ServiceNotCreatedException(
+                sprintf('Could not create %s', MandrillHandler::class),
+                0,
+                $e
+            );
+        }
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);
