@@ -21,15 +21,11 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\DynamoDbHandler;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function is_string;
 
@@ -45,7 +41,7 @@ final class DynamoDbHandlerFactory implements FactoryInterface
     /**
      * @param string                                               $requestedName
      * @param array<string, (string|int|bool|DynamoDbClient)>|null $options
-     * @phpstan-param array{client: (string|DynamoDbClient), table?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{client?: (bool|string|DynamoDbClient), table?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -76,15 +72,17 @@ final class DynamoDbHandlerFactory implements FactoryInterface
             }
         }
 
-        $table = (string) ($options['table'] ?? '');
+        $table  = '';
+        $level  = LogLevel::DEBUG;
+        $bubble = true;
 
-        $level = LogLevel::DEBUG;
+        if (array_key_exists('table', $options)) {
+            $table = $options['table'];
+        }
 
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
         }
-
-        $bubble = true;
 
         if (array_key_exists('bubble', $options)) {
             $bubble = (bool) $options['bubble'];
@@ -96,10 +94,6 @@ final class DynamoDbHandlerFactory implements FactoryInterface
             $level,
             $bubble
         );
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

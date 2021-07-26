@@ -20,15 +20,11 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Handler\ProcessHandler;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function sprintf;
 
@@ -63,13 +59,13 @@ final class ProcessHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No command provided');
         }
 
-        $command = (string) $options['command'];
+        $command = $options['command'];
         $cwd     = null;
         $level   = LogLevel::DEBUG;
         $bubble  = true;
 
         if (array_key_exists('cwd', $options)) {
-            $cwd = (string) $options['cwd'];
+            $cwd = $options['cwd'];
         }
 
         if (array_key_exists('level', $options)) {
@@ -77,7 +73,7 @@ final class ProcessHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         try {
@@ -94,10 +90,6 @@ final class ProcessHandlerFactory implements FactoryInterface
                 $e
             );
         }
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

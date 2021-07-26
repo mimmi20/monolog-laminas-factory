@@ -21,15 +21,11 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\DoctrineCouchDBHandler;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function is_string;
 
@@ -45,7 +41,7 @@ final class DoctrineCouchDBHandlerFactory implements FactoryInterface
     /**
      * @param string                                              $requestedName
      * @param array<string, (string|int|bool|CouchDBClient)>|null $options
-     * @phpstan-param array{client: (string|CouchDBClient), level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{client?: (bool|string|CouchDBClient), level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -61,13 +57,13 @@ final class DoctrineCouchDBHandlerFactory implements FactoryInterface
         }
 
         if (!array_key_exists('client', $options)) {
-            throw new ServiceNotCreatedException('No Service name provided for the required service class');
+            throw new ServiceNotCreatedException('No Service name provided for the required client class');
         }
 
         if ($options['client'] instanceof CouchDBClient) {
             $client = $options['client'];
         } elseif (!is_string($options['client'])) {
-            throw new ServiceNotCreatedException('No Service name provided for the required service class');
+            throw new ServiceNotCreatedException('No Service name provided for the required client class');
         } else {
             try {
                 $client = $container->get($options['client']);
@@ -76,16 +72,15 @@ final class DoctrineCouchDBHandlerFactory implements FactoryInterface
             }
         }
 
-        $level = LogLevel::DEBUG;
+        $level  = LogLevel::DEBUG;
+        $bubble = true;
 
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
         }
 
-        $bubble = true;
-
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new DoctrineCouchDBHandler(
@@ -93,10 +88,6 @@ final class DoctrineCouchDBHandlerFactory implements FactoryInterface
             $level,
             $bubble
         );
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

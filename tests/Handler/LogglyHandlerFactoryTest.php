@@ -15,8 +15,14 @@ namespace Mimmi20Test\LoggerFactory\Handler;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Handler\LogglyHandlerFactory;
+use Monolog\Handler\LogglyHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LogLevel;
+use ReflectionException;
+use ReflectionProperty;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 final class LogglyHandlerFactoryTest extends TestCase
 {
@@ -40,5 +46,91 @@ final class LogglyHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Options must be an Array');
 
         $factory($container, '');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithEmptyConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new LogglyHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No token provided');
+
+        $factory($container, '', []);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig(): void
+    {
+        $token = 'test-token';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new LogglyHandlerFactory();
+
+        $handler = $factory($container, '', ['token' => $token]);
+
+        self::assertInstanceOf(LogglyHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $tokenP = new ReflectionProperty($handler, 'token');
+        $tokenP->setAccessible(true);
+
+        self::assertSame($token, $tokenP->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig2(): void
+    {
+        $token = 'test-token';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new LogglyHandlerFactory();
+
+        $handler = $factory($container, '', ['token' => $token, 'level' => LogLevel::ALERT, 'bubble' => false]);
+
+        self::assertInstanceOf(LogglyHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $tokenP = new ReflectionProperty($handler, 'token');
+        $tokenP->setAccessible(true);
+
+        self::assertSame($token, $tokenP->getValue($handler));
     }
 }
