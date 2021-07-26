@@ -12,11 +12,19 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Handler;
 
+use Aws\Sqs\SqsClient;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\SqsHandlerFactory;
+use Monolog\Handler\SqsHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LogLevel;
+use ReflectionException;
+use ReflectionProperty;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 final class SqsHandlerFactoryTest extends TestCase
 {
@@ -40,5 +48,241 @@ final class SqsHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Options must be an Array');
 
         $factory($container, '');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithEmptyConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SqsHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No Service name provided for the required sqsClient class');
+
+        $factory($container, '', []);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfig(): void
+    {
+        $sqsClient = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SqsHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No Service name provided for the required sqsClient class');
+
+        $factory($container, '', ['sqsClient' => $sqsClient]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfig2(): void
+    {
+        $sqsClient = 'test-client';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($sqsClient)
+            ->willThrowException(new ServiceNotFoundException());
+
+        $factory = new SqsHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Could not load sqsClient class');
+
+        $factory($container, '', ['sqsClient' => $sqsClient]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig3(): void
+    {
+        $sqsClient      = 'test-client';
+        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($sqsClient)
+            ->willReturn($sqsClientClass);
+
+        $factory = new SqsHandlerFactory();
+
+        $handler = $factory($container, '', ['sqsClient' => $sqsClient]);
+
+        self::assertInstanceOf(SqsHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $clientP = new ReflectionProperty($handler, 'client');
+        $clientP->setAccessible(true);
+
+        self::assertSame($sqsClientClass, $clientP->getValue($handler));
+
+        $qu = new ReflectionProperty($handler, 'queueUrl');
+        $qu->setAccessible(true);
+
+        self::assertSame('', $qu->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig4(): void
+    {
+        $sqsClient      = 'test-client';
+        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queueUrl       = 'test-uri';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($sqsClient)
+            ->willReturn($sqsClientClass);
+
+        $factory = new SqsHandlerFactory();
+
+        $handler = $factory($container, '', ['sqsClient' => $sqsClient, 'queueUrl' => $queueUrl, 'level' => LogLevel::ALERT, 'bubble' => false]);
+
+        self::assertInstanceOf(SqsHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $clientP = new ReflectionProperty($handler, 'client');
+        $clientP->setAccessible(true);
+
+        self::assertSame($sqsClientClass, $clientP->getValue($handler));
+
+        $qu = new ReflectionProperty($handler, 'queueUrl');
+        $qu->setAccessible(true);
+
+        self::assertSame($queueUrl, $qu->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig5(): void
+    {
+        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SqsHandlerFactory();
+
+        $handler = $factory($container, '', ['sqsClient' => $sqsClientClass]);
+
+        self::assertInstanceOf(SqsHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $clientP = new ReflectionProperty($handler, 'client');
+        $clientP->setAccessible(true);
+
+        self::assertSame($sqsClientClass, $clientP->getValue($handler));
+
+        $qu = new ReflectionProperty($handler, 'queueUrl');
+        $qu->setAccessible(true);
+
+        self::assertSame('', $qu->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig6(): void
+    {
+        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queueUrl       = 'test-uri';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SqsHandlerFactory();
+
+        $handler = $factory($container, '', ['sqsClient' => $sqsClientClass, 'queueUrl' => $queueUrl, 'level' => LogLevel::ALERT, 'bubble' => false]);
+
+        self::assertInstanceOf(SqsHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $clientP = new ReflectionProperty($handler, 'client');
+        $clientP->setAccessible(true);
+
+        self::assertSame($sqsClientClass, $clientP->getValue($handler));
+
+        $qu = new ReflectionProperty($handler, 'queueUrl');
+        $qu->setAccessible(true);
+
+        self::assertSame($queueUrl, $qu->getValue($handler));
     }
 }
