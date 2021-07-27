@@ -41,6 +41,7 @@ use Mimmi20\LoggerFactory\Handler\DeduplicationHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\DoctrineCouchDBHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\DynamoDbHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\ElasticaHandlerFactory;
+use Mimmi20\LoggerFactory\Handler\ElasticsearchHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\ErrorLogHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\FallbackGroupHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\FilterHandlerFactory;
@@ -124,6 +125,7 @@ use Monolog\Handler\DeduplicationHandler;
 use Monolog\Handler\DoctrineCouchDBHandler;
 use Monolog\Handler\DynamoDbHandler;
 use Monolog\Handler\ElasticaHandler;
+use Monolog\Handler\ElasticsearchHandler;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Handler\FallbackGroupHandler;
 use Monolog\Handler\FilterHandler;
@@ -236,6 +238,7 @@ final class ConfigProvider
                 'doctrinecouchdb' => DoctrineCouchDBHandler::class,
                 'dynamodb' => DynamoDbHandler::class,
                 'elastica' => ElasticaHandler::class,
+                'elasticsearch' => ElasticsearchHandler::class,
                 'errorlog' => ErrorLogHandler::class,
                 'fallbackgroup' => FallbackGroupHandler::class,
                 'filter' => FilterHandler::class,
@@ -292,6 +295,7 @@ final class ConfigProvider
                 DoctrineCouchDBHandler::class => DoctrineCouchDBHandlerFactory::class,
                 DynamoDbHandler::class => DynamoDbHandlerFactory::class,
                 ElasticaHandler::class => ElasticaHandlerFactory::class,
+                ElasticsearchHandler::class => ElasticsearchHandlerFactory::class,
                 ErrorLogHandler::class => ErrorLogHandlerFactory::class,
                 FallbackGroupHandler::class => FallbackGroupHandlerFactory::class,
                 FilterHandler::class => FilterHandlerFactory::class,

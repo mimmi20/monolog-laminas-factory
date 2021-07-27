@@ -19,15 +19,11 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\NewRelicHandler;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 
 /**
@@ -65,19 +61,19 @@ final class NewRelicHandlerFactory implements FactoryInterface
             }
 
             if (array_key_exists('bubble', $options)) {
-                $bubble = (bool) $options['bubble'];
+                $bubble = $options['bubble'];
             }
 
             if (array_key_exists('appName', $options)) {
-                $appName = (string) $options['appName'];
+                $appName = $options['appName'];
             }
 
             if (array_key_exists('explodeArrays', $options)) {
-                $explodeArrays = (bool) $options['explodeArrays'];
+                $explodeArrays = $options['explodeArrays'];
             }
 
             if (array_key_exists('transactionName', $options)) {
-                $transactionName = (string) $options['transactionName'];
+                $transactionName = $options['transactionName'];
             }
         }
 
@@ -88,10 +84,6 @@ final class NewRelicHandlerFactory implements FactoryInterface
             $explodeArrays,
             $transactionName
         );
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);
