@@ -465,4 +465,25 @@ final class WebProcessorFactoryTest extends TestCase
             $xf->getValue($processor)
         );
     }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws ServiceNotCreatedException
+     * @throws ServiceNotFoundException
+     */
+    public function testGetServerDataService(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new WebProcessorFactory();
+
+        self::assertNull($factory->getServerDataService($container, ''));
+    }
 }

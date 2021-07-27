@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory;
 
+use Bartlett\Monolog\Handler\CallbackFilterHandler;
 use CMDISP\MonologMicrosoftTeams\TeamsLogHandler;
 use JK\Monolog\Processor\RequestHeaderProcessor;
 use Laminas\Log\Logger;
@@ -34,6 +35,7 @@ use Mimmi20\LoggerFactory\Formatter\WildfireFormatterFactory;
 use Mimmi20\LoggerFactory\Handler\AmqpHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\BrowserConsoleHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\BufferHandlerFactory;
+use Mimmi20\LoggerFactory\Handler\CallbackFilterHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\ChromePHPHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\CouchDBHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\CubeHandlerFactory;
@@ -231,6 +233,7 @@ final class ConfigProvider
                 'amqp' => AmqpHandler::class,
                 'browserconsole' => BrowserConsoleHandler::class,
                 'buffer' => BufferHandler::class,
+                'callbackfilter' => CallbackFilterHandler::class,
                 'chromephp' => ChromePHPHandler::class,
                 'couchdb' => CouchDBHandler::class,
                 'cube' => CubeHandler::class,
@@ -288,6 +291,7 @@ final class ConfigProvider
                 AmqpHandler::class => AmqpHandlerFactory::class,
                 BrowserConsoleHandler::class => BrowserConsoleHandlerFactory::class,
                 BufferHandler::class => BufferHandlerFactory::class,
+                CallbackFilterHandler::class => CallbackFilterHandlerFactory::class,
                 ChromePHPHandler::class => ChromePHPHandlerFactory::class,
                 CouchDBHandler::class => CouchDBHandlerFactory::class,
                 CubeHandler::class => CubeHandlerFactory::class,
