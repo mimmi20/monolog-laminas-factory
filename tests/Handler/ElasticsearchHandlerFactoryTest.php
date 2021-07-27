@@ -12,10 +12,12 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Handler;
 
+use Elasticsearch\Client;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Mimmi20\LoggerFactory\Handler\CubeHandlerFactory;
-use Monolog\Handler\CubeHandler;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Mimmi20\LoggerFactory\Handler\ElasticsearchHandlerFactory;
+use Monolog\Handler\ElasticsearchHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
@@ -24,7 +26,9 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
-final class CubeHandlerFactoryTest extends TestCase
+use function sprintf;
+
+final class ElasticsearchHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
@@ -39,7 +43,7 @@ final class CubeHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new CubeHandlerFactory();
+        $factory = new ElasticsearchHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
@@ -61,11 +65,11 @@ final class CubeHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new CubeHandlerFactory();
+        $factory = new ElasticsearchHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('The required url is missing');
+        $this->expectExceptionMessage('No Service name provided for the required service class');
 
         $factory($container, '', []);
     }
@@ -73,10 +77,8 @@ final class CubeHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig(): void
+    public function testInvoceWithConfigWithWrongClient(): void
     {
-        $url = true;
-
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -85,37 +87,39 @@ final class CubeHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new CubeHandlerFactory();
+        $factory = new ElasticsearchHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('No url provided');
+        $this->expectExceptionMessage('No Service name provided for the required service class');
 
-        $factory($container, '', ['url' => $url]);
+        $factory($container, '', ['client' => true]);
     }
 
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvoceWithConfigWithWrongClientString(): void
     {
-        $url = 'ftp://test.uri';
+        $client = 'xyz';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
         $container->expects(self::never())
             ->method('has');
-        $container->expects(self::never())
-            ->method('get');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($client)
+            ->willThrowException(new ServiceNotFoundException());
 
-        $factory = new CubeHandlerFactory();
+        $factory = new ElasticsearchHandlerFactory();
 
-        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Could not create a CubeHandler');
+        $this->expectExceptionMessage(sprintf('Could not load client class for %s class', ElasticsearchHandler::class));
 
-        $factory($container, '', ['url' => $url]);
+        $factory($container, '', ['client' => $client]);
     }
 
     /**
@@ -123,9 +127,11 @@ final class CubeHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig3(): void
+    public function testInvoceWithConfigWithClientClass(): void
     {
-        $url = 'http://test.uri:80';
+        $client = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -135,29 +141,30 @@ final class CubeHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new CubeHandlerFactory();
+        $factory = new ElasticsearchHandlerFactory();
 
-        $handler = $factory($container, '', ['url' => $url]);
+        $handler = $factory($container, '', ['client' => $client]);
 
-        self::assertInstanceOf(CubeHandler::class, $handler);
+        self::assertInstanceOf(ElasticsearchHandler::class, $handler);
 
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
 
-        $scheme = new ReflectionProperty($handler, 'scheme');
-        $scheme->setAccessible(true);
+        $clientP = new ReflectionProperty($handler, 'client');
+        $clientP->setAccessible(true);
 
-        self::assertSame('http', $scheme->getValue($handler));
+        self::assertSame($client, $clientP->getValue($handler));
 
-        $host = new ReflectionProperty($handler, 'host');
-        $host->setAccessible(true);
+        $optionsP = new ReflectionProperty($handler, 'options');
+        $optionsP->setAccessible(true);
 
-        self::assertSame('test.uri', $host->getValue($handler));
+        $optionsArray = $optionsP->getValue($handler);
 
-        $port = new ReflectionProperty($handler, 'port');
-        $port->setAccessible(true);
+        self::assertIsArray($optionsArray);
 
-        self::assertSame(80, $port->getValue($handler));
+        self::assertSame('monolog', $optionsArray['index']);
+        self::assertSame('record', $optionsArray['type']);
+        self::assertFalse($optionsArray['ignore_error']);
     }
 
     /**
@@ -165,40 +172,48 @@ final class CubeHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig4(): void
+    public function testInvoceWithConfigWithClassString(): void
     {
-        $url = 'http://test.uri:80';
+        $client      = 'xyz';
+        $clientClass = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $index       = 'test-index';
+        $type        = 'test-type';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
         $container->expects(self::never())
             ->method('has');
-        $container->expects(self::never())
-            ->method('get');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($client)
+            ->willReturn($clientClass);
 
-        $factory = new CubeHandlerFactory();
+        $factory = new ElasticsearchHandlerFactory();
 
-        $handler = $factory($container, '', ['url' => $url, 'level' => LogLevel::ALERT, 'bubble' => false]);
+        $handler = $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false]);
 
-        self::assertInstanceOf(CubeHandler::class, $handler);
+        self::assertInstanceOf(ElasticsearchHandler::class, $handler);
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
 
-        $scheme = new ReflectionProperty($handler, 'scheme');
-        $scheme->setAccessible(true);
+        $clientP = new ReflectionProperty($handler, 'client');
+        $clientP->setAccessible(true);
 
-        self::assertSame('http', $scheme->getValue($handler));
+        self::assertSame($clientClass, $clientP->getValue($handler));
 
-        $host = new ReflectionProperty($handler, 'host');
-        $host->setAccessible(true);
+        $optionsP = new ReflectionProperty($handler, 'options');
+        $optionsP->setAccessible(true);
 
-        self::assertSame('test.uri', $host->getValue($handler));
+        $optionsArray = $optionsP->getValue($handler);
 
-        $port = new ReflectionProperty($handler, 'port');
-        $port->setAccessible(true);
+        self::assertIsArray($optionsArray);
 
-        self::assertSame(80, $port->getValue($handler));
+        self::assertSame($index, $optionsArray['index']);
+        self::assertSame($type, $optionsArray['type']);
+        self::assertTrue($optionsArray['ignore_error']);
     }
 }

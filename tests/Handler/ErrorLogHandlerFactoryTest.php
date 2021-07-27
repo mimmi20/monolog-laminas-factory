@@ -12,10 +12,9 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Handler;
 
-use CMDISP\MonologMicrosoftTeams\TeamsLogHandler;
 use Interop\Container\ContainerInterface;
-use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Mimmi20\LoggerFactory\Handler\TeamsLogHandlerFactory;
+use Mimmi20\LoggerFactory\Handler\ErrorLogHandlerFactory;
+use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
@@ -24,10 +23,12 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
-final class TeamsLogHandlerFactoryTest extends TestCase
+final class ErrorLogHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
      */
     public function testInvoceWithoutConfig(): void
     {
@@ -39,17 +40,30 @@ final class TeamsLogHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new TeamsLogHandlerFactory();
+        $factory = new ErrorLogHandlerFactory();
 
-        $this->expectException(ServiceNotCreatedException::class);
-        $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Options must be an Array');
+        $handler = $factory($container, '');
 
-        $factory($container, '');
+        self::assertInstanceOf(ErrorLogHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $mt = new ReflectionProperty($handler, 'messageType');
+        $mt->setAccessible(true);
+
+        self::assertSame(ErrorLogHandler::OPERATING_SYSTEM, $mt->getValue($handler));
+
+        $en = new ReflectionProperty($handler, 'expandNewlines');
+        $en->setAccessible(true);
+
+        self::assertFalse($en->getValue($handler));
     }
 
     /**
      * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
      */
     public function testInvoceWithEmptyConfig(): void
     {
@@ -61,13 +75,24 @@ final class TeamsLogHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new TeamsLogHandlerFactory();
+        $factory = new ErrorLogHandlerFactory();
 
-        $this->expectException(ServiceNotCreatedException::class);
-        $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('No url provided');
+        $handler = $factory($container, '', []);
 
-        $factory($container, '', []);
+        self::assertInstanceOf(ErrorLogHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $mt = new ReflectionProperty($handler, 'messageType');
+        $mt->setAccessible(true);
+
+        self::assertSame(ErrorLogHandler::OPERATING_SYSTEM, $mt->getValue($handler));
+
+        $en = new ReflectionProperty($handler, 'expandNewlines');
+        $en->setAccessible(true);
+
+        self::assertFalse($en->getValue($handler));
     }
 
     /**
@@ -77,7 +102,7 @@ final class TeamsLogHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfig(): void
     {
-        $url = 'test-url';
+        $messageType = ErrorLogHandler::SAPI;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -87,50 +112,23 @@ final class TeamsLogHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new TeamsLogHandlerFactory();
+        $factory = new ErrorLogHandlerFactory();
 
-        $handler = $factory($container, '', ['url' => $url]);
+        $handler = $factory($container, '', ['level' => LogLevel::ALERT, 'bubble' => false, 'messageType' => $messageType, 'expandNewlines' => true]);
 
-        self::assertInstanceOf(TeamsLogHandler::class, $handler);
-
-        self::assertSame(Logger::DEBUG, $handler->getLevel());
-        self::assertTrue($handler->getBubble());
-
-        $urlP = new ReflectionProperty($handler, 'url');
-        $urlP->setAccessible(true);
-
-        self::assertSame($url, $urlP->getValue($handler));
-    }
-
-    /**
-     * @throws Exception
-     * @throws ReflectionException
-     * @throws InvalidArgumentException
-     */
-    public function testInvoceWithConfig2(): void
-    {
-        $url = 'test-url';
-
-        $container = $this->getMockBuilder(ContainerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects(self::never())
-            ->method('has');
-        $container->expects(self::never())
-            ->method('get');
-
-        $factory = new TeamsLogHandlerFactory();
-
-        $handler = $factory($container, '', ['url' => $url, 'level' => LogLevel::ALERT, 'bubble' => false]);
-
-        self::assertInstanceOf(TeamsLogHandler::class, $handler);
+        self::assertInstanceOf(ErrorLogHandler::class, $handler);
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
 
-        $urlP = new ReflectionProperty($handler, 'url');
-        $urlP->setAccessible(true);
+        $mt = new ReflectionProperty($handler, 'messageType');
+        $mt->setAccessible(true);
 
-        self::assertSame($url, $urlP->getValue($handler));
+        self::assertSame($messageType, $mt->getValue($handler));
+
+        $en = new ReflectionProperty($handler, 'expandNewlines');
+        $en->setAccessible(true);
+
+        self::assertTrue($en->getValue($handler));
     }
 }

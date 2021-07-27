@@ -14,9 +14,20 @@ namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\SwiftMailerHandlerFactory;
+use Monolog\Handler\SwiftMailerHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LogLevel;
+use ReflectionException;
+use ReflectionProperty;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
+use Swift_Mailer;
+use Swift_Message;
+
+use function sprintf;
 
 final class SwiftMailerHandlerFactoryTest extends TestCase
 {
@@ -40,5 +51,441 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Options must be an Array');
 
         $factory($container, '');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithEmptyConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SwiftMailerHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No Service name provided for the required mailer class');
+
+        $factory($container, '', []);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfig(): void
+    {
+        $mailer = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SwiftMailerHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No Service name provided for the required mailer class');
+
+        $factory($container, '', ['mailer' => $mailer]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfig2(): void
+    {
+        $mailer = 'test-mailer';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($mailer)
+            ->willThrowException(new ServiceNotFoundException());
+
+        $factory = new SwiftMailerHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Could not load mailer class');
+
+        $factory($container, '', ['mailer' => $mailer]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfig3(): void
+    {
+        $mailerName = 'test-mailer';
+        $mailer     = $this->getMockBuilder(Swift_Mailer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($mailerName)
+            ->willReturn($mailer);
+
+        $factory = new SwiftMailerHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No message service name or callback provided');
+
+        $factory($container, '', ['mailer' => $mailerName]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfig4(): void
+    {
+        $mailerName = 'test-mailer';
+        $mailer     = $this->getMockBuilder(Swift_Mailer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $message    = 'test-message';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::once())
+            ->method('has')
+            ->with($message)
+            ->willReturn(false);
+        $container->expects(self::once())
+            ->method('get')
+            ->with($mailerName)
+            ->willReturn($mailer);
+
+        $factory = new SwiftMailerHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No Message service found');
+
+        $factory($container, '', ['mailer' => $mailerName, 'message' => $message]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ServiceNotFoundException
+     */
+    public function testInvoceWithConfig5(): void
+    {
+        $mailerName  = 'test-mailer';
+        $mailer      = $this->getMockBuilder(Swift_Mailer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $messageName = 'test-message';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::once())
+            ->method('has')
+            ->with($messageName)
+            ->willReturn(true);
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([$mailerName], [$messageName])
+            ->willReturnCallback(
+                static function (string $with) use ($mailerName, $mailer): Swift_Mailer {
+                    if ($with === $mailerName) {
+                        return $mailer;
+                    }
+
+                    throw new ServiceNotFoundException();
+                }
+            );
+
+        $factory = new SwiftMailerHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not load service %s', $messageName));
+
+        $factory($container, '', ['mailer' => $mailerName, 'message' => $messageName]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig6(): void
+    {
+        $mailerName  = 'test-mailer';
+        $mailer      = $this->getMockBuilder(Swift_Mailer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $messageName = 'test-message';
+        $message     = $this->getMockBuilder(Swift_Message::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::once())
+            ->method('has')
+            ->with($messageName)
+            ->willReturn(true);
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([$mailerName], [$messageName])
+            ->willReturnOnConsecutiveCalls($mailer, $message);
+
+        $factory = new SwiftMailerHandlerFactory();
+
+        $handler = $factory($container, '', ['mailer' => $mailerName, 'message' => $messageName]);
+
+        self::assertInstanceOf(SwiftMailerHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $mailerP = new ReflectionProperty($handler, 'mailer');
+        $mailerP->setAccessible(true);
+
+        self::assertSame($mailer, $mailerP->getValue($handler));
+
+        $mt = new ReflectionProperty($handler, 'messageTemplate');
+        $mt->setAccessible(true);
+
+        self::assertSame($message, $mt->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig7(): void
+    {
+        $mailerName  = 'test-mailer';
+        $mailer      = $this->getMockBuilder(Swift_Mailer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $messageName = 'test-message';
+        $message     = $this->getMockBuilder(Swift_Message::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::once())
+            ->method('has')
+            ->with($messageName)
+            ->willReturn(true);
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([$mailerName], [$messageName])
+            ->willReturnOnConsecutiveCalls($mailer, $message);
+
+        $factory = new SwiftMailerHandlerFactory();
+
+        $handler = $factory($container, '', ['mailer' => $mailerName, 'message' => $messageName, 'level' => LogLevel::ALERT, 'bubble' => false]);
+
+        self::assertInstanceOf(SwiftMailerHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $mailerP = new ReflectionProperty($handler, 'mailer');
+        $mailerP->setAccessible(true);
+
+        self::assertSame($mailer, $mailerP->getValue($handler));
+
+        $mt = new ReflectionProperty($handler, 'messageTemplate');
+        $mt->setAccessible(true);
+
+        self::assertSame($message, $mt->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig8(): void
+    {
+        $mailer  = $this->getMockBuilder(Swift_Mailer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $message = $this->getMockBuilder(Swift_Message::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SwiftMailerHandlerFactory();
+
+        $handler = $factory($container, '', ['mailer' => $mailer, 'message' => $message]);
+
+        self::assertInstanceOf(SwiftMailerHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $mailerP = new ReflectionProperty($handler, 'mailer');
+        $mailerP->setAccessible(true);
+
+        self::assertSame($mailer, $mailerP->getValue($handler));
+
+        $mt = new ReflectionProperty($handler, 'messageTemplate');
+        $mt->setAccessible(true);
+
+        self::assertSame($message, $mt->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig9(): void
+    {
+        $mailer  = $this->getMockBuilder(Swift_Mailer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $message = $this->getMockBuilder(Swift_Message::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SwiftMailerHandlerFactory();
+
+        $handler = $factory($container, '', ['mailer' => $mailer, 'message' => $message, 'level' => LogLevel::ALERT, 'bubble' => false]);
+
+        self::assertInstanceOf(SwiftMailerHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $mailerP = new ReflectionProperty($handler, 'mailer');
+        $mailerP->setAccessible(true);
+
+        self::assertSame($mailer, $mailerP->getValue($handler));
+
+        $mt = new ReflectionProperty($handler, 'messageTemplate');
+        $mt->setAccessible(true);
+
+        self::assertSame($message, $mt->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig10(): void
+    {
+        $mailer  = $this->getMockBuilder(Swift_Mailer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $message = static function (): void {
+        };
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SwiftMailerHandlerFactory();
+
+        $handler = $factory($container, '', ['mailer' => $mailer, 'message' => $message]);
+
+        self::assertInstanceOf(SwiftMailerHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $mailerP = new ReflectionProperty($handler, 'mailer');
+        $mailerP->setAccessible(true);
+
+        self::assertSame($mailer, $mailerP->getValue($handler));
+
+        $mt = new ReflectionProperty($handler, 'messageTemplate');
+        $mt->setAccessible(true);
+
+        self::assertSame($message, $mt->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig11(): void
+    {
+        $mailer  = $this->getMockBuilder(Swift_Mailer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $message = static function (): void {
+        };
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SwiftMailerHandlerFactory();
+
+        $handler = $factory($container, '', ['mailer' => $mailer, 'message' => $message, 'level' => LogLevel::ALERT, 'bubble' => false]);
+
+        self::assertInstanceOf(SwiftMailerHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $mailerP = new ReflectionProperty($handler, 'mailer');
+        $mailerP->setAccessible(true);
+
+        self::assertSame($mailer, $mailerP->getValue($handler));
+
+        $mt = new ReflectionProperty($handler, 'messageTemplate');
+        $mt->setAccessible(true);
+
+        self::assertSame($message, $mt->getValue($handler));
     }
 }

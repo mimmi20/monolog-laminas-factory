@@ -19,15 +19,11 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\NativeMailerHandler;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 
 /**
@@ -42,7 +38,7 @@ final class NativeMailerHandlerFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{to?: array<string>, subject?: string, from?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool, maxColumnWidth?: int}|null $options
+     * @phpstan-param array{to?: array<string>|string, subject?: string, from?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool, maxColumnWidth?: int, contentType?: string, encoding?: string}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -70,8 +66,8 @@ final class NativeMailerHandlerFactory implements FactoryInterface
         }
 
         $toEmail        = (array) $options['to'];
-        $subject        = (string) $options['subject'];
-        $fromEmail      = (string) $options['from'];
+        $subject        = $options['subject'];
+        $fromEmail      = $options['from'];
         $level          = LogLevel::DEBUG;
         $bubble         = true;
         $maxColumnWidth = 70;
@@ -81,18 +77,22 @@ final class NativeMailerHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         if (array_key_exists('maxColumnWidth', $options)) {
-            $maxColumnWidth = (int) $options['maxColumnWidth'];
+            $maxColumnWidth = $options['maxColumnWidth'];
         }
 
         $handler = new NativeMailerHandler($toEmail, $subject, $fromEmail, $level, $bubble, $maxColumnWidth);
 
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
+        if (array_key_exists('contentType', $options)) {
+            $handler->setContentType($options['contentType']);
+        }
+
+        if (array_key_exists('encoding', $options)) {
+            $handler->setEncoding($options['encoding']);
+        }
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

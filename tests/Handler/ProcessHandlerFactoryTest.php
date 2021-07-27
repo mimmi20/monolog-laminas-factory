@@ -15,8 +15,16 @@ namespace Mimmi20Test\LoggerFactory\Handler;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Handler\ProcessHandlerFactory;
+use Monolog\Handler\ProcessHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LogLevel;
+use ReflectionException;
+use ReflectionProperty;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
+
+use function sprintf;
 
 final class ProcessHandlerFactoryTest extends TestCase
 {
@@ -40,5 +48,127 @@ final class ProcessHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Options must be an Array');
 
         $factory($container, '');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithEmptyConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new ProcessHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No command provided');
+
+        $factory($container, '', []);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig(): void
+    {
+        $command = 'test-command';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new ProcessHandlerFactory();
+
+        $handler = $factory($container, '', ['command' => $command]);
+
+        self::assertInstanceOf(ProcessHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $commandP = new ReflectionProperty($handler, 'command');
+        $commandP->setAccessible(true);
+
+        self::assertSame($command, $commandP->getValue($handler));
+
+        $cwdP = new ReflectionProperty($handler, 'cwd');
+        $cwdP->setAccessible(true);
+
+        self::assertNull($cwdP->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig2(): void
+    {
+        $command = 'test-command';
+        $cwd     = 'test-cwd';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new ProcessHandlerFactory();
+
+        $handler = $factory($container, '', ['command' => $command, 'cwd' => $cwd, 'level' => LogLevel::ALERT, 'bubble' => false]);
+
+        self::assertInstanceOf(ProcessHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $commandP = new ReflectionProperty($handler, 'command');
+        $commandP->setAccessible(true);
+
+        self::assertSame($command, $commandP->getValue($handler));
+
+        $cwdP = new ReflectionProperty($handler, 'cwd');
+        $cwdP->setAccessible(true);
+
+        self::assertSame($cwd, $cwdP->getValue($handler));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfig3(): void
+    {
+        $command = 'test-command';
+        $cwd     = 'test-cwd';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new ProcessHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', ProcessHandler::class));
+
+        $factory($container, '', ['command' => $command, 'cwd' => '', 'level' => LogLevel::ALERT, 'bubble' => false]);
     }
 }

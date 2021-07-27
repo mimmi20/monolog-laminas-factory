@@ -19,15 +19,11 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 
 use const LOG_USER;
@@ -44,7 +40,7 @@ final class SyslogUdpHandlerFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{host?: string, port?: int, facility?: (int|string), level?: (Level|LevelName|LogLevel::*), bubble?: bool, ident?: string}|null $options
+     * @phpstan-param array{host?: string, port?: int, facility?: (int|string), level?: (Level|LevelName|LogLevel::*), bubble?: bool, ident?: string, rfc?: SyslogUdpHandler::RFC*}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -63,15 +59,16 @@ final class SyslogUdpHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No host provided');
         }
 
-        $host     = (string) $options['host'];
+        $host     = $options['host'];
         $port     = 514;
         $facility = LOG_USER;
         $level    = LogLevel::DEBUG;
         $bubble   = true;
         $ident    = 'php';
+        $rfc      = SyslogUdpHandler::RFC5424;
 
         if (array_key_exists('port', $options)) {
-            $port = (int) $options['port'];
+            $port = $options['port'];
         }
 
         if (array_key_exists('facility', $options)) {
@@ -83,11 +80,15 @@ final class SyslogUdpHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         if (array_key_exists('ident', $options)) {
-            $ident = (string) $options['ident'];
+            $ident = $options['ident'];
+        }
+
+        if (array_key_exists('rfc', $options)) {
+            $rfc = $options['rfc'];
         }
 
         $handler = new SyslogUdpHandler(
@@ -96,12 +97,9 @@ final class SyslogUdpHandlerFactory implements FactoryInterface
             $facility,
             $level,
             $bubble,
-            $ident
+            $ident,
+            $rfc
         );
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

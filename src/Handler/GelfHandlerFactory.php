@@ -20,16 +20,12 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\GelfHandler;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function is_string;
 
@@ -45,7 +41,7 @@ final class GelfHandlerFactory implements FactoryInterface
     /**
      * @param string                                                   $requestedName
      * @param array<string, (string|int|bool|PublisherInterface)>|null $options
-     * @phpstan-param array{publisher: (string|PublisherInterface), level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{publisher?: (bool|string|PublisherInterface), level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -61,31 +57,30 @@ final class GelfHandlerFactory implements FactoryInterface
         }
 
         if (!array_key_exists('publisher', $options)) {
-            throw new ServiceNotCreatedException('No Service name provided for the required exchange class');
+            throw new ServiceNotCreatedException('No Service name provided for the required publisher class');
         }
 
         if ($options['publisher'] instanceof PublisherInterface) {
             $publisher = $options['publisher'];
         } elseif (!is_string($options['publisher'])) {
-            throw new ServiceNotCreatedException('No Service name provided for the required exchange class');
+            throw new ServiceNotCreatedException('No Service name provided for the required publisher class');
         } else {
             try {
                 $publisher = $container->get($options['publisher']);
             } catch (ContainerExceptionInterface $e) {
-                throw new ServiceNotFoundException('Could not load exchange class', 0, $e);
+                throw new ServiceNotFoundException('Could not load publisher class', 0, $e);
             }
         }
 
-        $level = LogLevel::DEBUG;
+        $level  = LogLevel::DEBUG;
+        $bubble = true;
 
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
         }
 
-        $bubble = true;
-
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new GelfHandler(
@@ -93,10 +88,6 @@ final class GelfHandlerFactory implements FactoryInterface
             $level,
             $bubble
         );
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

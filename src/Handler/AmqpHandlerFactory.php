@@ -21,16 +21,12 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\AmqpHandler;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use PhpAmqpLib\Channel\AMQPChannel;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function is_string;
 
@@ -46,7 +42,7 @@ final class AmqpHandlerFactory implements FactoryInterface
     /**
      * @param string                                                         $requestedName
      * @param array<string, (bool|int|string|AMQPExchange|AMQPChannel)>|null $options
-     * @phpstan-param array{exchange: (string|AMQPExchange|AMQPChannel), exchangeName?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{exchange?: (bool|string|AMQPExchange|AMQPChannel), exchangeName?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -77,22 +73,24 @@ final class AmqpHandlerFactory implements FactoryInterface
             }
         }
 
-        $exchangeName = 'log';
+        $exchangeName = null;
+        $level        = LogLevel::DEBUG;
+        $bubble       = true;
 
-        if (array_key_exists('exchangeName', $options)) {
-            $exchangeName = (string) $options['exchangeName'];
+        if ($options['exchange'] instanceof AMQPChannel) {
+            $exchangeName = 'log';
+
+            if (array_key_exists('exchangeName', $options)) {
+                $exchangeName = $options['exchangeName'];
+            }
         }
-
-        $level = LogLevel::DEBUG;
 
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
         }
 
-        $bubble = true;
-
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new AmqpHandler(
@@ -101,10 +99,6 @@ final class AmqpHandlerFactory implements FactoryInterface
             $level,
             $bubble
         );
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

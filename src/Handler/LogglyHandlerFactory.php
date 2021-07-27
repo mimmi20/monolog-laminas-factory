@@ -19,16 +19,12 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
-use Monolog\Handler\FormattableHandlerInterface;
-use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\LogglyHandler;
 use Monolog\Handler\MissingExtensionException;
-use Monolog\Handler\ProcessableHandlerInterface;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function sprintf;
 
@@ -63,7 +59,7 @@ final class LogglyHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No token provided');
         }
 
-        $token  = (string) $options['token'];
+        $token  = $options['token'];
         $level  = LogLevel::DEBUG;
         $bubble = true;
 
@@ -72,7 +68,7 @@ final class LogglyHandlerFactory implements FactoryInterface
         }
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         try {
@@ -88,10 +84,6 @@ final class LogglyHandlerFactory implements FactoryInterface
                 $e
             );
         }
-
-        assert($handler instanceof HandlerInterface);
-        assert($handler instanceof FormattableHandlerInterface);
-        assert($handler instanceof ProcessableHandlerInterface);
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);
