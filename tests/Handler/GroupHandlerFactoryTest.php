@@ -198,6 +198,10 @@ final class GroupHandlerFactoryTest extends TestCase
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -270,6 +274,10 @@ final class GroupHandlerFactoryTest extends TestCase
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -342,10 +350,18 @@ final class GroupHandlerFactoryTest extends TestCase
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
 
         $handler3 = $this->getMockBuilder(GelfHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler3->expects(self::never())
+            ->method('setFormatter');
+        $handler3->expects(self::never())
+            ->method('getFormatter');
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -421,10 +437,18 @@ final class GroupHandlerFactoryTest extends TestCase
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
 
         $handler3 = $this->getMockBuilder(GelfHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler3->expects(self::never())
+            ->method('setFormatter');
+        $handler3->expects(self::never())
+            ->method('getFormatter');
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()

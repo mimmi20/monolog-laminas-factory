@@ -198,6 +198,10 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -270,6 +274,10 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -342,10 +350,18 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
 
         $handler3 = $this->getMockBuilder(GelfHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler3->expects(self::never())
+            ->method('setFormatter');
+        $handler3->expects(self::never())
+            ->method('getFormatter');
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -388,6 +404,14 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
         $bubble->setAccessible(true);
 
         self::assertTrue($bubble->getValue($handler));
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -421,10 +445,18 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
 
         $handler3 = $this->getMockBuilder(GelfHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler3->expects(self::never())
+            ->method('setFormatter');
+        $handler3->expects(self::never())
+            ->method('getFormatter');
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -467,5 +499,109 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
         $bubble->setAccessible(true);
 
         self::assertFalse($bubble->getValue($handler));
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $formatter = true;
+        $handlers  = [
+            [
+                'type' => FingersCrossedHandler::class,
+                'enabled' => false,
+            ],
+            [
+                'type' => FirePHPHandler::class,
+                'enabled' => true,
+            ],
+            [
+                'type' => ChromePHPHandler::class,
+            ],
+            [
+                'type' => GelfHandler::class,
+            ],
+        ];
+
+        $handler1 = $this->getMockBuilder(FirePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
+
+        $handler3 = $this->getMockBuilder(GelfHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler3->expects(self::never())
+            ->method('setFormatter');
+        $handler3->expects(self::never())
+            ->method('getFormatter');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::exactly(3))
+            ->method('get')
+            ->withConsecutive([FirePHPHandler::class], [ChromePHPHandler::class], [GelfHandler::class])
+            ->willReturnOnConsecutiveCalls($handler1, $handler2, $handler3);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(3))
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new WhatFailureGroupHandlerFactory();
+
+        $handler = $factory($container, '', ['handlers' => $handlers, 'bubble' => false, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(WhatFailureGroupHandler::class, $handler);
+
+        $fp = new ReflectionProperty($handler, 'handlers');
+        $fp->setAccessible(true);
+
+        $handlerClasses = $fp->getValue($handler);
+
+        self::assertIsArray($handlerClasses);
+        self::assertCount(3, $handlerClasses);
+        self::assertSame($handler1, $handlerClasses[0]);
+        self::assertSame($handler2, $handlerClasses[1]);
+        self::assertSame($handler3, $handlerClasses[2]);
+
+        $bubble = new ReflectionProperty($handler, 'bubble');
+        $bubble->setAccessible(true);
+
+        self::assertFalse($bubble->getValue($handler));
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 }

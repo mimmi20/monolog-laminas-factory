@@ -229,6 +229,10 @@ final class FilterHandlerFactoryTest extends TestCase
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -289,6 +293,10 @@ final class FilterHandlerFactoryTest extends TestCase
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -351,6 +359,10 @@ final class FilterHandlerFactoryTest extends TestCase
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
