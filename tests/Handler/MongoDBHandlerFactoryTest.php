@@ -20,7 +20,7 @@ use MongoDB\Client;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Manager;
 use Monolog\Formatter\FormatterInterface;
-use Monolog\Formatter\LineFormatter;
+use Monolog\Formatter\MongoDBFormatter;
 use Monolog\Handler\MongoDBHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -219,7 +219,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
@@ -264,7 +264,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
@@ -312,7 +312,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
@@ -357,7 +357,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
@@ -408,7 +408,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
@@ -456,7 +456,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
@@ -507,7 +507,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
@@ -555,7 +555,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);

@@ -17,7 +17,7 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\AmqpHandlerFactory;
-use Monolog\Formatter\LineFormatter;
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\AmqpHandler;
 use Monolog\Logger;
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -172,7 +172,7 @@ final class AmqpHandlerFactoryTest extends TestCase
 
         self::assertNull($ecn->getValue($handler));
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(JsonFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
@@ -228,7 +228,7 @@ final class AmqpHandlerFactoryTest extends TestCase
 
         self::assertNull($ecn->getValue($handler));
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(JsonFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
@@ -281,7 +281,7 @@ final class AmqpHandlerFactoryTest extends TestCase
 
         self::assertNull($ecn->getValue($handler));
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(JsonFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
@@ -334,7 +334,7 @@ final class AmqpHandlerFactoryTest extends TestCase
 
         self::assertNull($ecn->getValue($handler));
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(JsonFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
@@ -390,7 +390,7 @@ final class AmqpHandlerFactoryTest extends TestCase
 
         self::assertSame('log', $ecn->getValue($handler));
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(JsonFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
@@ -447,7 +447,7 @@ final class AmqpHandlerFactoryTest extends TestCase
 
         self::assertSame($exchangeName, $ecn->getValue($handler));
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(JsonFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
@@ -500,7 +500,7 @@ final class AmqpHandlerFactoryTest extends TestCase
 
         self::assertSame('log', $ecn->getValue($handler));
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(JsonFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
@@ -554,7 +554,7 @@ final class AmqpHandlerFactoryTest extends TestCase
 
         self::assertSame($exchangeName, $ecn->getValue($handler));
 
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+        self::assertInstanceOf(JsonFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
         $proc->setAccessible(true);
