@@ -17,6 +17,8 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\DoctrineCouchDBHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\NormalizerFormatter;
 use Monolog\Handler\DoctrineCouchDBHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -25,6 +27,8 @@ use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+
+use function sprintf;
 
 final class DoctrineCouchDBHandlerFactoryTest extends TestCase
 {
@@ -157,6 +161,16 @@ final class DoctrineCouchDBHandlerFactoryTest extends TestCase
         $clientP->setAccessible(true);
 
         self::assertSame($client, $clientP->getValue($handler));
+
+        self::assertInstanceOf(NormalizerFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -194,6 +208,16 @@ final class DoctrineCouchDBHandlerFactoryTest extends TestCase
         $clientP->setAccessible(true);
 
         self::assertSame($client, $clientP->getValue($handler));
+
+        self::assertInstanceOf(NormalizerFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -228,6 +252,16 @@ final class DoctrineCouchDBHandlerFactoryTest extends TestCase
         $clientP->setAccessible(true);
 
         self::assertSame($client, $clientP->getValue($handler));
+
+        self::assertInstanceOf(NormalizerFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -262,5 +296,44 @@ final class DoctrineCouchDBHandlerFactoryTest extends TestCase
         $clientP->setAccessible(true);
 
         self::assertSame($client, $clientP->getValue($handler));
+
+        self::assertInstanceOf(NormalizerFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $client    = $this->getMockBuilder(CouchDBClient::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $formatter = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new DoctrineCouchDBHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['client' => $client, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
     }
 }

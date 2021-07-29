@@ -13,7 +13,10 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Handler\NewRelicHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\NormalizerFormatter;
 use Monolog\Handler\NewRelicHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -22,6 +25,8 @@ use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+
+use function sprintf;
 
 final class NewRelicHandlerFactoryTest extends TestCase
 {
@@ -63,6 +68,16 @@ final class NewRelicHandlerFactoryTest extends TestCase
         $tn->setAccessible(true);
 
         self::assertNull($tn->getValue($handler));
+
+        self::assertInstanceOf(NormalizerFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -103,6 +118,16 @@ final class NewRelicHandlerFactoryTest extends TestCase
         $tn->setAccessible(true);
 
         self::assertNull($tn->getValue($handler));
+
+        self::assertInstanceOf(NormalizerFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -146,5 +171,43 @@ final class NewRelicHandlerFactoryTest extends TestCase
         $tn->setAccessible(true);
 
         self::assertSame($transactionName, $tn->getValue($handler));
+
+        self::assertInstanceOf(NormalizerFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $appName         = 'test-app';
+        $transactionName = 'test-transaction';
+        $formatter       = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new NewRelicHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['level' => LogLevel::ALERT, 'bubble' => false, 'appName' => $appName, 'explodeArrays' => true, 'transactionName' => $transactionName, 'formatter' => $formatter]);
     }
 }

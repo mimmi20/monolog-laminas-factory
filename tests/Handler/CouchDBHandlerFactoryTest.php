@@ -13,7 +13,10 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Handler\CouchDBHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\CouchDBHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -22,6 +25,8 @@ use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+
+use function sprintf;
 
 final class CouchDBHandlerFactoryTest extends TestCase
 {
@@ -59,6 +64,16 @@ final class CouchDBHandlerFactoryTest extends TestCase
         self::assertSame('logger', $options['dbname']);
         self::assertNull($options['username']);
         self::assertNull($options['password']);
+
+        self::assertInstanceOf(JsonFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -95,6 +110,16 @@ final class CouchDBHandlerFactoryTest extends TestCase
         self::assertSame('logger', $options['dbname']);
         self::assertNull($options['username']);
         self::assertNull($options['password']);
+
+        self::assertInstanceOf(JsonFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -138,5 +163,47 @@ final class CouchDBHandlerFactoryTest extends TestCase
         self::assertSame($dbname, $options['dbname']);
         self::assertSame($userName, $options['username']);
         self::assertSame($password, $options['password']);
+
+        self::assertInstanceOf(JsonFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $level     = LogLevel::ERROR;
+        $host      = 'testhost';
+        $port      = 42;
+        $dbname    = 'test';
+        $userName  = 'test-user';
+        $password  = 'test-password';
+        $formatter = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new CouchDBHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['level' => $level, 'bubble' => false, 'host' => $host, 'port' => $port, 'dbname' => $dbname, 'username' => $userName, 'password' => $password, 'formatter' => $formatter]);
     }
 }

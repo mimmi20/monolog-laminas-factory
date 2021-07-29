@@ -15,6 +15,8 @@ namespace Mimmi20Test\LoggerFactory\Handler;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Handler\SlackWebhookHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\SlackWebhookHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -23,6 +25,8 @@ use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+
+use function sprintf;
 
 final class SlackWebhookHandlerFactoryTest extends TestCase
 {
@@ -159,6 +163,16 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
         $ef->setAccessible(true);
 
         self::assertSame([], $ef->getValue($slackRecord));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -229,5 +243,48 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
         $ef->setAccessible(true);
 
         self::assertSame($excludeFields, $ef->getValue($slackRecord));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @requires openssl
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $webhookUrl    = 'http://test.test';
+        $channel       = 'channel';
+        $userName      = 'user';
+        $iconEmoji     = 'icon';
+        $excludeFields = ['abc', 'xyz'];
+        $formatter     = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SlackWebhookHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['webhookUrl' => $webhookUrl, 'channel' => $channel, 'userName' => $userName, 'useAttachment' => false, 'iconEmoji' => $iconEmoji, 'level' => LogLevel::ALERT, 'bubble' => false, 'useShortAttachment' => true, 'includeContextAndExtra' => true, 'excludeFields' => $excludeFields, 'formatter' => $formatter]);
     }
 }

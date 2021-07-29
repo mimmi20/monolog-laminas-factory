@@ -15,6 +15,8 @@ namespace Mimmi20Test\LoggerFactory\Handler;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Handler\RollbarHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RollbarHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -143,6 +145,16 @@ final class RollbarHandlerFactoryTest extends TestCase
         self::assertTrue($rollbarConfig->loggingPayload());
         self::assertSame(Config::VERBOSE_NONE, $rollbarConfig->verbose());
         self::assertSame('production', $rollbarConfig->getDataBuilder()->getEnvironment());
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -192,5 +204,45 @@ final class RollbarHandlerFactoryTest extends TestCase
         self::assertFalse($rollbarConfig->loggingPayload());
         self::assertSame($verbose, $rollbarConfig->verbose());
         self::assertSame($environment, $rollbarConfig->getDataBuilder()->getEnvironment());
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $token       = 'tokentokentokentokentokentokenab';
+        $verbose     = LogLevel::ALERT;
+        $environment = 'test';
+        $level       = LogLevel::ERROR;
+        $formatter   = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new RollbarHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['access_token' => $token, 'enabled' => false, 'transmit' => false, 'log_payload' => false, 'verbose' => $verbose, 'environment' => $environment, 'bubble' => false, 'level' => $level, 'formatter' => $formatter]);
     }
 }

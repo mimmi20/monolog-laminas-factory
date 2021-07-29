@@ -17,6 +17,8 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\ElasticaHandlerFactory;
+use Monolog\Formatter\ElasticaFormatter;
+use Monolog\Formatter\FormatterInterface;
 use Monolog\Handler\ElasticaHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -165,6 +167,16 @@ final class ElasticaHandlerFactoryTest extends TestCase
         self::assertSame('monolog', $optionsArray['index']);
         self::assertSame('record', $optionsArray['type']);
         self::assertFalse($optionsArray['ignore_error']);
+
+        self::assertInstanceOf(ElasticaFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -215,5 +227,49 @@ final class ElasticaHandlerFactoryTest extends TestCase
         self::assertSame($index, $optionsArray['index']);
         self::assertSame($type, $optionsArray['type']);
         self::assertTrue($optionsArray['ignore_error']);
+
+        self::assertInstanceOf(ElasticaFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $client      = 'xyz';
+        $clientClass = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $index       = 'test-index';
+        $type        = 'test-type';
+        $formatter   = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($client)
+            ->willReturn($clientClass);
+
+        $factory = new ElasticaHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
     }
 }

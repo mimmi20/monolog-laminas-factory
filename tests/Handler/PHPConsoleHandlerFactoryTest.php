@@ -16,12 +16,16 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\PHPConsoleHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\PHPConsoleHandler;
 use Monolog\Logger;
 use PhpConsole\Connector;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LogLevel;
+use ReflectionException;
+use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function sprintf;
@@ -123,6 +127,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceConfig3(): void
     {
@@ -152,11 +157,22 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
         self::assertSame($connector, $handler->getConnector());
         self::assertIsArray($handler->getOptions());
         self::assertTrue($handler->getOptions()['enabled']);
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceConfig4(): void
     {
@@ -188,6 +204,16 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
         self::assertSame($connector, $handler->getConnector());
         self::assertIsArray($handler->getOptions());
         self::assertFalse($handler->getOptions()['enabled']);
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -224,6 +250,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceConfig6(): void
     {
@@ -250,11 +277,22 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
         self::assertSame($connector, $handler->getConnector());
         self::assertIsArray($handler->getOptions());
         self::assertTrue($handler->getOptions()['enabled']);
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceConfig7(): void
     {
@@ -283,5 +321,46 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
         self::assertSame($connector, $handler->getConnector());
         self::assertIsArray($handler->getOptions());
         self::assertFalse($handler->getOptions()['enabled']);
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $connector = $this->getMockBuilder(Connector::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $level     = LogLevel::ALERT;
+        $bubble    = false;
+        $formatter = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new PHPConsoleHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['connector' => $connector, 'level' => $level, 'bubble' => $bubble, 'options' => ['enabled' => false], 'formatter' => $formatter]);
     }
 }

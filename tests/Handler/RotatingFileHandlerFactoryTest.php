@@ -15,6 +15,8 @@ namespace Mimmi20Test\LoggerFactory\Handler;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Handler\RotatingFileHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -25,6 +27,7 @@ use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function date;
+use function sprintf;
 
 final class RotatingFileHandlerFactoryTest extends TestCase
 {
@@ -119,6 +122,16 @@ final class RotatingFileHandlerFactoryTest extends TestCase
         $ul->setAccessible(true);
 
         self::assertFalse($ul->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -169,6 +182,16 @@ final class RotatingFileHandlerFactoryTest extends TestCase
         $ul->setAccessible(true);
 
         self::assertFalse($ul->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -219,6 +242,16 @@ final class RotatingFileHandlerFactoryTest extends TestCase
         $ul->setAccessible(true);
 
         self::assertFalse($ul->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -273,6 +306,16 @@ final class RotatingFileHandlerFactoryTest extends TestCase
         $ul->setAccessible(true);
 
         self::assertFalse($ul->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -328,6 +371,16 @@ final class RotatingFileHandlerFactoryTest extends TestCase
         $ul->setAccessible(true);
 
         self::assertFalse($ul->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -383,5 +436,48 @@ final class RotatingFileHandlerFactoryTest extends TestCase
         $ul->setAccessible(true);
 
         self::assertFalse($ul->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $filename       = '/tmp/test-file';
+        $maxFiles       = 99;
+        $level          = LogLevel::ALERT;
+        $bubble         = false;
+        $filePermission = 0755;
+        $useLocking     = false;
+        $dateFormat     = RotatingFileHandler::FILE_PER_MONTH;
+        $formatter      = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new RotatingFileHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['filename' => $filename, 'maxFiles' => $maxFiles, 'level' => $level, 'bubble' => $bubble, 'filePermission' => $filePermission, 'useLocking' => $useLocking, 'dateFormat' => $dateFormat, 'formatter' => $formatter]);
     }
 }

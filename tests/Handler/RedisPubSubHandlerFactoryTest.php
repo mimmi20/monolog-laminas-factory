@@ -16,6 +16,8 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\RedisPubSubHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RedisPubSubHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -164,6 +166,16 @@ final class RedisPubSubHandlerFactoryTest extends TestCase
         $ck->setAccessible(true);
 
         self::assertSame('', $ck->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -209,6 +221,16 @@ final class RedisPubSubHandlerFactoryTest extends TestCase
         $ck->setAccessible(true);
 
         self::assertSame($key, $ck->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -248,6 +270,16 @@ final class RedisPubSubHandlerFactoryTest extends TestCase
         $ck->setAccessible(true);
 
         self::assertSame('', $ck->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -290,6 +322,16 @@ final class RedisPubSubHandlerFactoryTest extends TestCase
         $ck->setAccessible(true);
 
         self::assertSame($key, $ck->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -319,5 +361,37 @@ final class RedisPubSubHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage(sprintf('Could not load class %s', RedisPubSubHandler::class));
 
         $factory($container, '', ['client' => $clientName, 'key' => $key, 'level' => $level, 'bubble' => $bubble]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $client    = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $key       = 'test-key';
+        $level     = LogLevel::ALERT;
+        $bubble    = false;
+        $formatter = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new RedisPubSubHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['client' => $client, 'key' => $key, 'level' => $level, 'bubble' => $bubble, 'formatter' => $formatter]);
     }
 }

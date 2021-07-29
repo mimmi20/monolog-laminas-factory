@@ -17,6 +17,8 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\DynamoDbHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\ScalarFormatter;
 use Monolog\Handler\DynamoDbHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -25,6 +27,8 @@ use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+
+use function sprintf;
 
 final class DynamoDbHandlerFactoryTest extends TestCase
 {
@@ -162,6 +166,16 @@ final class DynamoDbHandlerFactoryTest extends TestCase
         $tableP->setAccessible(true);
 
         self::assertSame('', $tableP->getValue($handler));
+
+        self::assertInstanceOf(ScalarFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -205,6 +219,16 @@ final class DynamoDbHandlerFactoryTest extends TestCase
         $tableP->setAccessible(true);
 
         self::assertSame($table, $tableP->getValue($handler));
+
+        self::assertInstanceOf(ScalarFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -244,6 +268,16 @@ final class DynamoDbHandlerFactoryTest extends TestCase
         $tableP->setAccessible(true);
 
         self::assertSame('', $tableP->getValue($handler));
+
+        self::assertInstanceOf(ScalarFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -284,5 +318,45 @@ final class DynamoDbHandlerFactoryTest extends TestCase
         $tableP->setAccessible(true);
 
         self::assertSame($table, $tableP->getValue($handler));
+
+        self::assertInstanceOf(ScalarFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $client    = $this->getMockBuilder(DynamoDbClient::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $table     = 'test-table';
+        $formatter = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new DynamoDbHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['client' => $client, 'table' => $table, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
     }
 }

@@ -18,10 +18,14 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\SamplingHandlerFactory;
 use Mimmi20\LoggerFactory\MonologHandlerPluginManager;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\ChromePHPHandler;
 use Monolog\Handler\SamplingHandler;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
+use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function sprintf;
@@ -249,10 +253,68 @@ final class SamplingHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceWithHandlerConfig(): void
     {
-        $type = 'abc';
+        $type           = 'abc';
+        $formatterClass = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new SamplingHandlerFactory();
+
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'factor' => 42]);
+
+        self::assertInstanceOf(SamplingHandler::class, $handler);
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $type      = 'abc';
+        $formatter = true;
 
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
@@ -284,8 +346,12 @@ final class SamplingHandlerFactoryTest extends TestCase
 
         $factory = new SamplingHandlerFactory();
 
-        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'factor' => 42]);
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
 
-        self::assertInstanceOf(SamplingHandler::class, $handler);
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'factor' => 42, 'formatter' => $formatter]);
     }
 }

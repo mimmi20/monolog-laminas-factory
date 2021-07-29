@@ -15,6 +15,8 @@ namespace Mimmi20Test\LoggerFactory\Handler;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Handler\NativeMailerHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\HtmlFormatter;
 use Monolog\Handler\NativeMailerHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -23,6 +25,8 @@ use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+
+use function sprintf;
 
 final class NativeMailerHandlerFactoryTest extends TestCase
 {
@@ -168,6 +172,16 @@ final class NativeMailerHandlerFactoryTest extends TestCase
         $headersP->setAccessible(true);
 
         self::assertSame(['From: ' . $from], $headersP->getValue($handler));
+
+        self::assertInstanceOf(HtmlFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -222,5 +236,47 @@ final class NativeMailerHandlerFactoryTest extends TestCase
         $headersP->setAccessible(true);
 
         self::assertSame(['From: ' . $from], $headersP->getValue($handler));
+
+        self::assertInstanceOf(HtmlFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $to             = 'test-to';
+        $subject        = 'test-subject';
+        $from           = 'test-from';
+        $maxColumnWidth = 120;
+        $contentType    = 'test/fake';
+        $encoding       = 'iso-42';
+        $formatter      = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new NativeMailerHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['to' => $to, 'subject' => $subject, 'from' => $from, 'level' => LogLevel::ALERT, 'bubble' => false, 'maxColumnWidth' => $maxColumnWidth, 'contentType' => $contentType, 'encoding' => $encoding, 'formatter' => $formatter]);
     }
 }

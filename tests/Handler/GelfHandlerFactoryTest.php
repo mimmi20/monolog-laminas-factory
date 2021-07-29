@@ -17,6 +17,8 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\GelfHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\GelfMessageFormatter;
 use Monolog\Handler\GelfHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -25,6 +27,8 @@ use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+
+use function sprintf;
 
 final class GelfHandlerFactoryTest extends TestCase
 {
@@ -157,6 +161,16 @@ final class GelfHandlerFactoryTest extends TestCase
         $publisherP->setAccessible(true);
 
         self::assertSame($publisher, $publisherP->getValue($handler));
+
+        self::assertInstanceOf(GelfMessageFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -194,6 +208,16 @@ final class GelfHandlerFactoryTest extends TestCase
         $publisherP->setAccessible(true);
 
         self::assertSame($publisher, $publisherP->getValue($handler));
+
+        self::assertInstanceOf(GelfMessageFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -228,6 +252,16 @@ final class GelfHandlerFactoryTest extends TestCase
         $publisherP->setAccessible(true);
 
         self::assertSame($publisher, $publisherP->getValue($handler));
+
+        self::assertInstanceOf(GelfMessageFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -262,5 +296,44 @@ final class GelfHandlerFactoryTest extends TestCase
         $publisherP->setAccessible(true);
 
         self::assertSame($publisher, $publisherP->getValue($handler));
+
+        self::assertInstanceOf(GelfMessageFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $publisher = $this->getMockBuilder(PublisherInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $formatter = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new GelfHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['publisher' => $publisher, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
     }
 }

@@ -16,6 +16,8 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\RedisHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RedisHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -169,6 +171,16 @@ final class RedisHandlerFactoryTest extends TestCase
         $cs->setAccessible(true);
 
         self::assertSame(0, $cs->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -220,6 +232,16 @@ final class RedisHandlerFactoryTest extends TestCase
         $cs->setAccessible(true);
 
         self::assertSame($capSize, $cs->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -264,6 +286,16 @@ final class RedisHandlerFactoryTest extends TestCase
         $cs->setAccessible(true);
 
         self::assertSame(0, $cs->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -312,6 +344,16 @@ final class RedisHandlerFactoryTest extends TestCase
         $cs->setAccessible(true);
 
         self::assertSame($capSize, $cs->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -338,5 +380,38 @@ final class RedisHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage(sprintf('Could not load class %s', RedisHandler::class));
 
         $factory($container, '', ['client' => $clientName]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $client    = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $key       = 'test-key';
+        $level     = LogLevel::ALERT;
+        $bubble    = false;
+        $capSize   = 42;
+        $formatter = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new RedisHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['client' => $client, 'key' => $key, 'level' => $level, 'bubble' => $bubble, 'capSize' => $capSize, 'formatter' => $formatter]);
     }
 }

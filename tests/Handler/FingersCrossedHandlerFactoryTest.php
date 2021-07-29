@@ -219,15 +219,19 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithHandlerConfig(): void
     {
-        $type = 'abc';
+        $type           = 'abc';
+        $formatterClass = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $handler2->expects(self::never())
             ->method('setFormatter');
-        $handler2->expects(self::never())
-            ->method('getFormatter');
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -284,6 +288,16 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $ptl->setAccessible(true);
 
         self::assertNull($ptl->getValue($handler));
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -293,15 +307,19 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithHandlerConfig2(): void
     {
-        $type = 'abc';
+        $type           = 'abc';
+        $formatterClass = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $handler2->expects(self::never())
             ->method('setFormatter');
-        $handler2->expects(self::never())
-            ->method('getFormatter');
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -358,6 +376,16 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $ptl->setAccessible(true);
 
         self::assertSame(Logger::WARNING, $ptl->getValue($handler));
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -367,15 +395,19 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithHandlerConfig3(): void
     {
-        $type = 'abc';
+        $type           = 'abc';
+        $formatterClass = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $handler2->expects(self::never())
             ->method('setFormatter');
-        $handler2->expects(self::never())
-            ->method('getFormatter');
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -432,6 +464,16 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $ptl->setAccessible(true);
 
         self::assertSame(Logger::WARNING, $ptl->getValue($handler));
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -441,8 +483,11 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithHandlerConfig4(): void
     {
-        $type     = 'abc';
-        $strategy = $this->getMockBuilder(ChannelLevelActivationStrategy::class)
+        $type           = 'abc';
+        $strategy       = $this->getMockBuilder(ChannelLevelActivationStrategy::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $formatterClass = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -451,8 +496,9 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->getMock();
         $handler2->expects(self::never())
             ->method('setFormatter');
-        $handler2->expects(self::never())
-            ->method('getFormatter');
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -509,6 +555,16 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $ptl->setAccessible(true);
 
         self::assertSame(Logger::WARNING, $ptl->getValue($handler));
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -518,8 +574,11 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithHandlerConfig5(): void
     {
-        $type     = 'abc';
-        $strategy = LogLevel::WARNING;
+        $type           = 'abc';
+        $strategy       = LogLevel::WARNING;
+        $formatterClass = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $activationStrategyPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -536,8 +595,9 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->getMock();
         $handler2->expects(self::never())
             ->method('setFormatter');
-        $handler2->expects(self::never())
-            ->method('getFormatter');
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -594,6 +654,16 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $ptl->setAccessible(true);
 
         self::assertSame(Logger::WARNING, $ptl->getValue($handler));
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -603,9 +673,12 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithHandlerConfig6(): void
     {
-        $type          = 'abc';
-        $strategy      = 'xyz';
-        $strategyClass = $this->getMockBuilder(ChannelLevelActivationStrategy::class)
+        $type           = 'abc';
+        $strategy       = 'xyz';
+        $strategyClass  = $this->getMockBuilder(ChannelLevelActivationStrategy::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $formatterClass = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -614,8 +687,9 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->getMock();
         $handler2->expects(self::never())
             ->method('setFormatter');
-        $handler2->expects(self::never())
-            ->method('getFormatter');
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
 
         $activationStrategyPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -684,6 +758,16 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $ptl->setAccessible(true);
 
         self::assertSame(Logger::WARNING, $ptl->getValue($handler));
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -818,14 +902,18 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $strategyClass   = $this->getMockBuilder(ChannelLevelActivationStrategy::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $formatterClass  = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $handler2->expects(self::never())
             ->method('setFormatter');
-        $handler2->expects(self::never())
-            ->method('getFormatter');
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
 
         $activationStrategyPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -892,6 +980,16 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $ptl->setAccessible(true);
 
         self::assertSame(Logger::WARNING, $ptl->getValue($handler));
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**

@@ -15,6 +15,8 @@ namespace Mimmi20Test\LoggerFactory\Handler;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Handler\PushoverHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\PushoverHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -25,6 +27,7 @@ use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function gethostname;
+use function sprintf;
 
 final class PushoverHandlerFactoryTest extends TestCase
 {
@@ -163,6 +166,16 @@ final class PushoverHandlerFactoryTest extends TestCase
         $ex->setAccessible(true);
 
         self::assertSame(25200, $ex->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -239,5 +252,50 @@ final class PushoverHandlerFactoryTest extends TestCase
         $ex->setAccessible(true);
 
         self::assertSame($expire, $ex->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $token        = 'token';
+        $users        = ['abc', 'xyz'];
+        $title        = 'title';
+        $retry        = 24;
+        $expire       = 42;
+        $timeout      = 42.0;
+        $writeTimeout = 120.0;
+        $persistent   = true;
+        $chunkSize    = 100;
+        $formatter    = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new PushoverHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['token' => $token, 'users' => $users, 'title' => $title, 'level' => LogLevel::ALERT, 'bubble' => false, 'useSSL' => false, 'highPriorityLevel' => LogLevel::ERROR, 'emergencyLevel' => LogLevel::ALERT, 'retry' => $retry, 'expire' => $expire, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
     }
 }

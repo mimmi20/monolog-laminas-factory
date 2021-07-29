@@ -18,6 +18,8 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\FilterHandlerFactory;
 use Mimmi20\LoggerFactory\MonologHandlerPluginManager;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\ChromePHPHandler;
 use Monolog\Handler\FilterHandler;
 use Monolog\Logger;
@@ -214,8 +216,8 @@ final class FilterHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithHandlerConfig(): void
     {
-        $type   = 'abc';
-        $levels = [
+        $type           = 'abc';
+        $levels         = [
             Logger::DEBUG => 0,
             Logger::INFO => 1,
             Logger::NOTICE => 2,
@@ -225,14 +227,18 @@ final class FilterHandlerFactoryTest extends TestCase
             Logger::ALERT => 6,
             Logger::EMERGENCY => 7,
         ];
+        $formatterClass = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $handler2->expects(self::never())
             ->method('setFormatter');
-        $handler2->expects(self::never())
-            ->method('getFormatter');
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -274,6 +280,16 @@ final class FilterHandlerFactoryTest extends TestCase
         $al->setAccessible(true);
 
         self::assertSame($levels, $al->getValue($handler));
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -283,20 +299,24 @@ final class FilterHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithHandlerConfig2(): void
     {
-        $type   = 'abc';
-        $levels = [
+        $type           = 'abc';
+        $levels         = [
             Logger::WARNING => 0,
             Logger::ERROR => 1,
             Logger::CRITICAL => 2,
         ];
+        $formatterClass = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $handler2->expects(self::never())
             ->method('setFormatter');
-        $handler2->expects(self::never())
-            ->method('getFormatter');
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -338,6 +358,16 @@ final class FilterHandlerFactoryTest extends TestCase
         $al->setAccessible(true);
 
         self::assertSame($levels, $al->getValue($handler));
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -347,22 +377,26 @@ final class FilterHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithHandlerConfig3(): void
     {
-        $type   = 'abc';
-        $levels = [
+        $type           = 'abc';
+        $levels         = [
             Logger::NOTICE,
             Logger::WARNING,
             Logger::ERROR,
             Logger::CRITICAL,
             Logger::ALERT,
         ];
+        $formatterClass = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $handler2->expects(self::never())
             ->method('setFormatter');
-        $handler2->expects(self::never())
-            ->method('getFormatter');
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -404,5 +438,69 @@ final class FilterHandlerFactoryTest extends TestCase
         $al->setAccessible(true);
 
         self::assertSame(array_flip($levels), $al->getValue($handler));
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $type      = 'abc';
+        $levels    = [
+            Logger::NOTICE,
+            Logger::WARNING,
+            Logger::ERROR,
+            Logger::CRITICAL,
+            Logger::ALERT,
+        ];
+        $formatter = true;
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new FilterHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'minLevelOrList' => $levels, 'formatter' => $formatter]);
     }
 }

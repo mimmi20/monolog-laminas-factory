@@ -18,6 +18,8 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\DeduplicationHandlerFactory;
 use Mimmi20\LoggerFactory\MonologHandlerPluginManager;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\ChromePHPHandler;
 use Monolog\Handler\DeduplicationHandler;
 use Monolog\Logger;
@@ -213,15 +215,19 @@ final class DeduplicationHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithHandlerConfig(): void
     {
-        $type = 'abc';
+        $type           = 'abc';
+        $formatterClass = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $handler2->expects(self::never())
             ->method('setFormatter');
-        $handler2->expects(self::never())
-            ->method('getFormatter');
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -281,6 +287,16 @@ final class DeduplicationHandlerFactoryTest extends TestCase
         $timeP->setAccessible(true);
 
         self::assertSame(60, $timeP->getValue($handler));
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -293,14 +309,18 @@ final class DeduplicationHandlerFactoryTest extends TestCase
         $type               = 'abc';
         $deduplicationStore = 'test-link';
         $time               = 42;
+        $formatterClass     = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
             ->getMock();
         $handler2->expects(self::never())
             ->method('setFormatter');
-        $handler2->expects(self::never())
-            ->method('getFormatter');
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -360,5 +380,64 @@ final class DeduplicationHandlerFactoryTest extends TestCase
         $timeP->setAccessible(true);
 
         self::assertSame($time, $timeP->getValue($handler));
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $type               = 'abc';
+        $deduplicationStore = 'test-link';
+        $time               = 42;
+        $formatter          = true;
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new DeduplicationHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'deduplicationStore' => $deduplicationStore, 'deduplicationLevel' => LogLevel::ALERT, 'time' => $time, 'bubble' => false, 'formatter' => $formatter]);
     }
 }

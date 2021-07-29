@@ -17,6 +17,7 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\AmqpHandlerFactory;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\AmqpHandler;
 use Monolog\Logger;
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -170,6 +171,16 @@ final class AmqpHandlerFactoryTest extends TestCase
         $ecn->setAccessible(true);
 
         self::assertNull($ecn->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -216,6 +227,16 @@ final class AmqpHandlerFactoryTest extends TestCase
         $ecn->setAccessible(true);
 
         self::assertNull($ecn->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -259,6 +280,16 @@ final class AmqpHandlerFactoryTest extends TestCase
         $ecn->setAccessible(true);
 
         self::assertNull($ecn->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -302,6 +333,16 @@ final class AmqpHandlerFactoryTest extends TestCase
         $ecn->setAccessible(true);
 
         self::assertNull($ecn->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -348,6 +389,16 @@ final class AmqpHandlerFactoryTest extends TestCase
         $ecn->setAccessible(true);
 
         self::assertSame('log', $ecn->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -395,6 +446,16 @@ final class AmqpHandlerFactoryTest extends TestCase
         $ecn->setAccessible(true);
 
         self::assertSame($exchangeName, $ecn->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -438,6 +499,16 @@ final class AmqpHandlerFactoryTest extends TestCase
         $ecn->setAccessible(true);
 
         self::assertSame('log', $ecn->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -482,5 +553,15 @@ final class AmqpHandlerFactoryTest extends TestCase
         $ecn->setAccessible(true);
 
         self::assertSame($exchangeName, $ecn->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 }

@@ -16,6 +16,8 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\SwiftMailerHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\HtmlFormatter;
 use Monolog\Handler\SwiftMailerHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -273,6 +275,16 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
         $mt->setAccessible(true);
 
         self::assertSame($message, $mt->getValue($handler));
+
+        self::assertInstanceOf(HtmlFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -321,6 +333,16 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
         $mt->setAccessible(true);
 
         self::assertSame($message, $mt->getValue($handler));
+
+        self::assertInstanceOf(HtmlFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -363,6 +385,16 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
         $mt->setAccessible(true);
 
         self::assertSame($message, $mt->getValue($handler));
+
+        self::assertInstanceOf(HtmlFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -405,6 +437,16 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
         $mt->setAccessible(true);
 
         self::assertSame($message, $mt->getValue($handler));
+
+        self::assertInstanceOf(HtmlFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -446,6 +488,16 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
         $mt->setAccessible(true);
 
         self::assertSame($message, $mt->getValue($handler));
+
+        self::assertInstanceOf(HtmlFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -487,5 +539,46 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
         $mt->setAccessible(true);
 
         self::assertSame($message, $mt->getValue($handler));
+
+        self::assertInstanceOf(HtmlFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $mailer    = $this->getMockBuilder(Swift_Mailer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $message   = static function (): void {
+        };
+        $formatter = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SwiftMailerHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['mailer' => $mailer, 'message' => $message, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
     }
 }

@@ -15,6 +15,8 @@ namespace Mimmi20Test\LoggerFactory\Handler;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Handler\ProcessHandlerFactory;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\ProcessHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -107,6 +109,16 @@ final class ProcessHandlerFactoryTest extends TestCase
         $cwdP->setAccessible(true);
 
         self::assertNull($cwdP->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -145,6 +157,16 @@ final class ProcessHandlerFactoryTest extends TestCase
         $cwdP->setAccessible(true);
 
         self::assertSame($cwd, $cwdP->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -153,7 +175,6 @@ final class ProcessHandlerFactoryTest extends TestCase
     public function testInvoceWithConfig3(): void
     {
         $command = 'test-command';
-        $cwd     = 'test-cwd';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -170,5 +191,33 @@ final class ProcessHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage(sprintf('Could not create %s', ProcessHandler::class));
 
         $factory($container, '', ['command' => $command, 'cwd' => '', 'level' => LogLevel::ALERT, 'bubble' => false]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $command   = 'test-command';
+        $cwd       = 'test-cwd';
+        $formatter = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new ProcessHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['command' => $command, 'cwd' => $cwd, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
     }
 }
