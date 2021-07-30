@@ -52,7 +52,7 @@ final class WhatFailureGroupHandlerFactory
         $bubble = true;
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new WhatFailureGroupHandler(

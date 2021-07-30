@@ -13,11 +13,14 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\MandrillHandlerFactory;
+use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\HtmlFormatter;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\MandrillHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -529,5 +532,104 @@ final class MandrillHandlerFactoryTest extends TestCase
         );
 
         $factory($container, '', ['apiKey' => $apiKey, 'message' => $message, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndFormatter(): void
+    {
+        $apiKey       = 'test-key';
+        $messageClass = $this->getMockBuilder(Swift_Message::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $message      = static fn (): Swift_Message => $messageClass;
+        $formatter    = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willThrowException(new ServiceNotFoundException());
+
+        $factory = new MandrillHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+        );
+
+        $factory($container, '', ['apiKey' => $apiKey, 'message' => $message, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndFormatter2(): void
+    {
+        $apiKey       = 'test-key';
+        $messageClass = $this->getMockBuilder(Swift_Message::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $message      = static fn (): Swift_Message => $messageClass;
+        $formatter    = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new MandrillHandlerFactory();
+
+        $handler = $factory($container, '', ['apiKey' => $apiKey, 'message' => $message, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(MandrillHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $messageP = new ReflectionProperty($handler, 'message');
+        $messageP->setAccessible(true);
+
+        self::assertSame($messageClass, $messageP->getValue($handler));
+
+        $ak = new ReflectionProperty($handler, 'apiKey');
+        $ak->setAccessible(true);
+
+        self::assertSame($apiKey, $ak->getValue($handler));
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 }

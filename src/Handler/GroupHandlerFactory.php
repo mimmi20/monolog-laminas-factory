@@ -53,7 +53,7 @@ final class GroupHandlerFactory implements FactoryInterface
         $bubble = true;
 
         if (array_key_exists('bubble', $options)) {
-            $bubble = (bool) $options['bubble'];
+            $bubble = $options['bubble'];
         }
 
         $handler = new GroupHandler(

@@ -17,6 +17,7 @@ use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\OverflowHandlerFactory;
+use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
 use Mimmi20\LoggerFactory\MonologHandlerPluginManager;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
@@ -421,5 +422,167 @@ final class OverflowHandlerFactoryTest extends TestCase
         );
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'thresholdMap' => $thresholdMapSet, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ServiceNotFoundException
+     */
+    public function testInvoceWithConfigAndFormatter(): void
+    {
+        $type      = 'abc';
+        $formatter = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $thresholdMapSet = [
+            LogLevel::DEBUG => 9,
+            LogLevel::INFO => 99,
+            LogLevel::NOTICE => 2,
+            LogLevel::WARNING => 42,
+            LogLevel::ERROR => 11,
+            LogLevel::CRITICAL => 22,
+            LogLevel::ALERT => 17,
+            LogLevel::EMERGENCY => 8,
+        ];
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([MonologHandlerPluginManager::class], [MonologFormatterPluginManager::class])
+            ->willReturnCallback(
+                static function (string $var) use ($monologHandlerPluginManager): AbstractPluginManager {
+                    if (MonologHandlerPluginManager::class === $var) {
+                        return $monologHandlerPluginManager;
+                    }
+
+                    throw new ServiceNotFoundException();
+                }
+            );
+
+        $factory = new OverflowHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+        );
+
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'thresholdMap' => $thresholdMapSet, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndFormatter2(): void
+    {
+        $type                 = 'abc';
+        $thresholdMapExpected = [
+            Logger::DEBUG => 9,
+            Logger::INFO => 99,
+            Logger::NOTICE => 2,
+            Logger::WARNING => 42,
+            Logger::ERROR => 11,
+            Logger::CRITICAL => 22,
+            Logger::ALERT => 17,
+            Logger::EMERGENCY => 8,
+        ];
+        $formatterClass       = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $thresholdMapSet = [
+            LogLevel::DEBUG => 9,
+            LogLevel::INFO => 99,
+            LogLevel::NOTICE => 2,
+            LogLevel::WARNING => 42,
+            LogLevel::ERROR => 11,
+            LogLevel::CRITICAL => 22,
+            LogLevel::ALERT => 17,
+            LogLevel::EMERGENCY => 8,
+        ];
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::once())
+            ->method('setFormatter')
+            ->with($formatterClass);
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([MonologHandlerPluginManager::class], [MonologFormatterPluginManager::class])
+            ->willReturnOnConsecutiveCalls($monologHandlerPluginManager, $monologFormatterPluginManager);
+
+        $factory = new OverflowHandlerFactory();
+
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'thresholdMap' => $thresholdMapSet, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatterClass]);
+
+        self::assertInstanceOf(OverflowHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $thm = new ReflectionProperty($handler, 'thresholdMap');
+        $thm->setAccessible(true);
+
+        self::assertSame($thresholdMapExpected, $thm->getValue($handler));
+
+        self::assertSame($formatterClass, $handler->getFormatter());
     }
 }

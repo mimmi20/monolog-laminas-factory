@@ -13,8 +13,11 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\SyslogUdpHandlerFactory;
+use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\SyslogUdpHandler;
@@ -250,5 +253,128 @@ final class SyslogUdpHandlerFactoryTest extends TestCase
         );
 
         $factory($container, '', ['host' => $host, 'port' => $port, 'facility' => $facility, 'level' => LogLevel::ALERT, 'bubble' => false, 'ident' => $ident, 'rfc' => $rfc, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @requires extension sockets
+     */
+    public function testInvoceWithConfigAndFormatter(): void
+    {
+        $host      = 'test-host';
+        $port      = 4711;
+        $facility  = LOG_MAIL;
+        $ident     = 'test-ident';
+        $rfc       = SyslogUdpHandler::RFC3164;
+        $formatter = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willThrowException(new ServiceNotFoundException());
+
+        $factory = new SyslogUdpHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+        );
+
+        $factory($container, '', ['host' => $host, 'port' => $port, 'facility' => $facility, 'level' => LogLevel::ALERT, 'bubble' => false, 'ident' => $ident, 'rfc' => $rfc, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     *
+     * @requires extension sockets
+     */
+    public function testInvoceWithConfigAndFormatter2(): void
+    {
+        $host      = 'test-host';
+        $port      = 4711;
+        $facility  = LOG_MAIL;
+        $ident     = 'test-ident';
+        $rfc       = SyslogUdpHandler::RFC3164;
+        $formatter = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new SyslogUdpHandlerFactory();
+
+        $handler = $factory($container, '', ['host' => $host, 'port' => $port, 'facility' => $facility, 'level' => LogLevel::ALERT, 'bubble' => false, 'ident' => $ident, 'rfc' => $rfc, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(SyslogUdpHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $identP = new ReflectionProperty($handler, 'ident');
+        $identP->setAccessible(true);
+
+        self::assertSame($ident, $identP->getValue($handler));
+
+        $rfcP = new ReflectionProperty($handler, 'rfc');
+        $rfcP->setAccessible(true);
+
+        self::assertSame($rfc, $rfcP->getValue($handler));
+
+        $fa = new ReflectionProperty($handler, 'facility');
+        $fa->setAccessible(true);
+
+        self::assertSame($facility, $fa->getValue($handler));
+
+        $socketP = new ReflectionProperty($handler, 'socket');
+        $socketP->setAccessible(true);
+
+        $socket = $socketP->getValue($handler);
+
+        $ipP = new ReflectionProperty($socket, 'ip');
+        $ipP->setAccessible(true);
+
+        self::assertSame($host, $ipP->getValue($socket));
+
+        $portP = new ReflectionProperty($socket, 'port');
+        $portP->setAccessible(true);
+
+        self::assertSame($port, $portP->getValue($socket));
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 }

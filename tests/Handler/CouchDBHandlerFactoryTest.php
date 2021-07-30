@@ -13,10 +13,14 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\CouchDBHandlerFactory;
+use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\JsonFormatter;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\CouchDBHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -205,5 +209,107 @@ final class CouchDBHandlerFactoryTest extends TestCase
         );
 
         $factory($container, '', ['level' => $level, 'bubble' => false, 'host' => $host, 'port' => $port, 'dbname' => $dbname, 'username' => $userName, 'password' => $password, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndFormatter(): void
+    {
+        $level     = LogLevel::ERROR;
+        $host      = 'testhost';
+        $port      = 42;
+        $dbname    = 'test';
+        $userName  = 'test-user';
+        $password  = 'test-password';
+        $formatter = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willThrowException(new ServiceNotFoundException());
+
+        $factory = new CouchDBHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+        );
+
+        $factory($container, '', ['level' => $level, 'bubble' => false, 'host' => $host, 'port' => $port, 'dbname' => $dbname, 'username' => $userName, 'password' => $password, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndFormatter2(): void
+    {
+        $level     = LogLevel::ERROR;
+        $host      = 'testhost';
+        $port      = 42;
+        $dbname    = 'test';
+        $userName  = 'test-user';
+        $password  = 'test-password';
+        $formatter = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new CouchDBHandlerFactory();
+
+        $handler = $factory($container, '', ['level' => $level, 'bubble' => false, 'host' => $host, 'port' => $port, 'dbname' => $dbname, 'username' => $userName, 'password' => $password, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(CouchDBHandler::class, $handler);
+
+        self::assertSame(Logger::ERROR, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $optionsP = new ReflectionProperty($handler, 'options');
+        $optionsP->setAccessible(true);
+
+        $options = $optionsP->getValue($handler);
+
+        self::assertSame($host, $options['host']);
+        self::assertSame($port, $options['port']);
+        self::assertSame($dbname, $options['dbname']);
+        self::assertSame($userName, $options['username']);
+        self::assertSame($password, $options['password']);
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 }

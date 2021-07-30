@@ -17,6 +17,7 @@ use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\DeduplicationHandlerFactory;
+use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
 use Mimmi20\LoggerFactory\MonologHandlerPluginManager;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
@@ -436,6 +437,66 @@ final class DeduplicationHandlerFactoryTest extends TestCase
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
             sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'deduplicationStore' => $deduplicationStore, 'deduplicationLevel' => LogLevel::ALERT, 'time' => $time, 'bubble' => false, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ServiceNotFoundException
+     */
+    public function testInvoceWithConfigAndFormatter(): void
+    {
+        $type               = 'abc';
+        $deduplicationStore = 'test-link';
+        $time               = 42;
+        $formatter          = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([MonologHandlerPluginManager::class], [MonologFormatterPluginManager::class])
+            ->willReturnCallback(
+                static function (string $var) use ($monologHandlerPluginManager): AbstractPluginManager {
+                    if (MonologHandlerPluginManager::class === $var) {
+                        return $monologHandlerPluginManager;
+                    }
+
+                    throw new ServiceNotFoundException();
+                }
+            );
+
+        $factory = new DeduplicationHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
         );
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'deduplicationStore' => $deduplicationStore, 'deduplicationLevel' => LogLevel::ALERT, 'time' => $time, 'bubble' => false, 'formatter' => $formatter]);
