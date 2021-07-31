@@ -51,7 +51,7 @@ jobs:
         run: "composer-normalize --dry-run"
 
   install:
-    name: "Check dependencies"
+    name: "Install dependencies"
 
     needs: "validate"
 
@@ -77,11 +77,6 @@ jobs:
 
         continue-on-error:
           - false
-
-        include:
-          - operating-system: "ubuntu-20.04"
-            php-version: "8.1"
-            continue-on-error: true
 
     steps:
       - name: "Checkout"
