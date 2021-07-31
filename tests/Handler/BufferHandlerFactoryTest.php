@@ -187,7 +187,7 @@ final class BufferHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willThrowException(new ServiceNotFoundException());
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -237,7 +237,7 @@ final class BufferHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -314,7 +314,7 @@ final class BufferHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -386,7 +386,7 @@ final class BufferHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -437,7 +437,7 @@ final class BufferHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -507,7 +507,7 @@ final class BufferHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -579,7 +579,7 @@ final class BufferHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)

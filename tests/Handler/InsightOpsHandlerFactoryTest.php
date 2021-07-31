@@ -134,6 +134,7 @@ final class InsightOpsHandlerFactoryTest extends TestCase
         $bubble       = false;
         $persistent   = true;
         $chunkSize    = 100;
+        $region       = 'eu';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -145,13 +146,13 @@ final class InsightOpsHandlerFactoryTest extends TestCase
 
         $factory = new InsightOpsHandlerFactory();
 
-        $handler = $factory($container, '', ['token' => $token, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
+        $handler = $factory($container, '', ['token' => $token, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'region' => $region, 'useSSL' => false]);
 
         self::assertInstanceOf(InsightOpsHandler::class, $handler);
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
-        self::assertSame('ssl://us.data.logs.insight.rapid7.com:443', $handler->getConnectionString());
+        self::assertSame('eu.data.logs.insight.rapid7.com:80', $handler->getConnectionString());
         self::assertSame($writeTimeout, $handler->getTimeout());
         self::assertSame($writeTimeout, $handler->getWritingTimeout());
         self::assertSame($timeout, $handler->getConnectionTimeout());

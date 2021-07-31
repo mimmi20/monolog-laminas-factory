@@ -190,7 +190,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willThrowException(new ServiceNotFoundException());
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -240,7 +240,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -328,7 +328,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -416,7 +416,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -507,7 +507,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -606,7 +606,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -710,7 +710,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -802,7 +802,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -867,7 +867,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -932,7 +932,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -1026,7 +1026,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -1078,7 +1078,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -1138,7 +1138,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -1160,6 +1160,63 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         );
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => ['type' => $strategyName, 'options' => $strategyOptions], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter2(): void
+    {
+        $type            = 'abc';
+        $strategyName    = 'xyz';
+        $strategyOptions = ['level' => 123];
+        $formatter       = true;
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
+
+        $activationStrategyPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $activationStrategyPluginManager->expects(self::never())
+            ->method('has');
+        $activationStrategyPluginManager->expects(self::never())
+            ->method('get');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type, ['formatter' => $formatter])
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new FingersCrossedHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true, 'options' => ['formatter' => $formatter]], 'activationStrategy' => ['type' => $strategyName, 'options' => $strategyOptions], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
     }
 
     /**
@@ -1203,7 +1260,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -1291,7 +1348,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -1307,6 +1364,186 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $factory = new FingersCrossedHandlerFactory();
 
         $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => ['type' => $strategyName, 'options' => $strategyOptions], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(FingersCrossedHandler::class, $handler);
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $as = new ReflectionProperty($handler, 'activationStrategy');
+        $as->setAccessible(true);
+
+        self::assertSame($strategyClass, $as->getValue($handler));
+
+        $bs = new ReflectionProperty($handler, 'bufferSize');
+        $bs->setAccessible(true);
+
+        self::assertSame(42, $bs->getValue($handler));
+
+        $b = new ReflectionProperty($handler, 'bubble');
+        $b->setAccessible(true);
+
+        self::assertFalse($b->getValue($handler));
+
+        $sb = new ReflectionProperty($handler, 'stopBuffering');
+        $sb->setAccessible(true);
+
+        self::assertFalse($sb->getValue($handler));
+
+        $ptl = new ReflectionProperty($handler, 'passthruLevel');
+        $ptl->setAccessible(true);
+
+        self::assertSame(Logger::WARNING, $ptl->getValue($handler));
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ServiceNotFoundException
+     */
+    public function testInvoceWithConfigAndFormatter3(): void
+    {
+        $type            = 'abc';
+        $strategyName    = 'xyz';
+        $strategyOptions = ['level' => 123];
+        $formatter       = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type, ['formatter' => $formatter])
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([MonologHandlerPluginManager::class], [MonologFormatterPluginManager::class])
+            ->willReturnCallback(
+                static function (string $var) use ($monologHandlerPluginManager) {
+                    if (MonologHandlerPluginManager::class === $var) {
+                        return $monologHandlerPluginManager;
+                    }
+
+                    throw new ServiceNotFoundException();
+                }
+            );
+
+        $factory = new FingersCrossedHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+        );
+
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true, 'options' => ['formatter' => $formatter]], 'activationStrategy' => ['type' => $strategyName, 'options' => $strategyOptions], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndFormatter4(): void
+    {
+        $type            = 'abc';
+        $strategyName    = 'xyz';
+        $strategyOptions = ['level' => 123];
+        $strategyClass   = $this->getMockBuilder(ChannelLevelActivationStrategy::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $formatter       = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::once())
+            ->method('setFormatter')
+            ->with($formatter);
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatter);
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $activationStrategyPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $activationStrategyPluginManager->expects(self::never())
+            ->method('has');
+        $activationStrategyPluginManager->expects(self::once())
+            ->method('get')
+            ->with($strategyName, $strategyOptions)
+            ->willReturn($strategyClass);
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type, ['formatter' => $formatter])
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(3))
+            ->method('get')
+            ->withConsecutive([MonologHandlerPluginManager::class], [MonologFormatterPluginManager::class], [ActivationStrategyPluginManager::class])
+            ->willReturnOnConsecutiveCalls($monologHandlerPluginManager, $monologFormatterPluginManager, $activationStrategyPluginManager);
+
+        $factory = new FingersCrossedHandlerFactory();
+
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true, 'options' => ['formatter' => $formatter]], 'activationStrategy' => ['type' => $strategyName, 'options' => $strategyOptions], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
 
         self::assertInstanceOf(FingersCrossedHandler::class, $handler);
 
@@ -1389,7 +1626,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -1409,5 +1646,60 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Processors must be an Array');
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => ['type' => $strategyName, 'options' => $strategyOptions], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING, 'processors' => $processors]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolProcessors2(): void
+    {
+        $type            = 'abc';
+        $strategyName    = 'xyz';
+        $strategyOptions = ['level' => 123];
+        $processors      = true;
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
+
+        $activationStrategyPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $activationStrategyPluginManager->expects(self::never())
+            ->method('has');
+        $activationStrategyPluginManager->expects(self::never())
+            ->method('get');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type, ['processors' => $processors])
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new FingersCrossedHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true, 'options' => ['processors' => $processors]], 'activationStrategy' => ['type' => $strategyName, 'options' => $strategyOptions], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
     }
 }

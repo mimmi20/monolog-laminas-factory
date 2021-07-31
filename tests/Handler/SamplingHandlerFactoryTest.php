@@ -185,7 +185,7 @@ final class SamplingHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willThrowException(new ServiceNotFoundException());
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -229,7 +229,7 @@ final class SamplingHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -279,7 +279,7 @@ final class SamplingHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -337,7 +337,7 @@ final class SamplingHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -390,7 +390,7 @@ final class SamplingHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -412,6 +412,53 @@ final class SamplingHandlerFactoryTest extends TestCase
         );
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'factor' => 42, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter2(): void
+    {
+        $type      = 'abc';
+        $formatter = true;
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type, ['formatter' => $formatter])
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new SamplingHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true, 'options' => ['formatter' => $formatter]], 'factor' => 42]);
     }
 
     /**
@@ -440,7 +487,7 @@ final class SamplingHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -509,7 +556,7 @@ final class SamplingHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -541,6 +588,131 @@ final class SamplingHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
+     */
+    public function testInvoceWithConfigAndFormatter3(): void
+    {
+        $type           = 'abc';
+        $formatterClass = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::once())
+            ->method('setFormatter')
+            ->with($formatterClass);
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type, ['formatter' => $formatterClass])
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([MonologHandlerPluginManager::class], [MonologFormatterPluginManager::class])
+            ->willReturnOnConsecutiveCalls($monologHandlerPluginManager, $monologFormatterPluginManager);
+
+        $factory = new SamplingHandlerFactory();
+
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true, 'options' => ['formatter' => $formatterClass]], 'factor' => 1]);
+
+        self::assertInstanceOf(SamplingHandler::class, $handler);
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ServiceNotFoundException
+     */
+    public function testInvoceWithConfigAndFormatter4(): void
+    {
+        $type      = 'abc';
+        $formatter = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type, ['formatter' => $formatter])
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([MonologHandlerPluginManager::class], [MonologFormatterPluginManager::class])
+            ->willReturnCallback(
+                static function (string $var) use ($monologHandlerPluginManager): AbstractPluginManager {
+                    if (MonologHandlerPluginManager::class === $var) {
+                        return $monologHandlerPluginManager;
+                    }
+
+                    throw new ServiceNotFoundException();
+                }
+            );
+
+        $factory = new SamplingHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+        );
+
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true, 'options' => ['formatter' => $formatter]], 'factor' => 42]);
+    }
+
+    /**
+     * @throws Exception
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {
@@ -562,7 +734,7 @@ final class SamplingHandlerFactoryTest extends TestCase
             ->method('has');
         $monologHandlerPluginManager->expects(self::once())
             ->method('get')
-            ->with($type)
+            ->with($type, [])
             ->willReturn($handler2);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -582,5 +754,53 @@ final class SamplingHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Processors must be an Array');
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'factor' => 42, 'processors' => $processors]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolProcessors2(): void
+    {
+        $type           = 'abc';
+        $formatterClass = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $processors     = true;
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type, ['processors' => $processors])
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new SamplingHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true, 'options' => ['processors' => $processors]], 'factor' => 42]);
     }
 }
