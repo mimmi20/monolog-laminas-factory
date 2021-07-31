@@ -106,7 +106,7 @@ final class SlackHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      *
-     * @requires openssl
+     * @requires extension openssl
      */
     public function testInvoceWithConfig(): void
     {
@@ -189,7 +189,7 @@ final class SlackHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      *
-     * @requires openssl
+     * @requires extension openssl
      */
     public function testInvoceWithConfig2(): void
     {
@@ -277,7 +277,7 @@ final class SlackHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      *
-     * @requires openssl
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
@@ -314,7 +314,7 @@ final class SlackHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      *
-     * @requires openssl
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
@@ -357,7 +357,7 @@ final class SlackHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      *
-     * @requires openssl
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndFormatter2(): void
     {
@@ -458,7 +458,7 @@ final class SlackHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      *
-     * @requires openssl
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {

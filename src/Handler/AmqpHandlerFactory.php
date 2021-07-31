@@ -77,7 +77,7 @@ final class AmqpHandlerFactory implements FactoryInterface
         $level        = LogLevel::DEBUG;
         $bubble       = true;
 
-        if ($options['exchange'] instanceof AMQPChannel) {
+        if ($exchange instanceof AMQPChannel) {
             $exchangeName = 'log';
 
             if (array_key_exists('exchangeName', $options)) {
