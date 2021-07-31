@@ -377,4 +377,35 @@ final class SyslogUdpHandlerFactoryTest extends TestCase
         self::assertIsArray($processors);
         self::assertCount(0, $processors);
     }
+
+    /**
+     * @throws Exception
+     *
+     * @requires extension sockets
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        $host       = 'test-host';
+        $port       = 4711;
+        $facility   = LOG_MAIL;
+        $ident      = 'test-ident';
+        $rfc        = SyslogUdpHandler::RFC3164;
+        $processors = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SyslogUdpHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['host' => $host, 'port' => $port, 'facility' => $facility, 'level' => LogLevel::ALERT, 'bubble' => false, 'ident' => $ident, 'rfc' => $rfc, 'processors' => $processors]);
+    }
 }

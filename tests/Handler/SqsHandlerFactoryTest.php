@@ -458,4 +458,32 @@ final class SqsHandlerFactoryTest extends TestCase
         self::assertIsArray($processors);
         self::assertCount(0, $processors);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queueUrl       = 'test-uri';
+        $processors     = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SqsHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['sqsClient' => $sqsClientClass, 'queueUrl' => $queueUrl, 'level' => LogLevel::ALERT, 'bubble' => false, 'processors' => $processors]);
+    }
 }

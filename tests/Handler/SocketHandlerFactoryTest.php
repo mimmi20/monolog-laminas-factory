@@ -300,4 +300,35 @@ final class SocketHandlerFactoryTest extends TestCase
         self::assertIsArray($processors);
         self::assertCount(0, $processors);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        $connectionString = 'conn-string';
+        $timeout          = 42.0;
+        $writeTimeout     = 120.0;
+        $level            = LogLevel::ALERT;
+        $bubble           = false;
+        $persistent       = true;
+        $chunkSize        = 100;
+        $processors       = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SocketHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['connectionString' => $connectionString, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'processors' => $processors]);
+    }
 }

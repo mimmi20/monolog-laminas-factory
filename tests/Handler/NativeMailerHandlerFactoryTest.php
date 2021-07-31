@@ -396,4 +396,34 @@ final class NativeMailerHandlerFactoryTest extends TestCase
         self::assertIsArray($processors);
         self::assertCount(0, $processors);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        $to             = 'test-to';
+        $subject        = 'test-subject';
+        $from           = 'test-from';
+        $maxColumnWidth = 120;
+        $contentType    = 'test/fake';
+        $encoding       = 'iso-42';
+        $processors     = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new NativeMailerHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['to' => $to, 'subject' => $subject, 'from' => $from, 'level' => LogLevel::ALERT, 'bubble' => false, 'maxColumnWidth' => $maxColumnWidth, 'contentType' => $contentType, 'encoding' => $encoding, 'processors' => $processors]);
+    }
 }

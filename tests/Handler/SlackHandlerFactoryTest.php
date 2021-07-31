@@ -454,4 +454,39 @@ final class SlackHandlerFactoryTest extends TestCase
         self::assertIsArray($processors);
         self::assertCount(0, $processors);
     }
+
+    /**
+     * @throws Exception
+     *
+     * @requires openssl
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        $token         = 'token';
+        $channel       = 'channel';
+        $userName      = 'user';
+        $iconEmoji     = 'icon';
+        $excludeFields = ['abc', 'xyz'];
+        $timeout       = 42.0;
+        $writeTimeout  = 120.0;
+        $persistent    = true;
+        $chunkSize     = 100;
+        $processors    = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SlackHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['token' => $token, 'channel' => $channel, 'userName' => $userName, 'useAttachment' => false, 'iconEmoji' => $iconEmoji, 'level' => LogLevel::ALERT, 'bubble' => false, 'useShortAttachment' => true, 'includeContextAndExtra' => true, 'excludeFields' => $excludeFields, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'processors' => $processors]);
+    }
 }

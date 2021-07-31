@@ -709,4 +709,40 @@ final class MongoDBHandlerFactoryTest extends TestCase
         self::assertIsArray($processors);
         self::assertCount(0, $processors);
     }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        if (!class_exists(Manager::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
+        }
+
+        $level      = LogLevel::ALERT;
+        $bubble     = false;
+        $processors = true;
+
+        $client     = new Manager('mongodb://example.com:27017');
+        $database   = 'test-database';
+        $collection = 'test-collection';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new MongoDBHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['client' => $client, 'database' => $database, 'collection' => $collection, 'level' => $level, 'bubble' => $bubble, 'processors' => $processors]);
+    }
 }

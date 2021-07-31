@@ -585,4 +585,83 @@ final class OverflowHandlerFactoryTest extends TestCase
 
         self::assertSame($formatterClass, $handler->getFormatter());
     }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        $type                 = 'abc';
+        $thresholdMapExpected = [
+            Logger::DEBUG => 9,
+            Logger::INFO => 99,
+            Logger::NOTICE => 2,
+            Logger::WARNING => 42,
+            Logger::ERROR => 11,
+            Logger::CRITICAL => 22,
+            Logger::ALERT => 17,
+            Logger::EMERGENCY => 8,
+        ];
+        $processors           = true;
+
+        $thresholdMapSet = [
+            LogLevel::DEBUG => 9,
+            LogLevel::INFO => 99,
+            LogLevel::NOTICE => 2,
+            LogLevel::WARNING => 42,
+            LogLevel::ERROR => 11,
+            LogLevel::CRITICAL => 22,
+            LogLevel::ALERT => 17,
+            LogLevel::EMERGENCY => 8,
+        ];
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type)
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new OverflowHandlerFactory();
+
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'thresholdMap' => $thresholdMapSet, 'level' => LogLevel::ALERT, 'bubble' => false, 'processors' => $processors]);
+
+        self::assertInstanceOf(OverflowHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $thm = new ReflectionProperty($handler, 'thresholdMap');
+        $thm->setAccessible(true);
+
+        self::assertSame($thresholdMapExpected, $thm->getValue($handler));
+    }
 }

@@ -308,4 +308,33 @@ final class LogEntriesHandlerFactoryTest extends TestCase
         self::assertIsArray($processors);
         self::assertCount(0, $processors);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        $token        = 'test-token';
+        $host         = 'test.data.logentries.com';
+        $timeout      = 42.0;
+        $writeTimeout = 120.0;
+        $chunkSize    = 100;
+        $processors   = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new LogEntriesHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['token' => $token, 'useSSL' => false, 'level' => LogLevel::ALERT, 'bubble' => false, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'host' => $host, 'persistent' => true, 'chunkSize' => $chunkSize, 'processors' => $processors]);
+    }
 }

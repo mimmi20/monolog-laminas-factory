@@ -380,4 +380,39 @@ final class PsrHandlerFactoryTest extends TestCase
 
         self::assertSame($formatter, $handler->getFormatter());
     }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        $logger     = $this->getMockBuilder(LoggerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $processors = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new PsrHandlerFactory();
+
+        $handler = $factory($container, '', ['logger' => $logger, 'level' => LogLevel::ALERT, 'bubble' => false, 'processors' => $processors]);
+
+        self::assertInstanceOf(PsrHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $loggerP = new ReflectionProperty($handler, 'logger');
+        $loggerP->setAccessible(true);
+
+        self::assertSame($logger, $loggerP->getValue($handler));
+    }
 }

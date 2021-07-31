@@ -829,4 +829,80 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
         self::assertIsArray($processors);
         self::assertCount(0, $processors);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        $processors = true;
+        $handlers   = [
+            [
+                'type' => FingersCrossedHandler::class,
+                'enabled' => false,
+            ],
+            [
+                'type' => FirePHPHandler::class,
+                'enabled' => true,
+            ],
+            [
+                'type' => ChromePHPHandler::class,
+            ],
+            [
+                'type' => GelfHandler::class,
+            ],
+        ];
+
+        $handler1 = $this->getMockBuilder(FirePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler1->expects(self::never())
+            ->method('setFormatter');
+        $handler1->expects(self::never())
+            ->method('getFormatter');
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
+
+        $handler3 = $this->getMockBuilder(GelfHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler3->expects(self::never())
+            ->method('setFormatter');
+        $handler3->expects(self::never())
+            ->method('getFormatter');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::exactly(3))
+            ->method('get')
+            ->withConsecutive([FirePHPHandler::class], [ChromePHPHandler::class], [GelfHandler::class])
+            ->willReturnOnConsecutiveCalls($handler1, $handler2, $handler3);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(3))
+            ->method('get')
+            ->with(MonologHandlerPluginManager::class)
+            ->willReturn($monologHandlerPluginManager);
+
+        $factory = new WhatFailureGroupHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['handlers' => $handlers, 'bubble' => false, 'processors' => $processors]);
+    }
 }
