@@ -13,18 +13,20 @@ declare(strict_types = 1);
 namespace Mimmi20\LoggerFactory;
 
 use Laminas\ModuleManager\Feature\ConfigProviderInterface;
+use Laminas\ModuleManager\Feature\DependencyIndicatorInterface;
 use Laminas\ModuleManager\Feature\InitProviderInterface;
 use Laminas\ModuleManager\Listener\ServiceListenerInterface;
 use Laminas\ModuleManager\ModuleManagerInterface;
 
 use function assert;
 
-final class Module implements ConfigProviderInterface, InitProviderInterface
+final class Module implements ConfigProviderInterface, DependencyIndicatorInterface, InitProviderInterface
 {
     /**
      * Return default configuration for laminas-mvc applications.
      *
      * @return array<string, array<string, array<int|string, string>>>
+     * @phpstan-return array{service_manager: array{aliases: array<string, class-string>, factories: array<class-string, class-string>}, monolog_handlers: array{aliases: array<string, class-string>, factories: array<class-string, class-string>}, monolog_processors: array{aliases: array<string, class-string>, factories: array<class-string, class-string>}, monolog_formatters: array{aliases: array<string, class-string>, factories: array<class-string, class-string>}, monolog: array{factories: array<class-string, class-string>}}
      */
     public function getConfig(): array
     {
@@ -77,5 +79,15 @@ final class Module implements ConfigProviderInterface, InitProviderInterface
             MonologFormatterProviderInterface::class,
             'getMonologFormatterConfig'
         );
+    }
+
+    /**
+     * Expected to return an array of modules on which the current one depends on
+     *
+     * @return array<int, string>
+     */
+    public function getModuleDependencies(): array
+    {
+        return ['Laminas\Log'];
     }
 }
