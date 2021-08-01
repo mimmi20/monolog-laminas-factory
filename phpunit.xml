@@ -33,7 +33,7 @@
         <directory>tests/</directory>
     </testsuite>
 
-    <coverage includeUncoveredFiles="true" processUncoveredFiles="true" pathCoverage="true">
+    <coverage includeUncoveredFiles="true" processUncoveredFiles="true">
         <include>
             <directory suffix=".php">src/</directory>
         </include>

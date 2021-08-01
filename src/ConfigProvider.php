@@ -183,6 +183,9 @@ use Monolog\Processor\TagProcessor;
 use Monolog\Processor\UidProcessor;
 use Monolog\Processor\WebProcessor;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 final class ConfigProvider
 {
     /**
