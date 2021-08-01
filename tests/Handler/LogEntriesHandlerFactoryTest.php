@@ -13,8 +13,13 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\LogEntriesHandlerFactory;
+use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\LogEntriesHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -23,6 +28,8 @@ use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+
+use function sprintf;
 
 final class LogEntriesHandlerFactoryTest extends TestCase
 {
@@ -107,6 +114,16 @@ final class LogEntriesHandlerFactoryTest extends TestCase
         $lt->setAccessible(true);
 
         self::assertSame($token, $lt->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -149,5 +166,175 @@ final class LogEntriesHandlerFactoryTest extends TestCase
         $lt->setAccessible(true);
 
         self::assertSame($token, $lt->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $token        = 'test-token';
+        $host         = 'test.data.logentries.com';
+        $timeout      = 42.0;
+        $writeTimeout = 120.0;
+        $chunkSize    = 100;
+        $formatter    = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new LogEntriesHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['token' => $token, 'useSSL' => false, 'level' => LogLevel::ALERT, 'bubble' => false, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'host' => $host, 'persistent' => true, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndFormatter(): void
+    {
+        $token        = 'test-token';
+        $host         = 'test.data.logentries.com';
+        $timeout      = 42.0;
+        $writeTimeout = 120.0;
+        $chunkSize    = 100;
+        $formatter    = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willThrowException(new ServiceNotFoundException());
+
+        $factory = new LogEntriesHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+        );
+
+        $factory($container, '', ['token' => $token, 'useSSL' => false, 'level' => LogLevel::ALERT, 'bubble' => false, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'host' => $host, 'persistent' => true, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndFormatter2(): void
+    {
+        $token        = 'test-token';
+        $host         = 'test.data.logentries.com';
+        $timeout      = 42.0;
+        $writeTimeout = 120.0;
+        $chunkSize    = 100;
+        $formatter    = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new LogEntriesHandlerFactory();
+
+        $handler = $factory($container, '', ['token' => $token, 'useSSL' => false, 'level' => LogLevel::ALERT, 'bubble' => false, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'host' => $host, 'persistent' => true, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(LogEntriesHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+        self::assertSame($host . ':80', $handler->getConnectionString());
+        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($writeTimeout, $handler->getWritingTimeout());
+        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame($chunkSize, $handler->getChunkSize());
+        self::assertTrue($handler->isPersistent());
+
+        $lt = new ReflectionProperty($handler, 'logToken');
+        $lt->setAccessible(true);
+
+        self::assertSame($token, $lt->getValue($handler));
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        $token        = 'test-token';
+        $host         = 'test.data.logentries.com';
+        $timeout      = 42.0;
+        $writeTimeout = 120.0;
+        $chunkSize    = 100;
+        $processors   = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new LogEntriesHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['token' => $token, 'useSSL' => false, 'level' => LogLevel::ALERT, 'bubble' => false, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'host' => $host, 'persistent' => true, 'chunkSize' => $chunkSize, 'processors' => $processors]);
     }
 }

@@ -90,7 +90,6 @@ final class PsrHandlerFactory implements FactoryInterface
         );
 
         $this->addFormatter($container, $handler, $options);
-        $this->addProcessor($container, $handler, $options);
 
         return $handler;
     }

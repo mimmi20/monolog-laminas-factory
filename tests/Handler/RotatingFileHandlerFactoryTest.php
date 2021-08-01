@@ -13,8 +13,13 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\RotatingFileHandlerFactory;
+use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -25,6 +30,7 @@ use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function date;
+use function sprintf;
 
 final class RotatingFileHandlerFactoryTest extends TestCase
 {
@@ -119,6 +125,16 @@ final class RotatingFileHandlerFactoryTest extends TestCase
         $ul->setAccessible(true);
 
         self::assertFalse($ul->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -169,6 +185,16 @@ final class RotatingFileHandlerFactoryTest extends TestCase
         $ul->setAccessible(true);
 
         self::assertFalse($ul->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -219,6 +245,16 @@ final class RotatingFileHandlerFactoryTest extends TestCase
         $ul->setAccessible(true);
 
         self::assertFalse($ul->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -273,6 +309,16 @@ final class RotatingFileHandlerFactoryTest extends TestCase
         $ul->setAccessible(true);
 
         self::assertFalse($ul->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -328,6 +374,16 @@ final class RotatingFileHandlerFactoryTest extends TestCase
         $ul->setAccessible(true);
 
         self::assertFalse($ul->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -383,5 +439,194 @@ final class RotatingFileHandlerFactoryTest extends TestCase
         $ul->setAccessible(true);
 
         self::assertFalse($ul->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $filename       = '/tmp/test-file';
+        $maxFiles       = 99;
+        $level          = LogLevel::ALERT;
+        $bubble         = false;
+        $filePermission = 0755;
+        $useLocking     = false;
+        $dateFormat     = RotatingFileHandler::FILE_PER_MONTH;
+        $formatter      = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new RotatingFileHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['filename' => $filename, 'maxFiles' => $maxFiles, 'level' => $level, 'bubble' => $bubble, 'filePermission' => $filePermission, 'useLocking' => $useLocking, 'dateFormat' => $dateFormat, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndFormatter(): void
+    {
+        $filename       = '/tmp/test-file';
+        $maxFiles       = 99;
+        $level          = LogLevel::ALERT;
+        $bubble         = false;
+        $filePermission = 0755;
+        $useLocking     = false;
+        $dateFormat     = RotatingFileHandler::FILE_PER_MONTH;
+        $formatter      = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willThrowException(new ServiceNotFoundException());
+
+        $factory = new RotatingFileHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+        );
+
+        $factory($container, '', ['filename' => $filename, 'maxFiles' => $maxFiles, 'level' => $level, 'bubble' => $bubble, 'filePermission' => $filePermission, 'useLocking' => $useLocking, 'dateFormat' => $dateFormat, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndFormatter2(): void
+    {
+        $filename       = '/tmp/test-file';
+        $maxFiles       = 99;
+        $level          = LogLevel::ALERT;
+        $bubble         = false;
+        $filePermission = 0755;
+        $useLocking     = false;
+        $dateFormat     = RotatingFileHandler::FILE_PER_MONTH;
+        $formatter      = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new RotatingFileHandlerFactory();
+
+        $handler = $factory($container, '', ['filename' => $filename, 'maxFiles' => $maxFiles, 'level' => $level, 'bubble' => $bubble, 'filePermission' => $filePermission, 'useLocking' => $useLocking, 'dateFormat' => $dateFormat, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(RotatingFileHandler::class, $handler);
+
+        self::assertNull($handler->getStream());
+        self::assertSame($filename . '-' . date($dateFormat), $handler->getUrl());
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $fn = new ReflectionProperty($handler, 'filename');
+        $fn->setAccessible(true);
+
+        self::assertSame($filename, $fn->getValue($handler));
+
+        $mf = new ReflectionProperty($handler, 'maxFiles');
+        $mf->setAccessible(true);
+
+        self::assertSame($maxFiles, $mf->getValue($handler));
+
+        $fp = new ReflectionProperty($handler, 'filePermission');
+        $fp->setAccessible(true);
+
+        self::assertSame($filePermission, $fp->getValue($handler));
+
+        $ul = new ReflectionProperty($handler, 'useLocking');
+        $ul->setAccessible(true);
+
+        self::assertFalse($ul->getValue($handler));
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        $filename       = '/tmp/test-file';
+        $maxFiles       = 99;
+        $level          = LogLevel::ALERT;
+        $bubble         = false;
+        $filePermission = 0755;
+        $useLocking     = false;
+        $dateFormat     = RotatingFileHandler::FILE_PER_MONTH;
+        $processors     = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new RotatingFileHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['filename' => $filename, 'maxFiles' => $maxFiles, 'level' => $level, 'bubble' => $bubble, 'filePermission' => $filePermission, 'useLocking' => $useLocking, 'dateFormat' => $dateFormat, 'processors' => $processors]);
     }
 }

@@ -459,15 +459,7 @@ final class StreamHandlerFactoryTest extends TestCase
         $container->expects(self::exactly(2))
             ->method('get')
             ->withConsecutive([$streamName], [MonologFormatterPluginManager::class])
-            ->willReturnCallback(
-                static function (string $var) use ($streamName, $stream, $monologFormatterPluginManager) {
-                    if ($var === $streamName) {
-                        return $stream;
-                    }
-
-                    return $monologFormatterPluginManager;
-                }
-            );
+            ->willReturnOnConsecutiveCalls($stream, $monologFormatterPluginManager);
 
         $factory = new StreamHandlerFactory();
 

@@ -51,7 +51,7 @@ jobs:
         run: "composer-normalize --dry-run"
 
   install:
-    name: "Check dependencies"
+    name: "Install dependencies"
 
     needs: "validate"
 
@@ -69,6 +69,7 @@ jobs:
 
         php-version:
           - "7.4"
+          - "8.0"
 
         dependencies:
           - "--prefer-lowest"
@@ -280,28 +281,16 @@ jobs:
         operating-system:
           - "ubuntu-18.04"
           - "ubuntu-20.04"
-          - "windows-2019"
-          - "macos-10.15"
 
         php-version:
           - "7.4"
+          - "8.0"
 
         dependencies:
           - ""
 
         continue-on-error:
           - false
-
-        include:
-          - operating-system: "ubuntu-20.04"
-            php-version: "8.0"
-            continue-on-error: true
-          - operating-system: "windows-2019"
-            php-version: "8.0"
-            continue-on-error: true
-          - operating-system: "macos-10.15"
-            php-version: "8.0"
-            continue-on-error: true
 
     steps:
       - name: "Checkout"
@@ -399,4 +388,4 @@ jobs:
           verbose: false
 
       - name: "Run mutation tests with infection/infection"
-        run: "infection -s --min-covered-msi=85 --min-msi=82 --coverage=.build/coverage --logger-github"
+        run: "infection -s --min-covered-msi=90 --min-msi=87 --coverage=.build/coverage --logger-github"

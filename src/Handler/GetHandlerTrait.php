@@ -23,7 +23,6 @@ use Monolog\Handler\HandlerInterface;
 use Psr\Container\ContainerExceptionInterface;
 
 use function array_key_exists;
-use function assert;
 use function sprintf;
 
 trait GetHandlerTrait
@@ -58,8 +57,6 @@ trait GetHandlerTrait
                 $e
             );
         }
-
-        assert($handler instanceof HandlerInterface);
 
         $this->addFormatter($container, $handler, $options['options'] ?? []);
         $this->addProcessor($container, $handler, $options['options'] ?? []);

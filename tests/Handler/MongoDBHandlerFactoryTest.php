@@ -13,17 +13,24 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\MongoDBHandlerFactory;
+use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
 use MongoDB\Client;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Manager;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Formatter\MongoDBFormatter;
 use Monolog\Handler\MongoDBHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LogLevel;
+use ReflectionException;
+use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function class_exists;
@@ -181,6 +188,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceWithConfig5(): void
     {
@@ -213,11 +221,22 @@ final class MongoDBHandlerFactoryTest extends TestCase
 
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
+
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceWithConfig6(): void
     {
@@ -247,6 +266,16 @@ final class MongoDBHandlerFactoryTest extends TestCase
 
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
+
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -254,6 +283,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws RuntimeException
      * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceWithConfig7(): void
     {
@@ -284,6 +314,16 @@ final class MongoDBHandlerFactoryTest extends TestCase
 
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
+
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -291,6 +331,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws RuntimeException
      * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceWithConfig8(): void
     {
@@ -318,11 +359,22 @@ final class MongoDBHandlerFactoryTest extends TestCase
 
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
+
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceWithConfig9(): void
     {
@@ -358,11 +410,22 @@ final class MongoDBHandlerFactoryTest extends TestCase
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
+
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceWithConfig10(): void
     {
@@ -395,6 +458,16 @@ final class MongoDBHandlerFactoryTest extends TestCase
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
+
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -402,6 +475,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws RuntimeException
      * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceWithConfig11(): void
     {
@@ -435,6 +509,16 @@ final class MongoDBHandlerFactoryTest extends TestCase
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
+
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -442,6 +526,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws RuntimeException
      * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceWithConfig12(): void
     {
@@ -472,5 +557,192 @@ final class MongoDBHandlerFactoryTest extends TestCase
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
+
+        self::assertInstanceOf(MongoDBFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        if (!class_exists(Manager::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
+        }
+
+        $level     = LogLevel::ALERT;
+        $bubble    = false;
+        $formatter = true;
+
+        $client     = new Manager('mongodb://example.com:27017');
+        $database   = 'test-database';
+        $collection = 'test-collection';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new MongoDBHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['client' => $client, 'database' => $database, 'collection' => $collection, 'level' => $level, 'bubble' => $bubble, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndFormatter(): void
+    {
+        if (!class_exists(Manager::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
+        }
+
+        $level     = LogLevel::ALERT;
+        $bubble    = false;
+        $formatter = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $client     = new Manager('mongodb://example.com:27017');
+        $database   = 'test-database';
+        $collection = 'test-collection';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willThrowException(new ServiceNotFoundException());
+
+        $factory = new MongoDBHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+        );
+
+        $factory($container, '', ['client' => $client, 'database' => $database, 'collection' => $collection, 'level' => $level, 'bubble' => $bubble, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     * @throws ReflectionException
+     */
+    public function testInvoceWithConfigAndFormatter2(): void
+    {
+        if (!class_exists(Manager::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
+        }
+
+        $level     = LogLevel::ALERT;
+        $bubble    = false;
+        $formatter = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $client     = new Manager('mongodb://example.com:27017');
+        $database   = 'test-database';
+        $collection = 'test-collection';
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new MongoDBHandlerFactory();
+
+        $handler = $factory($container, '', ['client' => $client, 'database' => $database, 'collection' => $collection, 'level' => $level, 'bubble' => $bubble, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(MongoDBHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws RuntimeException
+     * @throws \MongoDB\Driver\Exception\InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        if (!class_exists(Manager::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
+        }
+
+        $level      = LogLevel::ALERT;
+        $bubble     = false;
+        $processors = true;
+
+        $client     = new Manager('mongodb://example.com:27017');
+        $database   = 'test-database';
+        $collection = 'test-collection';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new MongoDBHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['client' => $client, 'database' => $database, 'collection' => $collection, 'level' => $level, 'bubble' => $bubble, 'processors' => $processors]);
     }
 }

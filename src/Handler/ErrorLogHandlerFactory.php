@@ -56,7 +56,7 @@ final class ErrorLogHandlerFactory implements FactoryInterface
 
         if (is_array($options)) {
             if (array_key_exists('messageType', $options)) {
-                $messageType = (int) $options['messageType'];
+                $messageType = $options['messageType'];
             }
 
             if (array_key_exists('level', $options)) {

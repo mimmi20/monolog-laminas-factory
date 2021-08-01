@@ -13,8 +13,14 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\SendGridHandlerFactory;
+use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\HtmlFormatter;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\SendGridHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -23,6 +29,8 @@ use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+
+use function sprintf;
 
 final class SendGridHandlerFactoryTest extends TestCase
 {
@@ -226,6 +234,16 @@ final class SendGridHandlerFactoryTest extends TestCase
         $subjectP->setAccessible(true);
 
         self::assertSame($subject, $subjectP->getValue($handler));
+
+        self::assertInstanceOf(HtmlFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -284,5 +302,197 @@ final class SendGridHandlerFactoryTest extends TestCase
         $subjectP->setAccessible(true);
 
         self::assertSame($subject, $subjectP->getValue($handler));
+
+        self::assertInstanceOf(HtmlFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $apiUser   = 'test-api-user';
+        $apiKey    = 'test-api-key';
+        $from      = 'test-from';
+        $to        = 'test-to';
+        $subject   = 'test-subject';
+        $level     = LogLevel::ALERT;
+        $bubble    = false;
+        $formatter = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SendGridHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['apiUser' => $apiUser, 'apiKey' => $apiKey, 'from' => $from, 'to' => $to, 'subject' => $subject, 'level' => $level, 'bubble' => $bubble, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndFormatter(): void
+    {
+        $apiUser   = 'test-api-user';
+        $apiKey    = 'test-api-key';
+        $from      = 'test-from';
+        $to        = 'test-to';
+        $subject   = 'test-subject';
+        $level     = LogLevel::ALERT;
+        $bubble    = false;
+        $formatter = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willThrowException(new ServiceNotFoundException());
+
+        $factory = new SendGridHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+        );
+
+        $factory($container, '', ['apiUser' => $apiUser, 'apiKey' => $apiKey, 'from' => $from, 'to' => $to, 'subject' => $subject, 'level' => $level, 'bubble' => $bubble, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndFormatter2(): void
+    {
+        $apiUser   = 'test-api-user';
+        $apiKey    = 'test-api-key';
+        $from      = 'test-from';
+        $to        = 'test-to';
+        $subject   = 'test-subject';
+        $level     = LogLevel::ALERT;
+        $bubble    = false;
+        $formatter = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new SendGridHandlerFactory();
+
+        $handler = $factory($container, '', ['apiUser' => $apiUser, 'apiKey' => $apiKey, 'from' => $from, 'to' => $to, 'subject' => $subject, 'level' => $level, 'bubble' => $bubble, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(SendGridHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $apiUserP = new ReflectionProperty($handler, 'apiUser');
+        $apiUserP->setAccessible(true);
+
+        self::assertSame($apiUser, $apiUserP->getValue($handler));
+
+        $apiKeyP = new ReflectionProperty($handler, 'apiKey');
+        $apiKeyP->setAccessible(true);
+
+        self::assertSame($apiKey, $apiKeyP->getValue($handler));
+
+        $fromP = new ReflectionProperty($handler, 'from');
+        $fromP->setAccessible(true);
+
+        self::assertSame($from, $fromP->getValue($handler));
+
+        $toP = new ReflectionProperty($handler, 'to');
+        $toP->setAccessible(true);
+
+        self::assertSame((array) $to, $toP->getValue($handler));
+
+        $subjectP = new ReflectionProperty($handler, 'subject');
+        $subjectP->setAccessible(true);
+
+        self::assertSame($subject, $subjectP->getValue($handler));
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        $apiUser    = 'test-api-user';
+        $apiKey     = 'test-api-key';
+        $from       = 'test-from';
+        $to         = 'test-to';
+        $subject    = 'test-subject';
+        $level      = LogLevel::ALERT;
+        $bubble     = false;
+        $processors = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SendGridHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['apiUser' => $apiUser, 'apiKey' => $apiKey, 'from' => $from, 'to' => $to, 'subject' => $subject, 'level' => $level, 'bubble' => $bubble, 'processors' => $processors]);
     }
 }

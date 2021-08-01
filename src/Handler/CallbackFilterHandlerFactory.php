@@ -91,7 +91,6 @@ final class CallbackFilterHandlerFactory implements FactoryInterface
             $bubble
         );
 
-        $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);
 
         return $handler;

@@ -14,9 +14,13 @@ namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Aws\Sqs\SqsClient;
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\SqsHandlerFactory;
+use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\SqsHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
@@ -25,6 +29,8 @@ use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+
+use function sprintf;
 
 final class SqsHandlerFactoryTest extends TestCase
 {
@@ -162,6 +168,16 @@ final class SqsHandlerFactoryTest extends TestCase
         $qu->setAccessible(true);
 
         self::assertSame('', $qu->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -205,6 +221,16 @@ final class SqsHandlerFactoryTest extends TestCase
         $qu->setAccessible(true);
 
         self::assertSame($queueUrl, $qu->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -244,6 +270,16 @@ final class SqsHandlerFactoryTest extends TestCase
         $qu->setAccessible(true);
 
         self::assertSame('', $qu->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -284,5 +320,170 @@ final class SqsHandlerFactoryTest extends TestCase
         $qu->setAccessible(true);
 
         self::assertSame($queueUrl, $qu->getValue($handler));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolFormatter(): void
+    {
+        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queueUrl       = 'test-uri';
+        $formatter      = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SqsHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['sqsClient' => $sqsClientClass, 'queueUrl' => $queueUrl, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndFormatter(): void
+    {
+        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queueUrl       = 'test-uri';
+        $formatter      = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willThrowException(new ServiceNotFoundException());
+
+        $factory = new SqsHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+        );
+
+        $factory($container, '', ['sqsClient' => $sqsClientClass, 'queueUrl' => $queueUrl, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndFormatter2(): void
+    {
+        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queueUrl       = 'test-uri';
+        $formatter      = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new SqsHandlerFactory();
+
+        $handler = $factory($container, '', ['sqsClient' => $sqsClientClass, 'queueUrl' => $queueUrl, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(SqsHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $clientP = new ReflectionProperty($handler, 'client');
+        $clientP->setAccessible(true);
+
+        self::assertSame($sqsClientClass, $clientP->getValue($handler));
+
+        $qu = new ReflectionProperty($handler, 'queueUrl');
+        $qu->setAccessible(true);
+
+        self::assertSame($queueUrl, $qu->getValue($handler));
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfigAndBoolProcessors(): void
+    {
+        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $queueUrl       = 'test-uri';
+        $processors     = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SqsHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['sqsClient' => $sqsClientClass, 'queueUrl' => $queueUrl, 'level' => LogLevel::ALERT, 'bubble' => false, 'processors' => $processors]);
     }
 }
