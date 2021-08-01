@@ -384,7 +384,7 @@ jobs:
         uses: "codecov/codecov-action@v2.0.2"
         with:
           file: ".build/coverage/clover.xml"
-          flags: "phpunit,php-${{ matrix.php-version }},${{ matrix.coverage-drivers }},${{ matrix.operating-system }}"
+          flags: "phpunit,php-${{ matrix.php-version }},${{ matrix.coverage-drivers }},${{ matrix.php-version }},${{ matrix.operating-system }}"
           verbose: false
 
       - name: "Run mutation tests with infection/infection"

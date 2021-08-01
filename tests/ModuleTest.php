@@ -113,4 +113,20 @@ final class ModuleTest extends TestCase
         $module = new Module();
         $module->init($manager);
     }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testGetModuleDependencies(): void
+    {
+        $module = new Module();
+
+        $config = $module->getModuleDependencies();
+
+        self::assertIsArray($config);
+        self::assertCount(1, $config);
+        self::assertArrayHasKey(0, $config);
+        self::assertContains('Laminas\Log', $config);
+    }
 }
