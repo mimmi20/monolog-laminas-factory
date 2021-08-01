@@ -314,8 +314,8 @@ jobs:
       - name: "Update dependencies with composer"
         run: "composer update --optimize-autoloader --prefer-dist --prefer-stable --no-progress --no-interaction -v --ansi ${{ matrix.dependencies }}"
 
-      - name: "Run squizlabs/php_codesniffer"
-        run: "vendor/bin/phpmd src github src/phpmd.ruleset.xml"
+      - name: "Run phpmd/phpmd"
+        run: "vendor/bin/phpmd src github phpmd.ruleset.xml"
 
   tests:
     name: "UnitTests with PHPUnit"
