@@ -18,7 +18,7 @@
     "monolog/monolog": "^2.3.2"
   },
   "require-dev": {
-    "aws/aws-sdk-php": "^3.186.3",
+    "aws/aws-sdk-php": "^3.186.4",
     "bartlett/monolog-callbackfilterhandler": "^2.0",
     "cmdisp/monolog-microsoft-teams": "^1.2.0",
     "doctrine/couchdb": "1.0.0-beta4",
@@ -27,6 +27,7 @@
     "laminas/laminas-config": "^3.5.0",
     "laminas/laminas-dependency-plugin": "^2.1.2",
     "laminas/laminas-modulemanager": "^2.10.2",
+    "laminas/laminas-servicemanager": "^3.7.0",
     "mikey179/vfsstream": "^1.6.9",
     "mimmi20/coding-standard": "^2.3.0",
     "pepakriz/phpstan-exception-rules": "^0.11.7",
