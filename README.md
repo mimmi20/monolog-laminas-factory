@@ -18,10 +18,6 @@ Run
 $ composer require mimmi20/monolog-laminas-factory
 ```
 
-## Usage
-
-:bulb: This is a great place for showing a few usage examples!
-
 ## License
 
 This package is licensed using the MIT License.
