@@ -18,7 +18,7 @@
     "monolog/monolog": "^2.3.2"
   },
   "require-dev": {
-    "aws/aws-sdk-php": "^3.188.1",
+    "aws/aws-sdk-php": "^3.190.2",
     "bartlett/monolog-callbackfilterhandler": "^2.0.0",
     "cmdisp/monolog-microsoft-teams": "^1.2.0",
     "doctrine/couchdb": "1.0.0-beta4",
@@ -31,13 +31,12 @@
     "laminas/laminas-servicemanager": "^3.7.0",
     "mikey179/vfsstream": "^1.6.9",
     "mimmi20/coding-standard": "^2.4.2",
-    "pepakriz/phpstan-exception-rules": "^0.11.7",
     "php-amqplib/php-amqplib": "^3.0.0",
     "php-console/php-console": "^3.1.8",
     "phpstan/extension-installer": "^1.1.0",
     "phpstan/phpstan": "^0.12.94",
     "phpstan/phpstan-deprecation-rules": "^0.12.6",
-    "phpstan/phpstan-phpunit": "^0.12.21",
+    "phpstan/phpstan-phpunit": "^0.12.22",
     "phpunit/phpunit": "^9.5.8",
     "predis/predis": "^1.1.7",
     "rollbar/rollbar": "^2.1.0",

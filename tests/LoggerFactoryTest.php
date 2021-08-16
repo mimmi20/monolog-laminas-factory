@@ -136,7 +136,6 @@ final class LoggerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithConfigException(): void
     {
@@ -180,7 +179,6 @@ final class LoggerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithConfigException2(): void
     {

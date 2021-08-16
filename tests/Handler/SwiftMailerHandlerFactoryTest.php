@@ -193,7 +193,6 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithConfig5(): void
     {

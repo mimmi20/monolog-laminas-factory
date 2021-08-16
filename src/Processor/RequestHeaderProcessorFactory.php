@@ -13,10 +13,7 @@ declare(strict_types = 1);
 namespace Mimmi20\LoggerFactory\Processor;
 
 use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use JK\Monolog\Processor\RequestHeaderProcessor;
-use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 final class RequestHeaderProcessorFactory implements FactoryInterface
@@ -25,9 +22,7 @@ final class RequestHeaderProcessorFactory implements FactoryInterface
      * @param string            $requestedName
      * @param array<mixed>|null $options
      *
-     * @throws ServiceNotFoundException   if unable to resolve the service
-     * @throws ServiceNotCreatedException if an exception is raised when creating a service
-     * @throws ContainerException         if any other error occurs
+     * @throws void
      *
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint

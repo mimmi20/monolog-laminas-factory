@@ -772,7 +772,6 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithHandlerConfig7(): void
     {
@@ -1221,7 +1220,6 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
@@ -1410,7 +1408,6 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithConfigAndFormatter3(): void
     {

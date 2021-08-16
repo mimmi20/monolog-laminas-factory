@@ -277,7 +277,6 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithConfigAndFormatter(): void
     {

@@ -493,7 +493,6 @@ final class DeduplicationHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
@@ -655,7 +654,6 @@ final class DeduplicationHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithConfigAndFormatter3(): void
     {
@@ -716,7 +714,6 @@ final class DeduplicationHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      * @throws ReflectionException
-     * @throws InvalidArgumentException
      */
     public function testInvoceWithConfigAndFormatter4(): void
     {

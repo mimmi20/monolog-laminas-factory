@@ -561,7 +561,6 @@ final class FilterHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
@@ -715,7 +714,6 @@ final class FilterHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithConfigAndFormatter3(): void
     {
