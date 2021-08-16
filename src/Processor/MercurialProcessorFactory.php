@@ -13,9 +13,6 @@ declare(strict_types = 1);
 namespace Mimmi20\LoggerFactory\Processor;
 
 use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
-use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\Logger;
 use Monolog\Processor\MercurialProcessor;
@@ -35,9 +32,7 @@ final class MercurialProcessorFactory implements FactoryInterface
      * @param array<string, (int|string)>|null $options
      * @phpstan-param array{level?: (Level|LevelName|LogLevel::*)}|null $options
      *
-     * @throws ServiceNotFoundException   if unable to resolve the service
-     * @throws ServiceNotCreatedException if an exception is raised when creating a service
-     * @throws ContainerException         if any other error occurs
+     * @throws void
      *
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint

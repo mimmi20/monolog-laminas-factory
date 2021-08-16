@@ -379,7 +379,6 @@ final class StreamHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
@@ -1081,7 +1080,6 @@ final class StreamHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithConfigAndProcessors4(): void
     {

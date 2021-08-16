@@ -13,9 +13,6 @@ declare(strict_types = 1);
 namespace Mimmi20\LoggerFactory\Formatter;
 
 use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
-use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Formatter\LogmaticFormatter;
@@ -30,9 +27,7 @@ final class LogmaticFormatterFactory implements FactoryInterface
      * @param array<string, (int|bool|string)>|null $options
      * @phpstan-param array{batchMode?: JsonFormatter::BATCH_MODE_*, appendNewline?: bool, hostname?: string, appName?: string, includeStacktraces?: bool}|null $options
      *
-     * @throws ServiceNotFoundException   if unable to resolve the service
-     * @throws ServiceNotCreatedException if an exception is raised when creating a service
-     * @throws ContainerException         if any other error occurs
+     * @throws void
      *
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint

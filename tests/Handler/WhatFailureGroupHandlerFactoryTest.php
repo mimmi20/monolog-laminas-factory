@@ -171,7 +171,6 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithHandlerWithType(): void
     {
@@ -251,7 +250,6 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ServiceNotFoundException
      */
     public function testInvoceWithHandlerWithType2(): void
     {
