@@ -23,7 +23,7 @@
     "cmdisp/monolog-microsoft-teams": "^1.2.0",
     "doctrine/couchdb": "1.0.0-beta4",
     "elasticsearch/elasticsearch": "^7.14.0",
-    "graylog2/gelf-php": "^1.7.0",
+    "graylog2/gelf-php": "^1.7.1",
     "jk/monolog-request-header-processor": "^1.0.0",
     "laminas/laminas-config": "^3.5.0",
     "laminas/laminas-dependency-plugin": "^2.1.2",
