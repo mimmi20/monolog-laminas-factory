@@ -569,8 +569,6 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws ReflectionException
-     * @throws InvalidArgumentException
      */
     public function testInvoceWithHandlerConfig5(): void
     {
@@ -595,9 +593,8 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->getMock();
         $handler2->expects(self::never())
             ->method('setFormatter');
-        $handler2->expects(self::once())
-            ->method('getFormatter')
-            ->willReturn($formatterClass);
+        $handler2->expects(self::never())
+            ->method('getFormatter');
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -621,49 +618,11 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
 
         $factory = new FingersCrossedHandlerFactory();
 
-        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => $strategy, 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Could not find Class for ActivationStrategy');
 
-        self::assertInstanceOf(FingersCrossedHandler::class, $handler);
-
-        $handlerP = new ReflectionProperty($handler, 'handler');
-        $handlerP->setAccessible(true);
-
-        self::assertSame($handler2, $handlerP->getValue($handler));
-
-        $as = new ReflectionProperty($handler, 'activationStrategy');
-        $as->setAccessible(true);
-
-        self::assertInstanceOf(ErrorLevelActivationStrategy::class, $as->getValue($handler));
-
-        $bs = new ReflectionProperty($handler, 'bufferSize');
-        $bs->setAccessible(true);
-
-        self::assertSame(42, $bs->getValue($handler));
-
-        $b = new ReflectionProperty($handler, 'bubble');
-        $b->setAccessible(true);
-
-        self::assertFalse($b->getValue($handler));
-
-        $sb = new ReflectionProperty($handler, 'stopBuffering');
-        $sb->setAccessible(true);
-
-        self::assertFalse($sb->getValue($handler));
-
-        $ptl = new ReflectionProperty($handler, 'passthruLevel');
-        $ptl->setAccessible(true);
-
-        self::assertSame(Logger::WARNING, $ptl->getValue($handler));
-
-        self::assertSame($formatterClass, $handler->getFormatter());
-
-        $proc = new ReflectionProperty($handler, 'processors');
-        $proc->setAccessible(true);
-
-        $processors = $proc->getValue($handler);
-
-        self::assertIsArray($processors);
-        self::assertCount(0, $processors);
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => $strategy, 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
     }
 
     /**

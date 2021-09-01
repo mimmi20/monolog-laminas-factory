@@ -45,7 +45,7 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
     /**
      * @param string                                                       $requestedName
      * @param array<string, (int|string|ActivationStrategyInterface)>|null $options
-     * @phpstan-param array{handler?: bool|array{type?: string, enabled?: bool, options?: array<mixed>}, activationStrategy?: (null|Level|LevelName|LogLevel::*|ActivationStrategyInterface|array{type?: string, options?: array<mixed>}), bufferSize?: int, bubble?: bool, stopBuffering?: bool, passthruLevel?: (Level|LevelName|LogLevel::*)}|null $options
+     * @phpstan-param array{handler?: bool|array{type?: string, enabled?: bool, options?: array<mixed>}, activationStrategy?: (null|Level|LevelName|LogLevel::*|ActivationStrategyInterface|array{type?: string, options?: array<mixed>}|string), bufferSize?: int, bubble?: bool, stopBuffering?: bool, passthruLevel?: (Level|LevelName|LogLevel::*)}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -117,7 +117,7 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
 
     /**
      * @param ActivationStrategyInterface|array<string, array<mixed>|string>|int|string $activationStrategy
-     * @phpstan-param (Level|LevelName|LogLevel::*|ActivationStrategyInterface|array{type?: string, options?: array<mixed>}|null) $activationStrategy
+     * @phpstan-param (Level|LevelName|LogLevel::*|ActivationStrategyInterface|array{type?: string, options?: array<mixed>}|string|null) $activationStrategy
      *
      * @return ActivationStrategyInterface|int|string|null
      * @phpstan-return (Level|LevelName|LogLevel::*|ActivationStrategyInterface|null)
@@ -157,7 +157,11 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
             }
         }
 
-        if (is_string($activationStrategy) && $activationStrategyPluginManager->has($activationStrategy)) {
+        if (is_string($activationStrategy)) {
+            if (!$activationStrategyPluginManager->has($activationStrategy)) {
+                throw new ServiceNotCreatedException('Could not find Class for ActivationStrategy');
+            }
+
             try {
                 return $activationStrategyPluginManager->get($activationStrategy);
             } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
