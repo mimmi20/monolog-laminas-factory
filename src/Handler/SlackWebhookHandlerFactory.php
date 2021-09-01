@@ -72,10 +72,6 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
         $bubble             = true;
         $excludeFields      = [];
 
-        if (array_key_exists('channel', $options)) {
-            $channel = $options['channel'];
-        }
-
         if (array_key_exists('userName', $options)) {
             $userName = $options['userName'];
         }

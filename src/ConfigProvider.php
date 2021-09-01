@@ -19,6 +19,7 @@ use Laminas\Log\Logger;
 use Laminas\Log\LoggerInterface;
 use Mimmi20\LoggerFactory\Formatter\ChromePHPFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\ElasticaFormatterFactory;
+use Mimmi20\LoggerFactory\Formatter\ElasticsearchFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\FlowdockFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\FluentdFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\GelfMessageFormatterFactory;
@@ -104,6 +105,7 @@ use Mimmi20\LoggerFactory\Processor\UidProcessorFactory;
 use Mimmi20\LoggerFactory\Processor\WebProcessorFactory;
 use Monolog\Formatter\ChromePHPFormatter;
 use Monolog\Formatter\ElasticaFormatter;
+use Monolog\Formatter\ElasticsearchFormatter;
 use Monolog\Formatter\FlowdockFormatter;
 use Monolog\Formatter\FluentdFormatter;
 use Monolog\Formatter\GelfMessageFormatter;
@@ -238,31 +240,31 @@ final class ConfigProvider
                 'buffer' => BufferHandler::class,
                 'callbackfilter' => CallbackFilterHandler::class,
                 'chromephp' => ChromePHPHandler::class,
-                'couchdb' => CouchDBHandler::class,
+                'couchDb' => CouchDBHandler::class,
                 'cube' => CubeHandler::class,
                 'deduplication' => DeduplicationHandler::class,
-                'doctrinecouchdb' => DoctrineCouchDBHandler::class,
-                'dynamodb' => DynamoDbHandler::class,
+                'doctrineCouchDb' => DoctrineCouchDBHandler::class,
+                'dynamoDb' => DynamoDbHandler::class,
                 'elastica' => ElasticaHandler::class,
                 'elasticsearch' => ElasticsearchHandler::class,
                 'errorlog' => ErrorLogHandler::class,
                 'fallbackgroup' => FallbackGroupHandler::class,
                 'filter' => FilterHandler::class,
-                'fingerscrossed' => FingersCrossedHandler::class,
+                'fingersCrossed' => FingersCrossedHandler::class,
                 'firephp' => FirePHPHandler::class,
-                'fleephook' => FleepHookHandler::class,
+                'fleepHook' => FleepHookHandler::class,
                 'flowdock' => FlowdockHandler::class,
                 'gelf' => GelfHandler::class,
                 'group' => GroupHandler::class,
                 'ifttt' => IFTTTHandler::class,
                 'insightops' => InsightOpsHandler::class,
-                'logentries' => LogEntriesHandler::class,
+                'logEntries' => LogEntriesHandler::class,
                 'loggly' => LogglyHandler::class,
                 'logmatic' => LogmaticHandler::class,
                 'mandrill' => MandrillHandler::class,
                 'mongo' => MongoDBHandler::class,
                 'nativemailer' => NativeMailerHandler::class,
-                'newrelic' => NewRelicHandler::class,
+                'newRelic' => NewRelicHandler::class,
                 'noop' => NoopHandler::class,
                 'null' => NullHandler::class,
                 'overflow' => OverflowHandler::class,
@@ -271,23 +273,23 @@ final class ConfigProvider
                 'psr' => PsrHandler::class,
                 'pushover' => PushoverHandler::class,
                 'redis' => RedisHandler::class,
-                'redispubsub' => RedisPubSubHandler::class,
+                'redisPubSub' => RedisPubSubHandler::class,
                 'rollbar' => RollbarHandler::class,
                 'rotating' => RotatingFileHandler::class,
                 'sampling' => SamplingHandler::class,
                 'sendgrid' => SendGridHandler::class,
                 'slack' => SlackHandler::class,
-                'slackwebhook' => SlackWebhookHandler::class,
+                'slackWebhook' => SlackWebhookHandler::class,
                 'socket' => SocketHandler::class,
                 'sqs' => SqsHandler::class,
                 'stream' => StreamHandler::class,
-                'swiftmailer' => SwiftMailerHandler::class,
+                'swiftMailer' => SwiftMailerHandler::class,
                 'syslog' => SyslogHandler::class,
                 'syslogudp' => SyslogUdpHandler::class,
                 'teams' => TeamsLogHandler::class,
                 'telegrambot' => TelegramBotHandler::class,
                 'test' => TestHandler::class,
-                'whatfailuregrouphandler' => WhatFailureGroupHandler::class,
+                'whatFailureGroup' => WhatFailureGroupHandler::class,
                 'zend' => ZendMonitorHandler::class,
             ],
             'factories' => [
@@ -362,11 +364,11 @@ final class ConfigProvider
                 'git' => GitProcessor::class,
                 'hostname' => HostnameProcessor::class,
                 'introspection' => IntrospectionProcessor::class,
-                'memorypeak' => MemoryPeakUsageProcessor::class,
-                'memoryusage' => MemoryUsageProcessor::class,
+                'memoryPeak' => MemoryPeakUsageProcessor::class,
+                'memoryUsage' => MemoryUsageProcessor::class,
                 'mercurial' => MercurialProcessor::class,
-                'processid' => ProcessIdProcessor::class,
-                'psrlogmessage' => PsrLogMessageProcessor::class,
+                'processId' => ProcessIdProcessor::class,
+                'psrLogMessage' => PsrLogMessageProcessor::class,
                 'requestheader' => RequestHeaderProcessor::class,
                 'tags' => TagProcessor::class,
                 'uid' => UidProcessor::class,
@@ -399,6 +401,7 @@ final class ConfigProvider
             'aliases' => [
                 'chromePHP' => ChromePHPFormatter::class,
                 'elastica' => ElasticaFormatter::class,
+                'elasticsearch' => ElasticsearchFormatter::class,
                 'flowdock' => FlowdockFormatter::class,
                 'fluentd' => FluentdFormatter::class,
                 'gelf' => GelfMessageFormatter::class,
@@ -416,6 +419,7 @@ final class ConfigProvider
             'factories' => [
                 ChromePHPFormatter::class => ChromePHPFormatterFactory::class,
                 ElasticaFormatter::class => ElasticaFormatterFactory::class,
+                ElasticsearchFormatter::class => ElasticsearchFormatterFactory::class,
                 FlowdockFormatter::class => FlowdockFormatterFactory::class,
                 FluentdFormatter::class => FluentdFormatterFactory::class,
                 GelfMessageFormatter::class => GelfMessageFormatterFactory::class,

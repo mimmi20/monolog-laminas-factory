@@ -68,7 +68,7 @@ final class LoggerFactory implements FactoryInterface
         $loggerOptions = [
             'exceptionhandler' => $logConfig['exceptionhandler'] ?? false,
             'errorhandler' => $logConfig['errorhandler'] ?? false,
-            'fatal_error_shutdownfunction' => $logConfig['exceptionhandler'] ?? false,
+            'fatal_error_shutdownfunction' => $logConfig['shutdownhandler'] ?? false,
         ];
 
         try {
