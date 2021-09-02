@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory;
 
+use DateTimeZone;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\Log\Exception\InvalidArgumentException;
@@ -150,14 +151,23 @@ final class LoggerFactory implements FactoryInterface
         }
 
         if (isset($logConfig['name']) && array_key_exists('handlers', $logConfig) && is_array($logConfig['handlers'])) {
+            $monologConfig = [
+                'name' => $logConfig['name'],
+                'handlers' => $logConfig['handlers'],
+                'processors' => $logConfig['monolog_processors'] ?? [],
+            ];
+
+            if (
+                array_key_exists('timezone', $logConfig)
+                && (is_string($logConfig['timezone']) || $logConfig['timezone'] instanceof DateTimeZone)
+            ) {
+                $monologConfig['timezone'] = $logConfig['timezone'];
+            }
+
             try {
                 $monolog = $container->get(MonologPluginManager::class)->get(
                     \Monolog\Logger::class,
-                    [
-                        'name' => $logConfig['name'],
-                        'handlers' => $logConfig['handlers'],
-                        'processors' => $logConfig['monolog_processors'] ?? [],
-                    ]
+                    $monologConfig
                 );
             } catch (ContainerExceptionInterface $e) {
                 throw new ServiceNotCreatedException(sprintf('Could not find service %s', MonologPluginManager::class), 0, $e);

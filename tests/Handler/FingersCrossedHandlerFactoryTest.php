@@ -569,6 +569,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     * @throws ReflectionException
      */
     public function testInvoceWithHandlerConfig5(): void
     {
@@ -593,8 +594,9 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
             ->getMock();
         $handler2->expects(self::never())
             ->method('setFormatter');
-        $handler2->expects(self::never())
-            ->method('getFormatter');
+        $handler2->expects(self::once())
+            ->method('getFormatter')
+            ->willReturn($formatterClass);
 
         $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
             ->disableOriginalConstructor()
@@ -618,11 +620,49 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
 
         $factory = new FingersCrossedHandlerFactory();
 
-        $this->expectException(ServiceNotCreatedException::class);
-        $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Could not find Class for ActivationStrategy');
+        $handler = $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => $strategy, 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
 
-        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => $strategy, 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
+        self::assertInstanceOf(FingersCrossedHandler::class, $handler);
+
+        $handlerP = new ReflectionProperty($handler, 'handler');
+        $handlerP->setAccessible(true);
+
+        self::assertSame($handler2, $handlerP->getValue($handler));
+
+        $as = new ReflectionProperty($handler, 'activationStrategy');
+        $as->setAccessible(true);
+
+        self::assertInstanceOf(ErrorLevelActivationStrategy::class, $as->getValue($handler));
+
+        $bs = new ReflectionProperty($handler, 'bufferSize');
+        $bs->setAccessible(true);
+
+        self::assertSame(42, $bs->getValue($handler));
+
+        $b = new ReflectionProperty($handler, 'bubble');
+        $b->setAccessible(true);
+
+        self::assertFalse($b->getValue($handler));
+
+        $sb = new ReflectionProperty($handler, 'stopBuffering');
+        $sb->setAccessible(true);
+
+        self::assertFalse($sb->getValue($handler));
+
+        $ptl = new ReflectionProperty($handler, 'passthruLevel');
+        $ptl->setAccessible(true);
+
+        self::assertSame(Logger::WARNING, $ptl->getValue($handler));
+
+        self::assertSame($formatterClass, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
     }
 
     /**
@@ -1056,6 +1096,61 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Options must contain a type for the ActivationStrategy');
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => [], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithHandlerConfig12(): void
+    {
+        $type     = 'abc';
+        $strategy = 'xyz';
+
+        $activationStrategyPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $activationStrategyPluginManager->expects(self::once())
+            ->method('has')
+            ->with($strategy)
+            ->willReturn(false);
+        $activationStrategyPluginManager->expects(self::never())
+            ->method('get');
+
+        $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $handler2->expects(self::never())
+            ->method('setFormatter');
+        $handler2->expects(self::never())
+            ->method('getFormatter');
+
+        $monologHandlerPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologHandlerPluginManager->expects(self::never())
+            ->method('has');
+        $monologHandlerPluginManager->expects(self::once())
+            ->method('get')
+            ->with($type, [])
+            ->willReturn($handler2);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([MonologHandlerPluginManager::class], [ActivationStrategyPluginManager::class])
+            ->willReturnOnConsecutiveCalls($monologHandlerPluginManager, $activationStrategyPluginManager);
+
+        $factory = new FingersCrossedHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Could not find Class for ActivationStrategy');
+
+        $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => $strategy, 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
     }
 
     /**

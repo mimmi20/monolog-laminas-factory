@@ -37,11 +37,11 @@ trait AddProcessorTrait
      */
     private function addProcessor(ContainerInterface $container, HandlerInterface $handler, ?array $options = null): void
     {
-        if (!$handler instanceof ProcessableHandlerInterface) {
-            return;
-        }
-
-        if (!is_array($options) || !array_key_exists('processors', $options)) {
+        if (
+            !$handler instanceof ProcessableHandlerInterface
+            || !is_array($options)
+            || !array_key_exists('processors', $options)
+        ) {
             return;
         }
 
