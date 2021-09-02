@@ -677,4 +677,59 @@ final class MonologFactoryTest extends TestCase
 
         $factory($container, $requestedName, $options);
     }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithProcessors7(): void
+    {
+        $requestedName = Logger::class;
+        $timezone      = 'Europe/London';
+        $options       = [
+            'name' => 'xyz',
+            'timezone' => $timezone,
+            'processors' => [
+                ['enabled' => false],
+                [
+                    'enabled' => true,
+                    'type' => 'xyz',
+                    'options' => ['efg' => 'ijk'],
+                ],
+                ['type' => 'abc'],
+                static fn (array $record): array => $record,
+            ],
+        ];
+
+        $processor = $this->createMock(ProcessorInterface::class);
+
+        $monologProcessorPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologProcessorPluginManager->expects(self::never())
+            ->method('has');
+        $monologProcessorPluginManager->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive(['abc', []], ['xyz', ['efg' => 'ijk']])
+            ->willReturn($processor);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologProcessorPluginManager::class)
+            ->willReturn($monologProcessorPluginManager);
+
+        $factory = new MonologFactory();
+
+        $logger = $factory($container, $requestedName, $options);
+
+        self::assertInstanceOf(Logger::class, $logger);
+        self::assertSame($timezone, $logger->getTimezone()->getName());
+        self::assertIsArray($logger->getProcessors());
+        self::assertCount(3, $logger->getProcessors());
+    }
 }

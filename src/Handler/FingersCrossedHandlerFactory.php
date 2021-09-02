@@ -24,6 +24,7 @@ use Monolog\Handler\FingersCrossed\ActivationStrategyInterface;
 use Monolog\Handler\FingersCrossedHandler;
 use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Log\InvalidArgumentException;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
@@ -157,11 +158,7 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
             }
         }
 
-        if (is_string($activationStrategy)) {
-            if (!$activationStrategyPluginManager->has($activationStrategy)) {
-                throw new ServiceNotCreatedException('Could not find Class for ActivationStrategy');
-            }
-
+        if (is_string($activationStrategy) && $activationStrategyPluginManager->has($activationStrategy)) {
             try {
                 return $activationStrategyPluginManager->get($activationStrategy);
             } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
@@ -169,6 +166,13 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
             }
         }
 
-        return $activationStrategy;
+        try {
+            /* @phpstan-ignore-next-line */
+            return Logger::toMonologLevel($activationStrategy);
+        } catch (InvalidArgumentException $e) {
+            // do nothing here
+        }
+
+        throw new ServiceNotCreatedException('Could not find Class for ActivationStrategy');
     }
 }
