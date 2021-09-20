@@ -28,7 +28,7 @@
     "laminas/laminas-config": "^3.5.0",
     "laminas/laminas-dependency-plugin": "^2.1.2",
     "laminas/laminas-modulemanager": "^2.10.2",
-    "laminas/laminas-servicemanager": "^3.7.0",
+    "laminas/laminas-servicemanager": "^3.10.0",
     "mikey179/vfsstream": "^1.6.9",
     "mimmi20/coding-standard": "^2.4.4",
     "php-amqplib/php-amqplib": "^3.0.0",
