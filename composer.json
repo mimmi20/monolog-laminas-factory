@@ -38,7 +38,7 @@
     "phpstan/phpstan-deprecation-rules": "^0.12.6",
     "phpstan/phpstan-phpunit": "^0.12.22",
     "phpunit/phpunit": "^9.5.9",
-    "predis/predis": "^1.1.7",
+    "predis/predis": "^1.1.8",
     "rollbar/rollbar": "^2.1.0",
     "ruflin/elastica": "^7.1.1",
     "swiftmailer/swiftmailer": "^6.2.7"
