@@ -171,6 +171,7 @@ when you wire up the default logger.
 
 return [
     'log' => [
+        'name' => 'name',
         'handlers' => [
             'default' => [
                 'type' => 'stream',
@@ -192,6 +193,7 @@ return [
 return [
     
     'log' => [
+        'name' => 'name',
         'handlers' => [
             // Array Keys are the names used for the handlers
             'default' => [
@@ -1192,7 +1194,7 @@ return [
 Monolog Docs: [PHPConsoleHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/PHPConsoleHandler.php)
 
 
-###Log to databases
+### Log to databases
 
 #### RedisHandler
 Logs records to a [Redis](http://redis.io/) server.   Requires the [php-redis](https://pecl.php.net/package/redis)
@@ -2226,7 +2228,10 @@ return [
         'processors' => [
             'myProcessorsName' => [
                 'type' => 'memoryUsage',
-                'options' => [], // No options
+                'options' => [
+                    'realUsage' => true,
+                    'useFormatting' => true,
+                ],
             ],
         ],
     ],
@@ -2245,7 +2250,10 @@ return [
         'processors' => [
             'myProcessorsName' => [
                 'type' => 'memoryPeak',
-                'options' => [], // No options
+                'options' => [
+                    'realUsage' => true,
+                    'useFormatting' => true,
+                ],
             ],
         ],
     ],

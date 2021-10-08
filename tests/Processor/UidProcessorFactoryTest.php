@@ -37,9 +37,9 @@ final class UidProcessorFactoryTest extends TestCase
 
         $factory = new UidProcessorFactory();
 
-        $formatter = $factory($container, '');
+        $processor = $factory($container, '');
 
-        self::assertInstanceOf(UidProcessor::class, $formatter);
+        self::assertInstanceOf(UidProcessor::class, $processor);
     }
 
     /**
@@ -58,9 +58,9 @@ final class UidProcessorFactoryTest extends TestCase
 
         $factory = new UidProcessorFactory();
 
-        $formatter = $factory($container, '', []);
+        $processor = $factory($container, '', []);
 
-        self::assertInstanceOf(UidProcessor::class, $formatter);
+        self::assertInstanceOf(UidProcessor::class, $processor);
     }
 
     /**
@@ -79,9 +79,9 @@ final class UidProcessorFactoryTest extends TestCase
 
         $factory = new UidProcessorFactory();
 
-        $formatter = $factory($container, '', ['length' => 22]);
+        $processor = $factory($container, '', ['length' => 22]);
 
-        self::assertInstanceOf(UidProcessor::class, $formatter);
+        self::assertInstanceOf(UidProcessor::class, $processor);
     }
 
     /**

@@ -19,12 +19,14 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
+use Monolog\Handler\MissingExtensionException;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
 use function is_array;
+use function sprintf;
 
 use const LOG_USER;
 
@@ -91,15 +93,23 @@ final class SyslogUdpHandlerFactory implements FactoryInterface
             $rfc = $options['rfc'];
         }
 
-        $handler = new SyslogUdpHandler(
-            $host,
-            $port,
-            $facility,
-            $level,
-            $bubble,
-            $ident,
-            $rfc
-        );
+        try {
+            $handler = new SyslogUdpHandler(
+                $host,
+                $port,
+                $facility,
+                $level,
+                $bubble,
+                $ident,
+                $rfc
+            );
+        } catch (MissingExtensionException $e) {
+            throw new ServiceNotCreatedException(
+                sprintf('Could not create %s', SyslogUdpHandler::class),
+                0,
+                $e
+            );
+        }
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

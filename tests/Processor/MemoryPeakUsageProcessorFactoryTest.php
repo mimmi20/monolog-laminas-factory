@@ -17,6 +17,8 @@ use Mimmi20\LoggerFactory\Processor\MemoryPeakUsageProcessorFactory;
 use Monolog\Processor\MemoryPeakUsageProcessor;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
+use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 final class MemoryPeakUsageProcessorFactoryTest extends TestCase
@@ -24,8 +26,9 @@ final class MemoryPeakUsageProcessorFactoryTest extends TestCase
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
-    public function testInvoce(): void
+    public function testInvoceWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -37,8 +40,82 @@ final class MemoryPeakUsageProcessorFactoryTest extends TestCase
 
         $factory = new MemoryPeakUsageProcessorFactory();
 
-        $formatter = $factory($container, '');
+        $processor = $factory($container, '');
 
-        self::assertInstanceOf(MemoryPeakUsageProcessor::class, $formatter);
+        self::assertInstanceOf(MemoryPeakUsageProcessor::class, $processor);
+
+        $realUsage = new ReflectionProperty($processor, 'realUsage');
+        $realUsage->setAccessible(true);
+
+        self::assertTrue($realUsage->getValue($processor));
+
+        $useFormatting = new ReflectionProperty($processor, 'useFormatting');
+        $useFormatting->setAccessible(true);
+
+        self::assertTrue($useFormatting->getValue($processor));
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
+     */
+    public function testInvoceWithEmptyConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new MemoryPeakUsageProcessorFactory();
+
+        $processor = $factory($container, '', []);
+
+        self::assertInstanceOf(MemoryPeakUsageProcessor::class, $processor);
+
+        $realUsage = new ReflectionProperty($processor, 'realUsage');
+        $realUsage->setAccessible(true);
+
+        self::assertTrue($realUsage->getValue($processor));
+
+        $useFormatting = new ReflectionProperty($processor, 'useFormatting');
+        $useFormatting->setAccessible(true);
+
+        self::assertTrue($useFormatting->getValue($processor));
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
+     */
+    public function testInvoceWithConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new MemoryPeakUsageProcessorFactory();
+
+        $processor = $factory($container, '', ['realUsage' => false, 'useFormatting' => false]);
+
+        self::assertInstanceOf(MemoryPeakUsageProcessor::class, $processor);
+
+        $realUsage = new ReflectionProperty($processor, 'realUsage');
+        $realUsage->setAccessible(true);
+
+        self::assertFalse($realUsage->getValue($processor));
+
+        $useFormatting = new ReflectionProperty($processor, 'useFormatting');
+        $useFormatting->setAccessible(true);
+
+        self::assertFalse($useFormatting->getValue($processor));
     }
 }
