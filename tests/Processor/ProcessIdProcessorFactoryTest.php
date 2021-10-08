@@ -37,8 +37,8 @@ final class ProcessIdProcessorFactoryTest extends TestCase
 
         $factory = new ProcessIdProcessorFactory();
 
-        $formatter = $factory($container, '');
+        $processor = $factory($container, '');
 
-        self::assertInstanceOf(ProcessIdProcessor::class, $formatter);
+        self::assertInstanceOf(ProcessIdProcessor::class, $processor);
     }
 }

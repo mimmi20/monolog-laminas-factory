@@ -37,8 +37,8 @@ final class PsrLogMessageProcessorFactoryTest extends TestCase
 
         $factory = new PsrLogMessageProcessorFactory();
 
-        $formatter = $factory($container, '');
+        $processor = $factory($container, '');
 
-        self::assertInstanceOf(PsrLogMessageProcessor::class, $formatter);
+        self::assertInstanceOf(PsrLogMessageProcessor::class, $processor);
     }
 }

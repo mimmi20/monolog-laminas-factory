@@ -37,8 +37,8 @@ final class HostnameProcessorFactoryTest extends TestCase
 
         $factory = new HostnameProcessorFactory();
 
-        $formatter = $factory($container, '');
+        $processor = $factory($container, '');
 
-        self::assertInstanceOf(HostnameProcessor::class, $formatter);
+        self::assertInstanceOf(HostnameProcessor::class, $processor);
     }
 }

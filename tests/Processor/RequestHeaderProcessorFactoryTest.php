@@ -37,8 +37,8 @@ final class RequestHeaderProcessorFactoryTest extends TestCase
 
         $factory = new RequestHeaderProcessorFactory();
 
-        $formatter = $factory($container, '');
+        $processor = $factory($container, '');
 
-        self::assertInstanceOf(RequestHeaderProcessor::class, $formatter);
+        self::assertInstanceOf(RequestHeaderProcessor::class, $processor);
     }
 }
