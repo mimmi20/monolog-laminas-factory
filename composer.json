@@ -18,6 +18,7 @@
     "monolog/monolog": "^2.3.5"
   },
   "require-dev": {
+    "actived/microsoft-teams-notifier": "dev-master",
     "aws/aws-sdk-php": "^3.198.0",
     "bartlett/monolog-callbackfilterhandler": "^2.0.0",
     "cmdisp/monolog-microsoft-teams": "^1.2.0",
