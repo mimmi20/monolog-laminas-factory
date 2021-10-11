@@ -7,7 +7,7 @@ on:
 name: "Continuous Integration"
 
 env:
-  PHP_EXTENSIONS: "none, phar, json, opcache, mbstring, dom, simplexml, openssl, mongodb, amqp, sockets, curl"
+  PHP_EXTENSIONS: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, openssl, mongodb, amqp, sockets, curl"
   PHP_INI_VALUES: "opcache.enable=1, opcache.enable_cli=1, opcache.fast_shutdown=0, zend.assertions=1, assert.exception=On, intl.default_locale=de, intl.use_exceptions=1"
 
 jobs:
@@ -466,7 +466,7 @@ jobs:
         uses: "shivammathur/setup-php@2.15.0"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, openssl, mongodb, amqp, :sockets, curl"
+          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, openssl, mongodb, amqp, :sockets, curl"
           ini-values: "${{ env.PHP_INI_VALUES }}"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "composer:v2, infection"
@@ -534,7 +534,7 @@ jobs:
         uses: "shivammathur/setup-php@2.15.0"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, openssl, mongodb, amqp, sockets, :curl"
+          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, openssl, mongodb, amqp, sockets, :curl"
           ini-values: "${{ env.PHP_INI_VALUES }}"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "composer:v2, infection"
@@ -602,7 +602,7 @@ jobs:
         uses: "shivammathur/setup-php@2.15.0"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, openssl, :mongodb, amqp, sockets, curl"
+          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, openssl, :mongodb, amqp, sockets, curl"
           ini-values: "${{ env.PHP_INI_VALUES }}"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "composer:v2, infection"
@@ -670,7 +670,7 @@ jobs:
         uses: "shivammathur/setup-php@2.15.0"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, openssl, mongodb, :amqp, sockets, curl"
+          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, openssl, mongodb, :amqp, sockets, curl"
           ini-values: "${{ env.PHP_INI_VALUES }}"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "composer:v2, infection"
@@ -738,7 +738,7 @@ jobs:
         uses: "shivammathur/setup-php@2.15.0"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, :openssl, mongodb, amqp, sockets, curl"
+          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, :openssl, mongodb, amqp, sockets, curl"
           ini-values: "${{ env.PHP_INI_VALUES }}"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "composer:v2, infection"
