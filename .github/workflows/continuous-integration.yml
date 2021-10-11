@@ -483,7 +483,7 @@ jobs:
           restore-keys: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-"
 
       - name: "Update dependencies with composer"
-        run: "composer remove php-amqplib/php-amqplib"
+        run: "composer remove --dev php-amqplib/php-amqplib"
 
       - name: "Update dependencies with composer"
         run: "composer update --optimize-autoloader --prefer-dist --prefer-stable --no-progress --no-interaction -v --ansi ${{ matrix.dependencies }}"
@@ -554,7 +554,7 @@ jobs:
           restore-keys: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-"
 
       - name: "Update dependencies with composer"
-        run: "composer remove cmdisp/monolog-microsoft-teams rollbar/rollbar"
+        run: "composer remove --dev cmdisp/monolog-microsoft-teams rollbar/rollbar"
 
       - name: "Update dependencies with composer"
         run: "composer update --optimize-autoloader --prefer-dist --prefer-stable --no-progress --no-interaction -v --ansi ${{ matrix.dependencies }}"
