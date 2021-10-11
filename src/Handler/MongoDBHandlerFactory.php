@@ -78,7 +78,11 @@ final class MongoDBHandlerFactory implements FactoryInterface
             try {
                 $client = $container->get($options['client']);
             } catch (ContainerExceptionInterface $e) {
-                throw new ServiceNotFoundException('Could not load client class', 0, $e);
+                throw new ServiceNotFoundException(
+                    sprintf('Could not load client class for %s class', MongoDBHandler::class),
+                    0,
+                    $e
+                );
             }
 
             if (!$client instanceof Client && !$client instanceof Manager) {

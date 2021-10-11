@@ -29,6 +29,7 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function extension_loaded;
 use function sprintf;
 
 final class IFTTTHandlerFactoryTest extends TestCase
@@ -360,5 +361,34 @@ final class IFTTTHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Processors must be an Array');
 
         $factory($container, '', ['eventName' => $eventName, 'secretKey' => $secretKey, 'level' => LogLevel::ALERT, 'bubble' => false, 'processors' => $processors]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithError(): void
+    {
+        if (extension_loaded('curl')) {
+            self::markTestSkipped('This test checks the exception if the curl extension is missing');
+        }
+
+        $eventName = 'test-event';
+        $secretKey = 'test-key';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new IFTTTHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', IFTTTHandler::class));
+
+        $factory($container, '', ['eventName' => $eventName, 'secretKey' => $secretKey, 'level' => LogLevel::ALERT, 'bubble' => false]);
     }
 }

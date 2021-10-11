@@ -30,6 +30,7 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function extension_loaded;
 use function sprintf;
 
 final class SendGridHandlerFactoryTest extends TestCase
@@ -328,6 +329,40 @@ final class SendGridHandlerFactoryTest extends TestCase
 
         self::assertIsArray($processors);
         self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithoutExtension(): void
+    {
+        if (extension_loaded('curl')) {
+            self::markTestSkipped('This test checks the exception if the curl extension is missing');
+        }
+
+        $apiUser = 'test-api-user';
+        $apiKey  = 'test-api-key';
+        $from    = 'test-from';
+        $to      = 'test-to';
+        $subject = 'test-subject';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SendGridHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not create %s', SendGridHandler::class)
+        );
+
+        $factory($container, '', ['apiUser' => $apiUser, 'apiKey' => $apiKey, 'from' => $from, 'to' => $to, 'subject' => $subject]);
     }
 
     /**

@@ -30,6 +30,7 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function extension_loaded;
 use function sprintf;
 
 final class LogglyHandlerFactoryTest extends TestCase
@@ -314,5 +315,33 @@ final class LogglyHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Processors must be an Array');
 
         $factory($container, '', ['token' => $token, 'level' => LogLevel::ALERT, 'bubble' => false, 'processors' => $processors]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithErrors(): void
+    {
+        if (extension_loaded('curl')) {
+            self::markTestSkipped('This test checks the exception if the curl extension is missing');
+        }
+
+        $token = 'test-token';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new LogglyHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', LogglyHandler::class));
+
+        $factory($container, '', ['token' => $token, 'level' => LogLevel::ALERT, 'bubble' => false]);
     }
 }

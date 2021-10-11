@@ -30,12 +30,15 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function extension_loaded;
 use function sprintf;
 
 final class LogmaticHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithoutConfig(): void
     {
@@ -58,6 +61,8 @@ final class LogmaticHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithEmptyConfig(): void
     {
@@ -82,6 +87,8 @@ final class LogmaticHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfig(): void
     {
@@ -140,6 +147,8 @@ final class LogmaticHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfig2(): void
     {
@@ -203,6 +212,44 @@ final class LogmaticHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
+    public function testInvoceWithoutExtension(): void
+    {
+        if (extension_loaded('openssl')) {
+            self::markTestSkipped('This test checks the exception if the openssl extension is missing');
+        }
+
+        $token        = 'token';
+        $hostname     = 'test-host';
+        $appname      = 'test-app';
+        $timeout      = 42.0;
+        $writeTimeout = 120.0;
+        $persistent   = true;
+        $chunkSize    = 100;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new LogmaticHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not create %s', LogmaticHandler::class)
+        );
+
+        $factory($container, '', ['token' => $token, 'hostname' => $hostname, 'appname' => $appname, 'useSSL' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @requires extension openssl
+     */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
         $token        = 'token';
@@ -235,6 +282,8 @@ final class LogmaticHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
@@ -274,6 +323,8 @@ final class LogmaticHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndFormatter2(): void
     {
@@ -349,6 +400,8 @@ final class LogmaticHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {

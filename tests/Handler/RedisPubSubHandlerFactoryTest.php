@@ -117,13 +117,39 @@ final class RedisPubSubHandlerFactoryTest extends TestCase
         $container->expects(self::once())
             ->method('get')
             ->with($client)
+            ->willReturn(true);
+
+        $factory = new RedisPubSubHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', RedisPubSubHandler::class));
+
+        $factory($container, '', ['client' => $client]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithError(): void
+    {
+        $client = 'abc';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($client)
             ->willThrowException(new ServiceNotFoundException());
 
         $factory = new RedisPubSubHandlerFactory();
 
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Could not load client class');
+        $this->expectExceptionMessage(sprintf('Could not load client class for %s class', RedisPubSubHandler::class));
 
         $factory($container, '', ['client' => $client]);
     }

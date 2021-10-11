@@ -54,7 +54,7 @@ final class PushoverHandlerFactory implements FactoryInterface
     {
         if (!extension_loaded('sockets')) {
             throw new ServiceNotCreatedException(
-                sprintf('The curl extension is needed to use the %s', PushoverHandler::class)
+                sprintf('The sockets extension is needed to use the %s', PushoverHandler::class)
             );
         }
 

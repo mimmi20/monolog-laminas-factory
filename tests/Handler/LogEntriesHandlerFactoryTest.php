@@ -29,12 +29,15 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function extension_loaded;
 use function sprintf;
 
 final class LogEntriesHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithoutConfig(): void
     {
@@ -57,6 +60,8 @@ final class LogEntriesHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithEmptyConfig(): void
     {
@@ -81,6 +86,8 @@ final class LogEntriesHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfig(): void
     {
@@ -107,7 +114,6 @@ final class LogEntriesHandlerFactoryTest extends TestCase
         self::assertSame(60.0, $handler->getTimeout());
         self::assertSame(60.0, $handler->getWritingTimeout());
         self::assertSame(60.0, $handler->getConnectionTimeout());
-        //self::assertSame(0, $handler->getChunkSize());
         self::assertFalse($handler->isPersistent());
 
         $lt = new ReflectionProperty($handler, 'logToken');
@@ -130,6 +136,8 @@ final class LogEntriesHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfig2(): void
     {
@@ -181,6 +189,42 @@ final class LogEntriesHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
+    public function testInvoceWithoutExtension(): void
+    {
+        if (extension_loaded('openssl')) {
+            self::markTestSkipped('This test checks the exception if the openssl extension is missing');
+        }
+
+        $token        = 'test-token';
+        $host         = 'test.data.logentries.com';
+        $timeout      = 42.0;
+        $writeTimeout = 120.0;
+        $chunkSize    = 100;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new LogEntriesHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not create %s', LogEntriesHandler::class)
+        );
+
+        $factory($container, '', ['token' => $token, 'useSSL' => false, 'level' => LogLevel::ALERT, 'bubble' => false, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'host' => $host, 'persistent' => true, 'chunkSize' => $chunkSize]);
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @requires extension openssl
+     */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
         $token        = 'test-token';
@@ -211,6 +255,8 @@ final class LogEntriesHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
@@ -248,6 +294,8 @@ final class LogEntriesHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndFormatter2(): void
     {
@@ -311,6 +359,8 @@ final class LogEntriesHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {

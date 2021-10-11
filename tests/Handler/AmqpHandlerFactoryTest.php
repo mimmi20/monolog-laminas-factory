@@ -564,4 +564,30 @@ final class AmqpHandlerFactoryTest extends TestCase
         self::assertIsArray($processors);
         self::assertCount(0, $processors);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfig9(): void
+    {
+        $exchange = 'test';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($exchange)
+            ->willReturn(true);
+
+        $factory = new AmqpHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', AmqpHandler::class));
+
+        $factory($container, '', ['exchange' => $exchange, 'level' => LogLevel::ALERT, 'bubble' => false]);
+    }
 }

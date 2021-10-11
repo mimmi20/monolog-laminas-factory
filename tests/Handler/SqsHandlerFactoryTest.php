@@ -335,6 +335,32 @@ final class SqsHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
+    public function testInvoceWithConfig7(): void
+    {
+        $sqsClient = 'test-client';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($sqsClient)
+            ->willReturn(true);
+
+        $factory = new SqsHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', SqsHandler::class));
+
+        $factory($container, '', ['sqsClient' => $sqsClient]);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
         $sqsClientClass = $this->getMockBuilder(SqsClient::class)
