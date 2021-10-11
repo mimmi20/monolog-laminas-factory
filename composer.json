@@ -46,6 +46,7 @@
   },
   "suggest": {
     "ext-amqp": "Allow sending log messages to an AMQP server (1.0+ required)",
+    "ext-json": "Allow sending log messages to the ChromePHP Handler",
     "ext-mongodb": "Allow sending log messages to a MongoDB server (via driver)",
     "ext-sockets": "Allow sending log messages to a Syslog server (via UDP driver)",
     "actived/microsoft-teams-notifier": "Allow sending log messages to Microsoft Teams",
