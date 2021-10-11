@@ -18,7 +18,7 @@
     "monolog/monolog": "^2.3.5"
   },
   "require-dev": {
-    "aws/aws-sdk-php": "^3.198.0",
+    "aws/aws-sdk-php": "^3.198.1",
     "bartlett/monolog-callbackfilterhandler": "^2.0.0",
     "cmdisp/monolog-microsoft-teams": "^1.2.0",
     "doctrine/couchdb": "1.0.0-beta4",
