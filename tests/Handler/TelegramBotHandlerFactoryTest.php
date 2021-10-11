@@ -35,6 +35,8 @@ final class TelegramBotHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithoutConfig(): void
     {
@@ -57,6 +59,8 @@ final class TelegramBotHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithEmptyConfig(): void
     {
@@ -79,6 +83,8 @@ final class TelegramBotHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfig(): void
     {
@@ -105,6 +111,8 @@ final class TelegramBotHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfig2(): void
     {
@@ -153,6 +161,8 @@ final class TelegramBotHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfig3(): void
     {
@@ -199,6 +209,8 @@ final class TelegramBotHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
@@ -227,6 +239,8 @@ final class TelegramBotHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
@@ -261,6 +275,8 @@ final class TelegramBotHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndFormatter2(): void
     {
@@ -320,6 +336,8 @@ final class TelegramBotHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {

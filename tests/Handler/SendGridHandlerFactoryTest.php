@@ -36,6 +36,8 @@ final class SendGridHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithoutConfig(): void
     {
@@ -58,6 +60,8 @@ final class SendGridHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithEmptyConfig(): void
     {
@@ -80,6 +84,8 @@ final class SendGridHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfig(): void
     {
@@ -104,6 +110,8 @@ final class SendGridHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfig2(): void
     {
@@ -129,6 +137,8 @@ final class SendGridHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfig3(): void
     {
@@ -155,6 +165,8 @@ final class SendGridHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfig4(): void
     {
@@ -184,6 +196,8 @@ final class SendGridHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfig5(): void
     {
@@ -250,6 +264,8 @@ final class SendGridHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfig6(): void
     {
@@ -316,6 +332,8 @@ final class SendGridHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
@@ -349,6 +367,8 @@ final class SendGridHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
@@ -388,6 +408,8 @@ final class SendGridHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndFormatter2(): void
     {
@@ -467,6 +489,8 @@ final class SendGridHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {

@@ -35,6 +35,8 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithoutConfig(): void
     {
@@ -57,6 +59,8 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithEmptyConfig(): void
     {
@@ -79,6 +83,8 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfigWithoutChannel(): void
     {
@@ -106,6 +112,7 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      *
+     * @requires extension curl
      * @requires extension openssl
      */
     public function testInvoceWithConfig(): void
@@ -183,6 +190,7 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      *
+     * @requires extension curl
      * @requires extension openssl
      */
     public function testInvoceWithConfig2(): void
@@ -261,6 +269,7 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      *
+     * @requires extension curl
      * @requires extension openssl
      */
     public function testInvoceWithConfigAndBoolFormatter(): void
@@ -294,6 +303,7 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      *
+     * @requires extension curl
      * @requires extension openssl
      */
     public function testInvoceWithConfigAndFormatter(): void
@@ -333,6 +343,7 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      *
+     * @requires extension curl
      * @requires extension openssl
      */
     public function testInvoceWithConfigAndFormatter2(): void
@@ -424,6 +435,7 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      *
+     * @requires extension curl
      * @requires extension openssl
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
