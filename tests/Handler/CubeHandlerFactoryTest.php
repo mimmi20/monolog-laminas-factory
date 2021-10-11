@@ -120,7 +120,7 @@ final class CubeHandlerFactoryTest extends TestCase
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Could not create a CubeHandler');
+        $this->expectExceptionMessage(sprintf('Could not create %s', CubeHandler::class));
 
         $factory($container, '', ['url' => $url]);
     }

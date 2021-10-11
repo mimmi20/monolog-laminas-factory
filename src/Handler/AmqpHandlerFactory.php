@@ -29,6 +29,7 @@ use Psr\Log\LogLevel;
 use function array_key_exists;
 use function is_array;
 use function is_string;
+use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -70,6 +71,12 @@ final class AmqpHandlerFactory implements FactoryInterface
                 $exchange = $container->get($options['exchange']);
             } catch (ContainerExceptionInterface $e) {
                 throw new ServiceNotFoundException('Could not load exchange class', 0, $e);
+            }
+
+            if (!$exchange instanceof AMQPExchange && !$exchange instanceof AMQPChannel) {
+                throw new ServiceNotCreatedException(
+                    sprintf('Could not create %s', AmqpHandler::class)
+                );
             }
         }
 

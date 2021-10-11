@@ -73,6 +73,12 @@ final class PHPConsoleHandlerFactory implements FactoryInterface
             } catch (ContainerExceptionInterface $e) {
                 throw new ServiceNotFoundException('Could not load connector class', 0, $e);
             }
+
+            if (!$connector instanceof Connector) {
+                throw new ServiceNotCreatedException(
+                    sprintf('Could not create %s', PHPConsoleHandler::class)
+                );
+            }
         }
 
         $consoleOptions = [];

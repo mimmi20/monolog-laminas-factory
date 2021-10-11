@@ -75,6 +75,12 @@ final class ElasticaHandlerFactory implements FactoryInterface
                     $e
                 );
             }
+
+            if (!$client instanceof Client) {
+                throw new ServiceNotCreatedException(
+                    sprintf('Could not create %s', ElasticaHandler::class)
+                );
+            }
         }
 
         $index       = 'monolog';

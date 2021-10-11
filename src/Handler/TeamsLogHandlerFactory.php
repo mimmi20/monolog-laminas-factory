@@ -24,7 +24,9 @@ use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
+use function extension_loaded;
 use function is_array;
+use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -49,6 +51,12 @@ final class TeamsLogHandlerFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): TeamsLogHandler
     {
+        if (!extension_loaded('curl')) {
+            throw new ServiceNotCreatedException(
+                sprintf('The curl extension is needed to use the %s', TeamsLogHandler::class)
+            );
+        }
+
         if (!is_array($options)) {
             throw new ServiceNotCreatedException('Options must be an Array');
         }

@@ -19,12 +19,14 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
+use Monolog\Handler\MissingExtensionException;
 use Monolog\Handler\SlackWebhookHandler;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
 use function is_array;
+use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -104,18 +106,26 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
             $excludeFields = $options['excludeFields'];
         }
 
-        $handler = new SlackWebhookHandler(
-            $webhookUrl,
-            $channel,
-            $userName,
-            $useAttachment,
-            $iconEmoji,
-            $useShortAttachment,
-            $includeContext,
-            $level,
-            $bubble,
-            $excludeFields
-        );
+        try {
+            $handler = new SlackWebhookHandler(
+                $webhookUrl,
+                $channel,
+                $userName,
+                $useAttachment,
+                $iconEmoji,
+                $useShortAttachment,
+                $includeContext,
+                $level,
+                $bubble,
+                $excludeFields
+            );
+        } catch (MissingExtensionException $e) {
+            throw new ServiceNotCreatedException(
+                sprintf('Could not create %s', SlackWebhookHandler::class),
+                0,
+                $e
+            );
+        }
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

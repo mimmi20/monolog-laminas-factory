@@ -20,11 +20,13 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\IFTTTHandler;
+use Monolog\Handler\MissingExtensionException;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
 use function is_array;
+use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -74,12 +76,20 @@ final class IFTTTHandlerFactory implements FactoryInterface
             $bubble = $options['bubble'];
         }
 
-        $handler = new IFTTTHandler(
-            $eventName,
-            $secretKey,
-            $level,
-            $bubble
-        );
+        try {
+            $handler = new IFTTTHandler(
+                $eventName,
+                $secretKey,
+                $level,
+                $bubble
+            );
+        } catch (MissingExtensionException $e) {
+            throw new ServiceNotCreatedException(
+                sprintf('Could not create %s', IFTTTHandler::class),
+                0,
+                $e
+            );
+        }
 
         $this->addFormatter($container, $handler, $options);
         $this->addProcessor($container, $handler, $options);

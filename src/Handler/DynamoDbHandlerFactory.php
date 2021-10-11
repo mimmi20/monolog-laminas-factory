@@ -28,6 +28,7 @@ use Psr\Log\LogLevel;
 use function array_key_exists;
 use function is_array;
 use function is_string;
+use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -69,6 +70,12 @@ final class DynamoDbHandlerFactory implements FactoryInterface
                 $client = $container->get($options['client']);
             } catch (ContainerExceptionInterface $e) {
                 throw new ServiceNotFoundException('Could not load client class', 0, $e);
+            }
+
+            if (!$client instanceof DynamoDbClient) {
+                throw new ServiceNotCreatedException(
+                    sprintf('Could not create %s', DynamoDbHandler::class)
+                );
             }
         }
 

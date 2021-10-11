@@ -377,9 +377,9 @@ final class RedisHandlerFactoryTest extends TestCase
 
         $factory = new RedisHandlerFactory();
 
-        $this->expectException(ServiceNotFoundException::class);
+        $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage(sprintf('Could not load class %s', RedisHandler::class));
+        $this->expectExceptionMessage(sprintf('Could not create %s', RedisHandler::class));
 
         $factory($container, '', ['client' => $clientName]);
     }

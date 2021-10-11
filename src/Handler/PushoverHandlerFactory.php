@@ -24,8 +24,10 @@ use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
+use function extension_loaded;
 use function ini_get;
 use function is_array;
+use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -50,6 +52,12 @@ final class PushoverHandlerFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): PushoverHandler
     {
+        if (!extension_loaded('sockets')) {
+            throw new ServiceNotCreatedException(
+                sprintf('The curl extension is needed to use the %s', PushoverHandler::class)
+            );
+        }
+
         if (!is_array($options)) {
             throw new ServiceNotCreatedException('Options must be an Array');
         }

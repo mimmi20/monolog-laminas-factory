@@ -73,6 +73,12 @@ final class RedisHandlerFactory implements FactoryInterface
             } catch (ContainerExceptionInterface $e) {
                 throw new ServiceNotFoundException('Could not load client class', 0, $e);
             }
+
+            if (!$client instanceof Client && !$client instanceof Redis) {
+                throw new ServiceNotCreatedException(
+                    sprintf('Could not create %s', RedisHandler::class)
+                );
+            }
         }
 
         $key     = '';

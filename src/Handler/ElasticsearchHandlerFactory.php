@@ -75,6 +75,12 @@ final class ElasticsearchHandlerFactory implements FactoryInterface
                     $e
                 );
             }
+
+            if (!$client instanceof Client) {
+                throw new ServiceNotCreatedException(
+                    sprintf('Could not create %s', ElasticsearchHandler::class)
+                );
+            }
         }
 
         $index       = 'monolog';

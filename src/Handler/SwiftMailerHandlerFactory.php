@@ -29,6 +29,7 @@ use Swift_Message;
 use function array_key_exists;
 use function is_array;
 use function is_string;
+use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -71,6 +72,12 @@ final class SwiftMailerHandlerFactory implements FactoryInterface
                 $mailer = $container->get($options['mailer']);
             } catch (ContainerExceptionInterface $e) {
                 throw new ServiceNotFoundException('Could not load mailer class', 0, $e);
+            }
+
+            if (!$mailer instanceof Swift_Mailer) {
+                throw new ServiceNotCreatedException(
+                    sprintf('Could not create %s', SwiftMailerHandler::class)
+                );
             }
         }
 

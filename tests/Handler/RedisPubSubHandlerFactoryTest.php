@@ -358,9 +358,9 @@ final class RedisPubSubHandlerFactoryTest extends TestCase
 
         $factory = new RedisPubSubHandlerFactory();
 
-        $this->expectException(ServiceNotFoundException::class);
+        $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage(sprintf('Could not load class %s', RedisPubSubHandler::class));
+        $this->expectExceptionMessage(sprintf('Could not create %s', RedisPubSubHandler::class));
 
         $factory($container, '', ['client' => $clientName, 'key' => $key, 'level' => $level, 'bubble' => $bubble]);
     }
