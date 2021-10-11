@@ -32,6 +32,7 @@ use Rollbar\RollbarLogger;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function assert;
+use function class_exists;
 use function sprintf;
 
 final class RollbarHandlerFactoryTest extends TestCase
@@ -41,6 +42,10 @@ final class RollbarHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithoutConfig(): void
     {
+        if (!class_exists(Config::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
+        }
+
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -63,6 +68,10 @@ final class RollbarHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithEmptyConfig(): void
     {
+        if (!class_exists(Config::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
+        }
+
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -85,6 +94,10 @@ final class RollbarHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithTooShortToken(): void
     {
+        if (!class_exists(Config::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
+        }
+
         $token = 'token';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -111,6 +124,10 @@ final class RollbarHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfig(): void
     {
+        if (!class_exists(Config::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
+        }
+
         $token = 'tokentokentokentokentokentokenab';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -167,6 +184,10 @@ final class RollbarHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfig2(): void
     {
+        if (!class_exists(Config::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
+        }
+
         $token       = 'tokentokentokentokentokentokenab';
         $verbose     = LogLevel::ALERT;
         $environment = 'test';
@@ -224,6 +245,10 @@ final class RollbarHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
+        if (!class_exists(Config::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
+        }
+
         $token       = 'tokentokentokentokentokentokenab';
         $verbose     = LogLevel::ALERT;
         $environment = 'test';
@@ -254,6 +279,10 @@ final class RollbarHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
+        if (!class_exists(Config::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
+        }
+
         $token       = 'tokentokentokentokentokentokenab';
         $verbose     = LogLevel::ALERT;
         $environment = 'test';
@@ -290,6 +319,10 @@ final class RollbarHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfigAndFormatter2(): void
     {
+        if (!class_exists(Config::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
+        }
+
         $token       = 'tokentokentokentokentokentokenab';
         $verbose     = LogLevel::ALERT;
         $environment = 'test';
@@ -360,6 +393,10 @@ final class RollbarHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {
+        if (!class_exists(Config::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
+        }
+
         $token       = 'tokentokentokentokentokentokenab';
         $verbose     = LogLevel::ALERT;
         $environment = 'test';
