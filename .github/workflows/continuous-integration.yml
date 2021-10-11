@@ -399,7 +399,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           extensions: "${{ env.PHP_EXTENSIONS }}"
-          ini-values: "${{ env.PHP_INI_VALUES }}"
+          ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "composer:v2, infection"
 
@@ -467,7 +467,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, mongodb, amqp, :sockets, curl"
-          ini-values: "${{ env.PHP_INI_VALUES }}"
+          ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "composer:v2, infection"
 
@@ -481,6 +481,9 @@ jobs:
           path: "${{ steps.determine-composer-cache-directory.outputs.directory }}"
           key: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-${{ hashFiles('composer.lock') }}"
           restore-keys: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-"
+
+      - name: "Update dependencies with composer"
+        run: "composer remove php-amqplib/php-amqplib"
 
       - name: "Update dependencies with composer"
         run: "composer update --optimize-autoloader --prefer-dist --prefer-stable --no-progress --no-interaction -v --ansi ${{ matrix.dependencies }}"
@@ -535,7 +538,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, mongodb, amqp, sockets, :curl"
-          ini-values: "${{ env.PHP_INI_VALUES }}"
+          ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "composer:v2, infection"
 
@@ -549,6 +552,9 @@ jobs:
           path: "${{ steps.determine-composer-cache-directory.outputs.directory }}"
           key: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-${{ hashFiles('composer.lock') }}"
           restore-keys: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-"
+
+      - name: "Update dependencies with composer"
+        run: "composer remove cmdisp/monolog-microsoft-teams rollbar/rollbar"
 
       - name: "Update dependencies with composer"
         run: "composer update --optimize-autoloader --prefer-dist --prefer-stable --no-progress --no-interaction -v --ansi ${{ matrix.dependencies }}"
@@ -603,7 +609,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, :mongodb, amqp, sockets, curl"
-          ini-values: "${{ env.PHP_INI_VALUES }}"
+          ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "composer:v2, infection"
 
@@ -671,7 +677,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, mongodb, :amqp, sockets, curl"
-          ini-values: "${{ env.PHP_INI_VALUES }}"
+          ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "composer:v2, infection"
 
@@ -739,7 +745,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, :openssl, mongodb, amqp, sockets, curl"
-          ini-values: "${{ env.PHP_INI_VALUES }}"
+          ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "composer:v2, infection"
 
