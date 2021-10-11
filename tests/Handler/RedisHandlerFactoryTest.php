@@ -123,7 +123,33 @@ final class RedisHandlerFactoryTest extends TestCase
 
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Could not load client class');
+        $this->expectExceptionMessage(sprintf('Could not load client class for %s class', RedisHandler::class));
+
+        $factory($container, '', ['client' => $client]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithError(): void
+    {
+        $client = 'abc';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($client)
+            ->willReturn(true);
+
+        $factory = new RedisHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', RedisHandler::class));
 
         $factory($container, '', ['client' => $client]);
     }
@@ -377,9 +403,9 @@ final class RedisHandlerFactoryTest extends TestCase
 
         $factory = new RedisHandlerFactory();
 
-        $this->expectException(ServiceNotFoundException::class);
+        $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage(sprintf('Could not load class %s', RedisHandler::class));
+        $this->expectExceptionMessage(sprintf('Could not create %s', RedisHandler::class));
 
         $factory($container, '', ['client' => $clientName]);
     }

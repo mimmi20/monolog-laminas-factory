@@ -12,15 +12,16 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Handler;
 
+use Actived\MicrosoftTeamsNotifier\Handler\MicrosoftTeamsHandler;
+use Actived\MicrosoftTeamsNotifier\Handler\MicrosoftTeamsRecord;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Mimmi20\LoggerFactory\Handler\IFTTTHandlerFactory;
+use Mimmi20\LoggerFactory\Handler\MicrosoftTeamsHandlerFactory;
 use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\IFTTTHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
@@ -29,10 +30,11 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function assert;
 use function extension_loaded;
 use function sprintf;
 
-final class IFTTTHandlerFactoryTest extends TestCase
+final class MicrosoftTeamsHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
@@ -49,7 +51,7 @@ final class IFTTTHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new IFTTTHandlerFactory();
+        $factory = new MicrosoftTeamsHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
@@ -73,39 +75,13 @@ final class IFTTTHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new IFTTTHandlerFactory();
+        $factory = new MicrosoftTeamsHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('No eventName provided');
+        $this->expectExceptionMessage('No url provided');
 
         $factory($container, '', []);
-    }
-
-    /**
-     * @throws Exception
-     *
-     * @requires extension curl
-     */
-    public function testInvoceWithConfig(): void
-    {
-        $eventName = 'test-event';
-
-        $container = $this->getMockBuilder(ContainerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects(self::never())
-            ->method('has');
-        $container->expects(self::never())
-            ->method('get');
-
-        $factory = new IFTTTHandlerFactory();
-
-        $this->expectException(ServiceNotCreatedException::class);
-        $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('No secretKey provided');
-
-        $factory($container, '', ['eventName' => $eventName]);
     }
 
     /**
@@ -115,10 +91,9 @@ final class IFTTTHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvoceWithConfig(): void
     {
-        $eventName = 'test-event';
-        $secretKey = 'test-key';
+        $url = 'test-url';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -128,24 +103,43 @@ final class IFTTTHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new IFTTTHandlerFactory();
+        $factory = new MicrosoftTeamsHandlerFactory();
 
-        $handler = $factory($container, '', ['eventName' => $eventName, 'secretKey' => $secretKey]);
+        $handler = $factory($container, '', ['url' => $url]);
 
-        self::assertInstanceOf(IFTTTHandler::class, $handler);
+        self::assertInstanceOf(MicrosoftTeamsHandler::class, $handler);
 
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
 
-        $en = new ReflectionProperty($handler, 'eventName');
-        $en->setAccessible(true);
+        $urlP = new ReflectionProperty($handler, 'webhookDsn');
+        $urlP->setAccessible(true);
 
-        self::assertSame($eventName, $en->getValue($handler));
+        self::assertSame($url, $urlP->getValue($handler));
 
-        $sk = new ReflectionProperty($handler, 'secretKey');
-        $sk->setAccessible(true);
+        $formatP = new ReflectionProperty($handler, 'format');
+        $formatP->setAccessible(true);
 
-        self::assertSame($secretKey, $sk->getValue($handler));
+        self::assertSame('%message%', $formatP->getValue($handler));
+
+        $microsoftTeamsRecord = new ReflectionProperty($handler, 'microsoftTeamsRecord');
+        $microsoftTeamsRecord->setAccessible(true);
+
+        $mtr = $microsoftTeamsRecord->getValue($handler);
+        assert($mtr instanceof MicrosoftTeamsRecord);
+
+        self::assertSame('Message', $mtr->getTitle());
+        self::assertSame('Date', $mtr->getSubject());
+
+        $emojiP = new ReflectionProperty($mtr, 'emoji');
+        $emojiP->setAccessible(true);
+
+        self::assertNull($emojiP->getValue($mtr));
+
+        $colorP = new ReflectionProperty($mtr, 'color');
+        $colorP->setAccessible(true);
+
+        self::assertNull($colorP->getValue($mtr));
 
         self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
 
@@ -165,10 +159,14 @@ final class IFTTTHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfig3(): void
+    public function testInvoceWithConfig2(): void
     {
-        $eventName = 'test-event';
-        $secretKey = 'test-key';
+        $url     = 'test-url';
+        $title   = 'test-title';
+        $subject = 'test-subject';
+        $emoji   = ';)';
+        $color   = '#C00';
+        $format  = '%message% %extras%';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -178,24 +176,43 @@ final class IFTTTHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new IFTTTHandlerFactory();
+        $factory = new MicrosoftTeamsHandlerFactory();
 
-        $handler = $factory($container, '', ['eventName' => $eventName, 'secretKey' => $secretKey, 'level' => LogLevel::ALERT, 'bubble' => false]);
+        $handler = $factory($container, '', ['url' => $url, 'title' => $title, 'subject' => $subject, 'emoji' => $emoji, 'color' => $color, 'format' => $format, 'level' => LogLevel::ALERT, 'bubble' => false]);
 
-        self::assertInstanceOf(IFTTTHandler::class, $handler);
+        self::assertInstanceOf(MicrosoftTeamsHandler::class, $handler);
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
 
-        $en = new ReflectionProperty($handler, 'eventName');
-        $en->setAccessible(true);
+        $urlP = new ReflectionProperty($handler, 'webhookDsn');
+        $urlP->setAccessible(true);
 
-        self::assertSame($eventName, $en->getValue($handler));
+        self::assertSame($url, $urlP->getValue($handler));
 
-        $sk = new ReflectionProperty($handler, 'secretKey');
-        $sk->setAccessible(true);
+        $formatP = new ReflectionProperty($handler, 'format');
+        $formatP->setAccessible(true);
 
-        self::assertSame($secretKey, $sk->getValue($handler));
+        self::assertSame($format, $formatP->getValue($handler));
+
+        $microsoftTeamsRecord = new ReflectionProperty($handler, 'microsoftTeamsRecord');
+        $microsoftTeamsRecord->setAccessible(true);
+
+        $mtr = $microsoftTeamsRecord->getValue($handler);
+        assert($mtr instanceof MicrosoftTeamsRecord);
+
+        self::assertSame($title, $mtr->getTitle());
+        self::assertSame($subject, $mtr->getSubject());
+
+        $emojiP = new ReflectionProperty($mtr, 'emoji');
+        $emojiP->setAccessible(true);
+
+        self::assertSame($emoji, $emojiP->getValue($mtr));
+
+        $colorP = new ReflectionProperty($mtr, 'color');
+        $colorP->setAccessible(true);
+
+        self::assertSame($color, $colorP->getValue($mtr));
 
         self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
 
@@ -215,8 +232,7 @@ final class IFTTTHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
-        $eventName = 'test-event';
-        $secretKey = 'test-key';
+        $url       = 'test-url';
         $formatter = true;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -227,7 +243,7 @@ final class IFTTTHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new IFTTTHandlerFactory();
+        $factory = new MicrosoftTeamsHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
@@ -235,7 +251,7 @@ final class IFTTTHandlerFactoryTest extends TestCase
             sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
         );
 
-        $factory($container, '', ['eventName' => $eventName, 'secretKey' => $secretKey, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+        $factory($container, '', ['url' => $url, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
     }
 
     /**
@@ -245,8 +261,7 @@ final class IFTTTHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
-        $eventName = 'test-event';
-        $secretKey = 'test-key';
+        $url       = 'test-url';
         $formatter = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -261,7 +276,7 @@ final class IFTTTHandlerFactoryTest extends TestCase
             ->with(MonologFormatterPluginManager::class)
             ->willThrowException(new ServiceNotFoundException());
 
-        $factory = new IFTTTHandlerFactory();
+        $factory = new MicrosoftTeamsHandlerFactory();
 
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
@@ -269,7 +284,7 @@ final class IFTTTHandlerFactoryTest extends TestCase
             sprintf('Could not find service %s', MonologFormatterPluginManager::class)
         );
 
-        $factory($container, '', ['eventName' => $eventName, 'secretKey' => $secretKey, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+        $factory($container, '', ['url' => $url, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
     }
 
     /**
@@ -281,8 +296,7 @@ final class IFTTTHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfigAndFormatter2(): void
     {
-        $eventName = 'test-event';
-        $secretKey = 'test-key';
+        $url       = 'test-url';
         $formatter = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -305,24 +319,43 @@ final class IFTTTHandlerFactoryTest extends TestCase
             ->with(MonologFormatterPluginManager::class)
             ->willReturn($monologFormatterPluginManager);
 
-        $factory = new IFTTTHandlerFactory();
+        $factory = new MicrosoftTeamsHandlerFactory();
 
-        $handler = $factory($container, '', ['eventName' => $eventName, 'secretKey' => $secretKey, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+        $handler = $factory($container, '', ['url' => $url, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
 
-        self::assertInstanceOf(IFTTTHandler::class, $handler);
+        self::assertInstanceOf(MicrosoftTeamsHandler::class, $handler);
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
 
-        $en = new ReflectionProperty($handler, 'eventName');
-        $en->setAccessible(true);
+        $urlP = new ReflectionProperty($handler, 'webhookDsn');
+        $urlP->setAccessible(true);
 
-        self::assertSame($eventName, $en->getValue($handler));
+        self::assertSame($url, $urlP->getValue($handler));
 
-        $sk = new ReflectionProperty($handler, 'secretKey');
-        $sk->setAccessible(true);
+        $formatP = new ReflectionProperty($handler, 'format');
+        $formatP->setAccessible(true);
 
-        self::assertSame($secretKey, $sk->getValue($handler));
+        self::assertSame('%message%', $formatP->getValue($handler));
+
+        $microsoftTeamsRecord = new ReflectionProperty($handler, 'microsoftTeamsRecord');
+        $microsoftTeamsRecord->setAccessible(true);
+
+        $mtr = $microsoftTeamsRecord->getValue($handler);
+        assert($mtr instanceof MicrosoftTeamsRecord);
+
+        self::assertSame('Message', $mtr->getTitle());
+        self::assertSame('Date', $mtr->getSubject());
+
+        $emojiP = new ReflectionProperty($mtr, 'emoji');
+        $emojiP->setAccessible(true);
+
+        self::assertNull($emojiP->getValue($mtr));
+
+        $colorP = new ReflectionProperty($mtr, 'color');
+        $colorP->setAccessible(true);
+
+        self::assertNull($colorP->getValue($mtr));
 
         self::assertSame($formatter, $handler->getFormatter());
 
@@ -342,8 +375,7 @@ final class IFTTTHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {
-        $eventName  = 'test-event';
-        $secretKey  = 'test-key';
+        $url        = 'test-url';
         $processors = true;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -354,26 +386,25 @@ final class IFTTTHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new IFTTTHandlerFactory();
+        $factory = new MicrosoftTeamsHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage('Processors must be an Array');
 
-        $factory($container, '', ['eventName' => $eventName, 'secretKey' => $secretKey, 'level' => LogLevel::ALERT, 'bubble' => false, 'processors' => $processors]);
+        $factory($container, '', ['url' => $url, 'level' => LogLevel::ALERT, 'bubble' => false, 'processors' => $processors]);
     }
 
     /**
      * @throws Exception
      */
-    public function testInvoceWithError(): void
+    public function testInvoceWithoutExtension(): void
     {
         if (extension_loaded('curl')) {
             self::markTestSkipped('This test checks the exception if the curl extension is missing');
         }
 
-        $eventName = 'test-event';
-        $secretKey = 'test-key';
+        $url = 'test-url';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -383,12 +414,12 @@ final class IFTTTHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new IFTTTHandlerFactory();
+        $factory = new MicrosoftTeamsHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage(sprintf('Could not create %s', IFTTTHandler::class));
+        $this->expectExceptionMessage(sprintf('The curl extension is needed to use the %s', MicrosoftTeamsHandler::class));
 
-        $factory($container, '', ['eventName' => $eventName, 'secretKey' => $secretKey, 'level' => LogLevel::ALERT, 'bubble' => false]);
+        $factory($container, '', ['url' => $url, 'level' => LogLevel::ALERT, 'bubble' => false]);
     }
 }

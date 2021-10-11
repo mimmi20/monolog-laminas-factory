@@ -27,6 +27,7 @@ use UnexpectedValueException;
 use function array_key_exists;
 use function is_array;
 use function is_string;
+use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -82,7 +83,11 @@ final class CubeHandlerFactory implements FactoryInterface
                 $bubble
             );
         } catch (UnexpectedValueException $e) {
-            throw new ServiceNotCreatedException('Could not create a CubeHandler', 0, $e);
+            throw new ServiceNotCreatedException(
+                sprintf('Could not create %s', CubeHandler::class),
+                0,
+                $e
+            );
         }
 
         $this->addFormatter($container, $handler, $options);

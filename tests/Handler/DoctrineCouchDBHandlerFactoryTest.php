@@ -124,7 +124,7 @@ final class DoctrineCouchDBHandlerFactoryTest extends TestCase
 
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Could not load client class');
+        $this->expectExceptionMessage(sprintf('Could not load client class for %s class', DoctrineCouchDBHandler::class));
 
         $factory($container, '', ['client' => $clientName]);
     }
@@ -309,6 +309,32 @@ final class DoctrineCouchDBHandlerFactoryTest extends TestCase
 
         self::assertIsArray($processors);
         self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfig7(): void
+    {
+        $clientName = 'test-client';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($clientName)
+            ->willReturn(true);
+
+        $factory = new DoctrineCouchDBHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', DoctrineCouchDBHandler::class));
+
+        $factory($container, '', ['client' => $clientName]);
     }
 
     /**

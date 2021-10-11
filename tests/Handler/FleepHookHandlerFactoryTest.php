@@ -29,12 +29,15 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function extension_loaded;
 use function sprintf;
 
 final class FleepHookHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithoutConfig(): void
     {
@@ -57,6 +60,8 @@ final class FleepHookHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceEmptyConfig(): void
     {
@@ -81,6 +86,8 @@ final class FleepHookHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension openssl
      */
     public function testInvoceConfig(): void
     {
@@ -129,6 +136,8 @@ final class FleepHookHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension openssl
      */
     public function testInvoceConfig2(): void
     {
@@ -181,6 +190,8 @@ final class FleepHookHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
@@ -214,6 +225,8 @@ final class FleepHookHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
@@ -253,6 +266,8 @@ final class FleepHookHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndFormatter2(): void
     {
@@ -318,6 +333,8 @@ final class FleepHookHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {
@@ -345,5 +362,39 @@ final class FleepHookHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Processors must be an Array');
 
         $factory($container, '', ['token' => $token, 'level' => $level, 'bubble' => $bubble, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'processors' => $processors]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithoutException(): void
+    {
+        if (extension_loaded('openssl')) {
+            self::markTestSkipped('This test checks the exception if the openssl extension is missing');
+        }
+
+        $token        = 'test-token';
+        $timeout      = 42.0;
+        $writeTimeout = 120.0;
+        $level        = LogLevel::ALERT;
+        $bubble       = false;
+        $persistent   = true;
+        $chunkSize    = 100;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new FleepHookHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', FleepHookHandler::class));
+
+        $factory($container, '', ['token' => $token, 'level' => $level, 'bubble' => $bubble, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
     }
 }

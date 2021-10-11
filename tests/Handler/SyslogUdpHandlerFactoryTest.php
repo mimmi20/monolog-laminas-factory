@@ -29,6 +29,7 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function extension_loaded;
 use function sprintf;
 
 use const LOG_MAIL;
@@ -38,6 +39,8 @@ final class SyslogUdpHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
+     *
+     * @requires extension sockets
      */
     public function testInvoceWithoutConfig(): void
     {
@@ -60,6 +63,8 @@ final class SyslogUdpHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension sockets
      */
     public function testInvoceWithEmptyConfig(): void
     {
@@ -407,5 +412,37 @@ final class SyslogUdpHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Processors must be an Array');
 
         $factory($container, '', ['host' => $host, 'port' => $port, 'facility' => $facility, 'level' => LogLevel::ALERT, 'bubble' => false, 'ident' => $ident, 'rfc' => $rfc, 'processors' => $processors]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithoutExtension(): void
+    {
+        if (extension_loaded('sockets')) {
+            self::markTestSkipped('This test checks the exception if the sockets extension is missing');
+        }
+
+        $host     = 'test-host';
+        $port     = 4711;
+        $facility = LOG_MAIL;
+        $ident    = 'test-ident';
+        $rfc      = SyslogUdpHandler::RFC3164;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SyslogUdpHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', SyslogUdpHandler::class));
+
+        $factory($container, '', ['host' => $host, 'port' => $port, 'facility' => $facility, 'level' => LogLevel::ALERT, 'bubble' => false, 'ident' => $ident, 'rfc' => $rfc]);
     }
 }

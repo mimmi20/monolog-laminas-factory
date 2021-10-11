@@ -124,7 +124,7 @@ final class DynamoDbHandlerFactoryTest extends TestCase
 
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Could not load client class');
+        $this->expectExceptionMessage(sprintf('Could not load client class for %s class', DynamoDbHandler::class));
 
         $factory($container, '', ['client' => $clientName]);
     }
@@ -331,6 +331,32 @@ final class DynamoDbHandlerFactoryTest extends TestCase
 
         self::assertIsArray($processors);
         self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfig7(): void
+    {
+        $clientName = 'test-client';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($clientName)
+            ->willReturn(true);
+
+        $factory = new DynamoDbHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', DynamoDbHandler::class));
+
+        $factory($container, '', ['client' => $clientName]);
     }
 
     /**

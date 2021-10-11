@@ -29,12 +29,15 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function extension_loaded;
 use function sprintf;
 
 final class SlackWebhookHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithoutConfig(): void
     {
@@ -57,6 +60,8 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithEmptyConfig(): void
     {
@@ -79,6 +84,8 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfigWithoutChannel(): void
     {
@@ -106,7 +113,7 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      *
-     * @requires extension openssl
+     * @requires extension curl
      */
     public function testInvoceWithConfig(): void
     {
@@ -183,7 +190,7 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      *
-     * @requires extension openssl
+     * @requires extension curl
      */
     public function testInvoceWithConfig2(): void
     {
@@ -261,7 +268,7 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      *
-     * @requires extension openssl
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
@@ -294,7 +301,7 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      *
-     * @requires extension openssl
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
@@ -333,7 +340,7 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      *
-     * @requires extension openssl
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndFormatter2(): void
     {
@@ -424,7 +431,7 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      *
-     * @requires extension openssl
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {
@@ -448,6 +455,39 @@ final class SlackWebhookHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['webhookUrl' => $webhookUrl, 'channel' => $channel, 'userName' => $userName, 'useAttachment' => false, 'iconEmoji' => $iconEmoji, 'level' => LogLevel::ALERT, 'bubble' => false, 'useShortAttachment' => true, 'includeContextAndExtra' => true, 'excludeFields' => $excludeFields, 'processors' => $processors]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithError(): void
+    {
+        if (extension_loaded('curl')) {
+            self::markTestSkipped('This test checks the exception if the curl extension is missing');
+        }
+
+        $webhookUrl    = 'http://test.test';
+        $channel       = 'channel';
+        $userName      = 'user';
+        $iconEmoji     = 'icon';
+        $excludeFields = ['abc', 'xyz'];
+        $processors    = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SlackWebhookHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', SlackWebhookHandler::class));
 
         $factory($container, '', ['webhookUrl' => $webhookUrl, 'channel' => $channel, 'userName' => $userName, 'useAttachment' => false, 'iconEmoji' => $iconEmoji, 'level' => LogLevel::ALERT, 'bubble' => false, 'useShortAttachment' => true, 'includeContextAndExtra' => true, 'excludeFields' => $excludeFields, 'processors' => $processors]);
     }

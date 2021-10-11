@@ -556,6 +556,32 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
+    public function testInvoceWithConfig12(): void
+    {
+        $mailer = 'test-mailer';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($mailer)
+            ->willReturn(true);
+
+        $factory = new SwiftMailerHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', SwiftMailerHandler::class));
+
+        $factory($container, '', ['mailer' => $mailer]);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
         $mailer    = $this->getMockBuilder(Swift_Mailer::class)

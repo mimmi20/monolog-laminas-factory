@@ -29,6 +29,7 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function extension_loaded;
 use function gethostname;
 use function sprintf;
 
@@ -36,6 +37,8 @@ final class PushoverHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
+     *
+     * @requires extension sockets
      */
     public function testInvoceWithoutConfig(): void
     {
@@ -58,6 +61,8 @@ final class PushoverHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension sockets
      */
     public function testInvoceWithEmptyConfig(): void
     {
@@ -80,6 +85,8 @@ final class PushoverHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension sockets
      */
     public function testInvoceWithConfigWithoutUsers(): void
     {
@@ -106,6 +113,8 @@ final class PushoverHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension sockets
      */
     public function testInvoceWithConfigAndUsers(): void
     {
@@ -132,7 +141,6 @@ final class PushoverHandlerFactoryTest extends TestCase
         self::assertSame(60.0, $handler->getTimeout());
         self::assertSame(60.0, $handler->getWritingTimeout());
         self::assertSame(60.0, $handler->getConnectionTimeout());
-        //self::assertSame(0, $handler->getChunkSize());
         self::assertFalse($handler->isPersistent());
 
         $tk = new ReflectionProperty($handler, 'token');
@@ -185,6 +193,8 @@ final class PushoverHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension sockets
      */
     public function testInvoceWithConfigAndUsers2(): void
     {
@@ -269,6 +279,8 @@ final class PushoverHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension sockets
      */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
@@ -304,6 +316,8 @@ final class PushoverHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension sockets
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
@@ -345,6 +359,8 @@ final class PushoverHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension sockets
      */
     public function testInvoceWithConfigAndFormatter2(): void
     {
@@ -442,6 +458,8 @@ final class PushoverHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension sockets
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {
@@ -471,5 +489,41 @@ final class PushoverHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Processors must be an Array');
 
         $factory($container, '', ['token' => $token, 'users' => $users, 'title' => $title, 'level' => LogLevel::ALERT, 'bubble' => false, 'useSSL' => false, 'highPriorityLevel' => LogLevel::ERROR, 'emergencyLevel' => LogLevel::ALERT, 'retry' => $retry, 'expire' => $expire, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'processors' => $processors]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithoutExtension(): void
+    {
+        if (extension_loaded('sockets')) {
+            self::markTestSkipped('This test checks the exception if the sockets extension is missing');
+        }
+
+        $token        = 'token';
+        $users        = ['abc', 'xyz'];
+        $title        = 'title';
+        $retry        = 24;
+        $expire       = 42;
+        $timeout      = 42.0;
+        $writeTimeout = 120.0;
+        $persistent   = true;
+        $chunkSize    = 100;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new PushoverHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('The sockets extension is needed to use the %s', PushoverHandler::class));
+
+        $factory($container, '', ['token' => $token, 'users' => $users, 'title' => $title, 'level' => LogLevel::ALERT, 'bubble' => false, 'useSSL' => false, 'highPriorityLevel' => LogLevel::ERROR, 'emergencyLevel' => LogLevel::ALERT, 'retry' => $retry, 'expire' => $expire, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
     }
 }

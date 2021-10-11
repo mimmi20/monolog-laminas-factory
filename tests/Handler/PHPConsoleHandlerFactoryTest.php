@@ -338,6 +338,32 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
+    public function testInvoceConfig8(): void
+    {
+        $connector = 'abc';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($connector)
+            ->willReturn(true);
+
+        $factory = new PHPConsoleHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', PHPConsoleHandler::class));
+
+        $factory($container, '', ['connector' => $connector]);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
         $connector = $this->getMockBuilder(Connector::class)

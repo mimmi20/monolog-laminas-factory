@@ -273,6 +273,32 @@ final class PsrHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
+    public function testInvoceWithConfig7(): void
+    {
+        $loggerName = 'test-logger';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($loggerName)
+            ->willReturn(true);
+
+        $factory = new PsrHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', PsrHandler::class));
+
+        $factory($container, '', ['logger' => $loggerName]);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
         $logger    = $this->getMockBuilder(LoggerInterface::class)

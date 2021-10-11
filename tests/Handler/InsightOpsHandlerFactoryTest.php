@@ -29,12 +29,15 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function extension_loaded;
 use function sprintf;
 
 final class InsightOpsHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithoutConfig(): void
     {
@@ -57,6 +60,8 @@ final class InsightOpsHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithEmptyConfig(): void
     {
@@ -81,6 +86,8 @@ final class InsightOpsHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws ReflectionException
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfig(): void
     {
@@ -124,6 +131,8 @@ final class InsightOpsHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws ReflectionException
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfig2(): void
     {
@@ -173,6 +182,45 @@ final class InsightOpsHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
+    public function testInvoceWithoutExtension(): void
+    {
+        if (extension_loaded('openssl')) {
+            self::markTestSkipped('This test checks the exception if the openssl extension is missing');
+        }
+
+        $token        = 'test-token';
+        $timeout      = 42.0;
+        $writeTimeout = 120.0;
+        $level        = LogLevel::ALERT;
+        $bubble       = false;
+        $persistent   = true;
+        $chunkSize    = 100;
+        $region       = 'eu';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new InsightOpsHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not create %s', InsightOpsHandler::class)
+        );
+
+        $factory($container, '', ['token' => $token, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'region' => $region]);
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @requires extension openssl
+     */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
         $token        = 'test-token';
@@ -205,6 +253,8 @@ final class InsightOpsHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
@@ -244,6 +294,8 @@ final class InsightOpsHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws ReflectionException
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndFormatter2(): void
     {
@@ -304,6 +356,8 @@ final class InsightOpsHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {

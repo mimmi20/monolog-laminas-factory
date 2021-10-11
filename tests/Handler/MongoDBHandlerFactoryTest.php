@@ -180,7 +180,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
 
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Could not load client class');
+        $this->expectExceptionMessage(sprintf('Could not load client class for %s class', MongoDBHandler::class));
 
         $factory($container, '', ['client' => $client, 'database' => $database, 'collection' => $collection]);
     }
@@ -567,6 +567,34 @@ final class MongoDBHandlerFactoryTest extends TestCase
 
         self::assertIsArray($processors);
         self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfig13(): void
+    {
+        $client     = 'test-client';
+        $database   = 'test-database';
+        $collection = 'test-collection';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($client)
+            ->willReturn(true);
+
+        $factory = new MongoDBHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', MongoDBHandler::class));
+
+        $factory($container, '', ['client' => $client, 'database' => $database, 'collection' => $collection]);
     }
 
     /**

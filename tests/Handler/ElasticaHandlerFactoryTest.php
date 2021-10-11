@@ -128,6 +128,32 @@ final class ElasticaHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     */
+    public function testInvoceWithConfigError(): void
+    {
+        $client = 'xyz';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($client)
+            ->willReturn(true);
+
+        $factory = new ElasticaHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', ElasticaHandler::class));
+
+        $factory($container, '', ['client' => $client]);
+    }
+
+    /**
+     * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */

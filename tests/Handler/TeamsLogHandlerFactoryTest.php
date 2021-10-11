@@ -29,15 +29,22 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function class_exists;
 use function sprintf;
 
 final class TeamsLogHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithoutConfig(): void
     {
+        if (!class_exists(TeamsLogHandler::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', TeamsLogHandler::class));
+        }
+
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -57,9 +64,15 @@ final class TeamsLogHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithEmptyConfig(): void
     {
+        if (!class_exists(TeamsLogHandler::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', TeamsLogHandler::class));
+        }
+
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -81,9 +94,15 @@ final class TeamsLogHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfig(): void
     {
+        if (!class_exists(TeamsLogHandler::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', TeamsLogHandler::class));
+        }
+
         $url = 'test-url';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -123,9 +142,15 @@ final class TeamsLogHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfig2(): void
     {
+        if (!class_exists(TeamsLogHandler::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', TeamsLogHandler::class));
+        }
+
         $url = 'test-url';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -163,9 +188,15 @@ final class TeamsLogHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
+        if (!class_exists(TeamsLogHandler::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', TeamsLogHandler::class));
+        }
+
         $url       = 'test-url';
         $formatter = true;
 
@@ -190,9 +221,15 @@ final class TeamsLogHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
+        if (!class_exists(TeamsLogHandler::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', TeamsLogHandler::class));
+        }
+
         $url       = 'test-url';
         $formatter = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
@@ -223,9 +260,15 @@ final class TeamsLogHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndFormatter2(): void
     {
+        if (!class_exists(TeamsLogHandler::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', TeamsLogHandler::class));
+        }
+
         $url       = 'test-url';
         $formatter = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
@@ -276,9 +319,15 @@ final class TeamsLogHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {
+        if (!class_exists(TeamsLogHandler::class)) {
+            self::markTestSkipped(sprintf('class %s is required for this test', TeamsLogHandler::class));
+        }
+
         $url        = 'test-url';
         $processors = true;
 

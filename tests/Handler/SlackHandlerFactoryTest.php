@@ -29,12 +29,15 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function extension_loaded;
 use function sprintf;
 
 final class SlackHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithoutConfig(): void
     {
@@ -57,6 +60,8 @@ final class SlackHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithEmptyConfig(): void
     {
@@ -79,6 +84,8 @@ final class SlackHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension openssl
      */
     public function testInvoceWithConfigWithoutChannel(): void
     {
@@ -488,5 +495,43 @@ final class SlackHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage('Processors must be an Array');
 
         $factory($container, '', ['token' => $token, 'channel' => $channel, 'userName' => $userName, 'useAttachment' => false, 'iconEmoji' => $iconEmoji, 'level' => LogLevel::ALERT, 'bubble' => false, 'useShortAttachment' => true, 'includeContextAndExtra' => true, 'excludeFields' => $excludeFields, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'processors' => $processors]);
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @requires extension openssl
+     */
+    public function testInvoceWithError(): void
+    {
+        if (extension_loaded('openssl')) {
+            self::markTestSkipped('This test checks the exception if the openssl extension is missing');
+        }
+
+        $token         = 'token';
+        $channel       = 'channel';
+        $userName      = 'user';
+        $iconEmoji     = 'icon';
+        $excludeFields = ['abc', 'xyz'];
+        $timeout       = 42.0;
+        $writeTimeout  = 120.0;
+        $persistent    = true;
+        $chunkSize     = 100;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SlackHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', SlackHandler::class));
+
+        $factory($container, '', ['token' => $token, 'channel' => $channel, 'userName' => $userName, 'useAttachment' => false, 'iconEmoji' => $iconEmoji, 'level' => LogLevel::ALERT, 'bubble' => false, 'useShortAttachment' => true, 'includeContextAndExtra' => true, 'excludeFields' => $excludeFields, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
     }
 }

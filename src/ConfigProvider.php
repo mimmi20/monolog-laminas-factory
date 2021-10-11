@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory;
 
+use Actived\MicrosoftTeamsNotifier\Handler\MicrosoftTeamsHandler;
 use Bartlett\Monolog\Handler\CallbackFilterHandler;
 use CMDISP\MonologMicrosoftTeams\TeamsLogHandler;
 use JK\Monolog\Processor\RequestHeaderProcessor;
@@ -62,6 +63,7 @@ use Mimmi20\LoggerFactory\Handler\LogEntriesHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\LogglyHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\LogmaticHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\MandrillHandlerFactory;
+use Mimmi20\LoggerFactory\Handler\MicrosoftTeamsHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\MongoDBHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\NativeMailerHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\NewRelicHandlerFactory;
@@ -262,6 +264,7 @@ final class ConfigProvider
                 'loggly' => LogglyHandler::class,
                 'logmatic' => LogmaticHandler::class,
                 'mandrill' => MandrillHandler::class,
+                'microsoft-teams' => MicrosoftTeamsHandler::class,
                 'mongo' => MongoDBHandler::class,
                 'nativemailer' => NativeMailerHandler::class,
                 'newRelic' => NewRelicHandler::class,
@@ -320,6 +323,7 @@ final class ConfigProvider
                 LogglyHandler::class => LogglyHandlerFactory::class,
                 LogmaticHandler::class => LogmaticHandlerFactory::class,
                 MandrillHandler::class => MandrillHandlerFactory::class,
+                MicrosoftTeamsHandler::class => MicrosoftTeamsHandlerFactory::class,
                 MongoDBHandler::class => MongoDBHandlerFactory::class,
                 NativeMailerHandler::class => NativeMailerHandlerFactory::class,
                 NewRelicHandler::class => NewRelicHandlerFactory::class,

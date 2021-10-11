@@ -7,7 +7,7 @@ on:
 name: "Continuous Integration"
 
 env:
-  PHP_EXTENSIONS: "json, opcache, openssl, mbstring, mongodb, amqp, sockets, curl"
+  PHP_EXTENSIONS: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, mongodb, amqp, sockets, curl"
   PHP_INI_VALUES: "opcache.enable=1, opcache.enable_cli=1, opcache.fast_shutdown=0, zend.assertions=1, assert.exception=On, intl.default_locale=de, intl.use_exceptions=1"
 
 jobs:
@@ -365,8 +365,8 @@ jobs:
       - name: "Run unit tests with phpunit/phpunit"
         run: "vendor/bin/phpunit -c phpunit.xml --verbose --no-coverage"
 
-  code-coverage:
-    name: "Code Coverage with PHPUnit"
+  code-coverage-with-all-extensions:
+    name: "Code Coverage with PHPUnit with all Extensions"
 
     needs: "tests"
 
@@ -399,7 +399,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           extensions: "${{ env.PHP_EXTENSIONS }}"
-          ini-values: "${{ env.PHP_INI_VALUES }}"
+          ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "composer:v2, infection"
 
@@ -427,8 +427,286 @@ jobs:
         uses: "codecov/codecov-action@v2.1.0"
         with:
           file: ".build/coverage/clover.xml"
-          flags: "phpunit,php-${{ matrix.php-version }},${{ matrix.coverage-drivers }},${{ matrix.php-version }},${{ matrix.operating-system }}"
+          flags: "phpunit,php-${{ matrix.php-version }},${{ matrix.coverage-drivers }},${{ matrix.php-version }},${{ matrix.operating-system }},with-all-extensions"
           verbose: false
 
       - name: "Run mutation tests with infection/infection"
-        run: "infection -s --min-covered-msi=90 --min-msi=87 --coverage=.build/coverage --logger-github"
+        run: "infection -s --min-covered-msi=90 --min-msi=87 --coverage=.build/coverage --only-covered --logger-github"
+
+  code-coverage-without-sockets:
+    name: "Code Coverage with PHPUnit without sockets"
+
+    needs: "tests"
+
+    runs-on: "${{ matrix.operating-system }}"
+
+    continue-on-error: false
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        operating-system:
+          - "ubuntu-20.04"
+
+        php-version:
+          - "7.4"
+
+        dependencies:
+          - ""
+
+        coverage-drivers:
+          - "xdebug"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2.3.4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@2.15.0"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, mongodb, amqp, :sockets, curl"
+          ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
+          coverage: "${{ matrix.coverage-drivers }}"
+          tools: "composer:v2, infection"
+
+      - name: "Determine composer cache directory"
+        id: "determine-composer-cache-directory"
+        run: "echo \"::set-output name=directory::$(composer config cache-dir)\""
+
+      - name: "Cache dependencies installed with composer"
+        uses: "actions/cache@v2.1.6"
+        with:
+          path: "${{ steps.determine-composer-cache-directory.outputs.directory }}"
+          key: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-${{ hashFiles('composer.lock') }}"
+          restore-keys: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-"
+
+      - name: "Update dependencies with composer"
+        run: "composer remove --dev php-amqplib/php-amqplib"
+
+      - name: "Update dependencies with composer"
+        run: "composer update --optimize-autoloader --prefer-dist --prefer-stable --no-progress --no-interaction -v --ansi ${{ matrix.dependencies }}"
+
+      - name: "Create cache directory for phpunit/phpunit"
+        run: "mkdir -p .build/coverage"
+
+      - name: "Collect code coverage with Xdebug and phpunit/phpunit"
+        run: "vendor/bin/phpunit -c phpunit.xml --verbose --debug --coverage-clover=.build/coverage/clover.xml --coverage-text --coverage-xml=.build/coverage/coverage-xml --log-junit=.build/coverage/phpunit.junit.xml"
+
+      - name: "Upload coverage to Codecov"
+        uses: "codecov/codecov-action@v2.1.0"
+        with:
+          file: ".build/coverage/clover.xml"
+          flags: "phpunit,php-${{ matrix.php-version }},${{ matrix.coverage-drivers }},${{ matrix.php-version }},${{ matrix.operating-system }},without-sockets"
+          verbose: false
+
+      - name: "Run mutation tests with infection/infection"
+        run: "infection -s --min-covered-msi=90 --min-msi=87 --coverage=.build/coverage --only-covered --logger-github"
+
+  code-coverage-without-curl:
+    name: "Code Coverage with PHPUnit without curl"
+
+    needs: "tests"
+
+    runs-on: "${{ matrix.operating-system }}"
+
+    continue-on-error: false
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        operating-system:
+          - "ubuntu-20.04"
+
+        php-version:
+          - "7.4"
+
+        dependencies:
+          - ""
+
+        coverage-drivers:
+          - "xdebug"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2.3.4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@2.15.0"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, mongodb, amqp, sockets, :curl"
+          ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
+          coverage: "${{ matrix.coverage-drivers }}"
+          tools: "composer:v2, infection"
+
+      - name: "Determine composer cache directory"
+        id: "determine-composer-cache-directory"
+        run: "echo \"::set-output name=directory::$(composer config cache-dir)\""
+
+      - name: "Cache dependencies installed with composer"
+        uses: "actions/cache@v2.1.6"
+        with:
+          path: "${{ steps.determine-composer-cache-directory.outputs.directory }}"
+          key: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-${{ hashFiles('composer.lock') }}"
+          restore-keys: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-"
+
+      - name: "Update dependencies with composer"
+        run: "composer remove --dev cmdisp/monolog-microsoft-teams rollbar/rollbar"
+
+      - name: "Update dependencies with composer"
+        run: "composer update --optimize-autoloader --prefer-dist --prefer-stable --no-progress --no-interaction -v --ansi ${{ matrix.dependencies }}"
+
+      - name: "Create cache directory for phpunit/phpunit"
+        run: "mkdir -p .build/coverage"
+
+      - name: "Collect code coverage with Xdebug and phpunit/phpunit"
+        run: "vendor/bin/phpunit -c phpunit.xml --verbose --debug --coverage-clover=.build/coverage/clover.xml --coverage-text --coverage-xml=.build/coverage/coverage-xml --log-junit=.build/coverage/phpunit.junit.xml"
+
+      - name: "Upload coverage to Codecov"
+        uses: "codecov/codecov-action@v2.1.0"
+        with:
+          file: ".build/coverage/clover.xml"
+          flags: "phpunit,php-${{ matrix.php-version }},${{ matrix.coverage-drivers }},${{ matrix.php-version }},${{ matrix.operating-system }},without-curl"
+          verbose: false
+
+      - name: "Run mutation tests with infection/infection"
+        run: "infection -s --min-covered-msi=90 --min-msi=87 --coverage=.build/coverage --only-covered --logger-github"
+
+  code-coverage-without-mongodb:
+    name: "Code Coverage with PHPUnit without mongodb"
+
+    needs: "tests"
+
+    runs-on: "${{ matrix.operating-system }}"
+
+    continue-on-error: false
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        operating-system:
+          - "ubuntu-20.04"
+
+        php-version:
+          - "7.4"
+
+        dependencies:
+          - ""
+
+        coverage-drivers:
+          - "xdebug"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2.3.4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@2.15.0"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, :mongodb, amqp, sockets, curl"
+          ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
+          coverage: "${{ matrix.coverage-drivers }}"
+          tools: "composer:v2, infection"
+
+      - name: "Determine composer cache directory"
+        id: "determine-composer-cache-directory"
+        run: "echo \"::set-output name=directory::$(composer config cache-dir)\""
+
+      - name: "Cache dependencies installed with composer"
+        uses: "actions/cache@v2.1.6"
+        with:
+          path: "${{ steps.determine-composer-cache-directory.outputs.directory }}"
+          key: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-${{ hashFiles('composer.lock') }}"
+          restore-keys: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-"
+
+      - name: "Update dependencies with composer"
+        run: "composer update --optimize-autoloader --prefer-dist --prefer-stable --no-progress --no-interaction -v --ansi ${{ matrix.dependencies }}"
+
+      - name: "Create cache directory for phpunit/phpunit"
+        run: "mkdir -p .build/coverage"
+
+      - name: "Collect code coverage with Xdebug and phpunit/phpunit"
+        run: "vendor/bin/phpunit -c phpunit.xml --verbose --coverage-clover=.build/coverage/clover.xml --coverage-text --coverage-xml=.build/coverage/coverage-xml --log-junit=.build/coverage/phpunit.junit.xml"
+
+      - name: "Upload coverage to Codecov"
+        uses: "codecov/codecov-action@v2.1.0"
+        with:
+          file: ".build/coverage/clover.xml"
+          flags: "phpunit,php-${{ matrix.php-version }},${{ matrix.coverage-drivers }},${{ matrix.php-version }},${{ matrix.operating-system }},without-mongodb"
+          verbose: false
+
+      - name: "Run mutation tests with infection/infection"
+        run: "infection -s --min-covered-msi=90 --min-msi=87 --coverage=.build/coverage --only-covered --logger-github"
+
+  code-coverage-without-amqp:
+    name: "Code Coverage with PHPUnit without amqp"
+
+    needs: "tests"
+
+    runs-on: "${{ matrix.operating-system }}"
+
+    continue-on-error: false
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        operating-system:
+          - "ubuntu-20.04"
+
+        php-version:
+          - "7.4"
+
+        dependencies:
+          - ""
+
+        coverage-drivers:
+          - "xdebug"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2.3.4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@2.15.0"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, mongodb, :amqp, sockets, curl"
+          ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
+          coverage: "${{ matrix.coverage-drivers }}"
+          tools: "composer:v2, infection"
+
+      - name: "Determine composer cache directory"
+        id: "determine-composer-cache-directory"
+        run: "echo \"::set-output name=directory::$(composer config cache-dir)\""
+
+      - name: "Cache dependencies installed with composer"
+        uses: "actions/cache@v2.1.6"
+        with:
+          path: "${{ steps.determine-composer-cache-directory.outputs.directory }}"
+          key: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-${{ hashFiles('composer.lock') }}"
+          restore-keys: "php-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-"
+
+      - name: "Update dependencies with composer"
+        run: "composer update --optimize-autoloader --prefer-dist --prefer-stable --no-progress --no-interaction -v --ansi ${{ matrix.dependencies }}"
+
+      - name: "Create cache directory for phpunit/phpunit"
+        run: "mkdir -p .build/coverage"
+
+      - name: "Collect code coverage with Xdebug and phpunit/phpunit"
+        run: "vendor/bin/phpunit -c phpunit.xml --verbose --coverage-clover=.build/coverage/clover.xml --coverage-text --coverage-xml=.build/coverage/coverage-xml --log-junit=.build/coverage/phpunit.junit.xml"
+
+      - name: "Upload coverage to Codecov"
+        uses: "codecov/codecov-action@v2.1.0"
+        with:
+          file: ".build/coverage/clover.xml"
+          flags: "phpunit,php-${{ matrix.php-version }},${{ matrix.coverage-drivers }},${{ matrix.php-version }},${{ matrix.operating-system }},without-amqp"
+          verbose: false
+
+      - name: "Run mutation tests with infection/infection"
+        run: "infection -s --min-covered-msi=90 --min-msi=87 --coverage=.build/coverage --only-covered --logger-github"

@@ -314,6 +314,32 @@ final class GelfHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
+    public function testInvoceWithConfig7(): void
+    {
+        $publisherName = 'test-publisher';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($publisherName)
+            ->willReturn(true);
+
+        $factory = new GelfHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', GelfHandler::class));
+
+        $factory($container, '', ['publisher' => $publisherName]);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
         $publisher = $this->getMockBuilder(PublisherInterface::class)

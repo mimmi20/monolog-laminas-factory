@@ -28,6 +28,7 @@ use Psr\Log\LogLevel;
 use function array_key_exists;
 use function is_array;
 use function is_string;
+use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -69,6 +70,12 @@ final class GelfHandlerFactory implements FactoryInterface
                 $publisher = $container->get($options['publisher']);
             } catch (ContainerExceptionInterface $e) {
                 throw new ServiceNotFoundException('Could not load publisher class', 0, $e);
+            }
+
+            if (!$publisher instanceof PublisherInterface) {
+                throw new ServiceNotCreatedException(
+                    sprintf('Could not create %s', GelfHandler::class)
+                );
             }
         }
 
