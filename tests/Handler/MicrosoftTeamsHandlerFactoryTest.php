@@ -13,6 +13,7 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Actived\MicrosoftTeamsNotifier\Handler\MicrosoftTeamsHandler;
+use Actived\MicrosoftTeamsNotifier\Handler\MicrosoftTeamsRecord;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -29,6 +30,7 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function assert;
 use function extension_loaded;
 use function sprintf;
 
@@ -115,6 +117,30 @@ final class MicrosoftTeamsHandlerFactoryTest extends TestCase
 
         self::assertSame($url, $urlP->getValue($handler));
 
+        $formatP = new ReflectionProperty($handler, 'format');
+        $formatP->setAccessible(true);
+
+        self::assertSame('%message%', $formatP->getValue($handler));
+
+        $microsoftTeamsRecord = new ReflectionProperty($handler, 'microsoftTeamsRecord');
+        $microsoftTeamsRecord->setAccessible(true);
+
+        $mtr = $microsoftTeamsRecord->getValue($handler);
+        assert($mtr instanceof MicrosoftTeamsRecord);
+
+        self::assertSame('Message', $mtr->getTitle());
+        self::assertSame('Date', $mtr->getSubject());
+
+        $emojiP = new ReflectionProperty($mtr, 'emoji');
+        $emojiP->setAccessible(true);
+
+        self::assertNull($emojiP->getValue($mtr));
+
+        $colorP = new ReflectionProperty($mtr, 'color');
+        $colorP->setAccessible(true);
+
+        self::assertNull($colorP->getValue($mtr));
+
         self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
@@ -135,7 +161,12 @@ final class MicrosoftTeamsHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfig2(): void
     {
-        $url = 'test-url';
+        $url     = 'test-url';
+        $title   = 'test-title';
+        $subject = 'test-subject';
+        $emoji   = ';)';
+        $color   = '#C00';
+        $format  = '%message% %extras%';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -147,7 +178,7 @@ final class MicrosoftTeamsHandlerFactoryTest extends TestCase
 
         $factory = new MicrosoftTeamsHandlerFactory();
 
-        $handler = $factory($container, '', ['url' => $url, 'level' => LogLevel::ALERT, 'bubble' => false]);
+        $handler = $factory($container, '', ['url' => $url, 'title' => $title, 'subject' => $subject, 'emoji' => $emoji, 'color' => $color, 'format' => $format, 'level' => LogLevel::ALERT, 'bubble' => false]);
 
         self::assertInstanceOf(MicrosoftTeamsHandler::class, $handler);
 
@@ -158,6 +189,30 @@ final class MicrosoftTeamsHandlerFactoryTest extends TestCase
         $urlP->setAccessible(true);
 
         self::assertSame($url, $urlP->getValue($handler));
+
+        $formatP = new ReflectionProperty($handler, 'format');
+        $formatP->setAccessible(true);
+
+        self::assertSame($format, $formatP->getValue($handler));
+
+        $microsoftTeamsRecord = new ReflectionProperty($handler, 'microsoftTeamsRecord');
+        $microsoftTeamsRecord->setAccessible(true);
+
+        $mtr = $microsoftTeamsRecord->getValue($handler);
+        assert($mtr instanceof MicrosoftTeamsRecord);
+
+        self::assertSame($title, $mtr->getTitle());
+        self::assertSame($subject, $mtr->getSubject());
+
+        $emojiP = new ReflectionProperty($mtr, 'emoji');
+        $emojiP->setAccessible(true);
+
+        self::assertSame($emoji, $emojiP->getValue($mtr));
+
+        $colorP = new ReflectionProperty($mtr, 'color');
+        $colorP->setAccessible(true);
+
+        self::assertSame($color, $colorP->getValue($mtr));
 
         self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
 
@@ -277,6 +332,30 @@ final class MicrosoftTeamsHandlerFactoryTest extends TestCase
         $urlP->setAccessible(true);
 
         self::assertSame($url, $urlP->getValue($handler));
+
+        $formatP = new ReflectionProperty($handler, 'format');
+        $formatP->setAccessible(true);
+
+        self::assertSame('%message%', $formatP->getValue($handler));
+
+        $microsoftTeamsRecord = new ReflectionProperty($handler, 'microsoftTeamsRecord');
+        $microsoftTeamsRecord->setAccessible(true);
+
+        $mtr = $microsoftTeamsRecord->getValue($handler);
+        assert($mtr instanceof MicrosoftTeamsRecord);
+
+        self::assertSame('Message', $mtr->getTitle());
+        self::assertSame('Date', $mtr->getSubject());
+
+        $emojiP = new ReflectionProperty($mtr, 'emoji');
+        $emojiP->setAccessible(true);
+
+        self::assertNull($emojiP->getValue($mtr));
+
+        $colorP = new ReflectionProperty($mtr, 'color');
+        $colorP->setAccessible(true);
+
+        self::assertNull($colorP->getValue($mtr));
 
         self::assertSame($formatter, $handler->getFormatter());
 

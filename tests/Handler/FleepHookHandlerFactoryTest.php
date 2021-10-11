@@ -367,7 +367,7 @@ final class FleepHookHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithError(): void
+    public function testInvoceWithoutException(): void
     {
         if (extension_loaded('openssl')) {
             self::markTestSkipped('This test checks the exception if the openssl extension is missing');

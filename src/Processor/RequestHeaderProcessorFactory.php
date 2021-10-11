@@ -15,6 +15,10 @@ namespace Mimmi20\LoggerFactory\Processor;
 use Interop\Container\ContainerInterface;
 use JK\Monolog\Processor\RequestHeaderProcessor;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Log\LogLevel;
+
+use function array_key_exists;
+use function is_array;
 
 final class RequestHeaderProcessorFactory implements FactoryInterface
 {
@@ -29,6 +33,12 @@ final class RequestHeaderProcessorFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): RequestHeaderProcessor
     {
-        return new RequestHeaderProcessor();
+        $level = LogLevel::DEBUG;
+
+        if (is_array($options) && array_key_exists('level', $options)) {
+            $level = $options['level'];
+        }
+
+        return new RequestHeaderProcessor($level);
     }
 }

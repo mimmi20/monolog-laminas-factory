@@ -81,6 +81,10 @@ This library was inspired by [psr11-monolog](https://gitlab.com/blazon/psr11-mon
       - [PsrHandler](#psrhandler)
       - [TestHandler](#testhandler)
       - [OverflowHandler](#overflowhandler)
+    - [3rd Party Handlers](#3rd-party-handlers)
+      - [MicrosoftTeamsHandler](#microsoftteamshandler)
+      - [TeamsLogHandler](#teamsloghandler)
+      - [CallbackFilterHandler](#callbackfilterhandler)
   - [Formatters](#formatters)
     - [LineFomatter](#linefomatter)
     - [HtmlFormatter](#htmlformatter)
@@ -132,11 +136,11 @@ return [
         'exceptionhandler' => false,
         'errorhandler' => false,
         'shutdownhandler' => false,
-        'writers' => [],    // Writers for Laminas Log
+        'writers' => [], // Writers for Laminas Log
         'processors' => [], // Processors for Laminas Log
-        'handlers' => [     // Handlers for Monolog
-            // At the bare minimum you must include a default handler config.
-            // Otherwise log entries will be sent to the void.
+        'handlers' => [ // Handlers for Monolog
+ // At the bare minimum you must include a default handler config.
+ // Otherwise log entries will be sent to the void.
             'default' => [
                 'type' => 'stream',
                 'enabled' => true,
@@ -145,7 +149,7 @@ return [
                 ],
             ],
             
-            // Another Handler
+ // Another Handler
             'myOtherHandler' => [
                 'type' => 'stream',
                 'enabled' => false,
@@ -195,30 +199,30 @@ return [
     'log' => [
         'name' => 'name',
         'handlers' => [
-            // Array Keys are the names used for the handlers
+ // Array Keys are the names used for the handlers
             'default' => [
-                // A Handler type or pre-configured service from the container
+ // A Handler type or pre-configured service from the container
                 'type' => 'stream',
                 
-                // Handler specific options.  See handlers below
+ // Handler specific options.  See handlers below
                 'options' => [
                     'stream' => '/tmp/log_one.txt',
                 
-                    // Optional: Formatter for the handler.
+ // Optional: Formatter for the handler.
                     'formatter' => [
                         'type' => 'line',
                             
-                        // formatter specific options.  See formatters below
+ // formatter specific options.  See formatters below
                         'options' => [], 
                     ], 
                     
-                    // Optional: Processor for the handler
+ // Optional: Processor for the handler
                     'processors' => [
                         [
-                            // A processor type or pre-configured service from the container
+ // A processor type or pre-configured service from the container
                             'type' => 'psrLogMessage',
                             
-                            // processor specific options.  See processors below
+ // processor specific options.  See processors below
                             'options' => [], 
                         ],
                     ],
@@ -226,14 +230,14 @@ return [
             ],
         ],
         
-        // Processors for Monolog/Logger
+ // Processors for Monolog/Logger
         'monolog_processors' => [
-            // Array Keys are the names used for the processors
+ // Array Keys are the names used for the processors
             'processorOne' => [
-                // A processor type or pre-configured service from the container
+ // A processor type or pre-configured service from the container
                 'type' => 'psrLogMessage',
                 
-                // processor specific options.  See processors below
+ // processor specific options.  See processors below
                 'options' => [], 
             ],        
         ],
@@ -264,7 +268,7 @@ return [
                     'filePermission' => null, // Optional: file permissions (default (0644) are only for owner read/write)
                     'useLocking' => false, // Optional: Try to lock log file before doing any writes
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -298,7 +302,7 @@ return [
                     'filenameFormat' => '{filename}-{date}', // Optional
                     'dateFormat' => 'Y-m-d', // Optional
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -327,7 +331,7 @@ return [
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     'logOpts' => LOG_PID, // Optional: Option flags for the openlog() call, defaults to LOG_PID
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -356,7 +360,7 @@ return [
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     'expandNewlines' => false, // Optional: If set to true, newlines in the message will be expanded to be take multiple log entries
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -384,7 +388,7 @@ return [
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     'cwd' => __DIR__, // Optional: "Current working directory" (CWD) for the process to be executed in.
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -418,7 +422,7 @@ return [
                     'contentType' => 'text/html', // Optional
                     'encoding' => 'utf-8', // Optional
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -446,7 +450,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -484,7 +488,7 @@ return [
                     'persistent' => false, // Optional
                     'chunkSize' => 100, // Optional
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -515,7 +519,7 @@ return [
                     'persistent' => false, // Optional
                     'chunkSize' => 100, // Optional
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -549,7 +553,7 @@ return [
                     'bubble' => false, // Optional: Whether the messages that are handled can bubble up the stack or not
                     'excludeFields' => ['context.field1', 'extra.field2'], // Optional: Dot separated list of fields to exclude from slack message.
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -587,7 +591,7 @@ return [
                     'persistent' => false, // Optional
                     'chunkSize' => 100, // Optional
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -618,7 +622,7 @@ return [
                     'level' => \Psr\Log\LogLevel::INFO, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => false, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -646,7 +650,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -677,7 +681,7 @@ return [
                     'persistent' => false, // Optional
                     'chunkSize' => 100, // Optional
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -705,7 +709,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -738,7 +742,7 @@ return [
                     'persistent' => false, // Optional
                     'chunkSize' => 100, // Optional
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -766,7 +770,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -792,7 +796,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -823,7 +827,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -848,7 +852,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -876,7 +880,7 @@ return [
                     'explodeArrays' => false, // Optional: Explode Arrays
                     'transactionName' => 'my-transaction', // Optional: Explode Arrays
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -903,7 +907,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -942,7 +946,7 @@ return [
                     'ident' => 'me-too', // Optional: Program name or tag for each log message.
                     'rfc' => '', // Optional
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -975,7 +979,7 @@ return [
                     'chunkSize' => 100, // Optional
                     'host' => 'data.logentries.com', // Optional
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1008,7 +1012,7 @@ return [
                     'persistent' => false, // Optional
                     'chunkSize' => 100, // Optional
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1042,7 +1046,7 @@ return [
                     'persistent' => false, // Optional
                     'chunkSize' => 100, // Optional
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1070,7 +1074,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1080,8 +1084,7 @@ return [
 ```
 Monolog Docs: [SqsHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/SqsHandler.php)
 
-
-### Logging in development
+### Logging in Development
 
 ##### FirePHPHandler
 Handler for [FirePHP](http://www.firephp.org/), providing inline console messages within [FireBug](http://getfirebug.com/).
@@ -1101,7 +1104,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1127,7 +1130,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1154,7 +1157,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1183,7 +1186,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1192,7 +1195,6 @@ return [
 ];
 ```
 Monolog Docs: [PHPConsoleHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/PHPConsoleHandler.php)
-
 
 ### Log to databases
 
@@ -1216,7 +1218,7 @@ return [
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     'capSize' => true, // Optional: Number of entries to limit list size to, 0 = unlimited
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1245,7 +1247,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1254,7 +1256,6 @@ return [
 ];
 ```
 Monolog Docs: [RedisPubSubHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/RedisPubSubHandler.php)
-
 
 #### MongoDBHandler
 Handler to write records in MongoDB via a [Mongo extension](http://php.net/manual/en/mongodb.tutorial.library.php) connection.
@@ -1275,7 +1276,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1298,7 +1299,7 @@ return [
                 'type' => 'couchDb',
                   
                 'options' => [
-                    'host' => 'localhost',  // Optional: Hostname/Ip address,  Default: 'localhost'
+                    'host' => 'localhost', // Optional: Hostname/Ip address,  Default: 'localhost'
                     'port' => 5984, // Optional: port,  Default: 5984
                     'dbname' => 'db', // Optional: Database Name,  Default: 'logger'
                     'username' => 'someuser', // Optional: Username,  Default: null
@@ -1306,7 +1307,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1333,7 +1334,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1363,7 +1364,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1393,7 +1394,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1421,7 +1422,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1453,12 +1454,12 @@ return [
                 'options' => [
                     'handler' => [], // Required: Registered Handler to wrap
                     'activationStrategy' => 'my-service', // Optional: Strategy which determines when this handler takes action.  Must be either the error level or configured ActivationStrategyInterface service
-                    'bufferSize' => 0,            // Optional: How many entries should be buffered at most, beyond that the oldest items are removed from the buffer.
-                    'bubble' => true,         // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'stopBuffering' => true,         // Optional: Whether the handler should stop buffering after being triggered (default true)
-                    'passthruLevel' => null,         // Optional: Minimum level to always flush to handler on close, even if strategy not triggered
+                    'bufferSize' => 0, // Optional: How many entries should be buffered at most, beyond that the oldest items are removed from the buffer.
+                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                    'stopBuffering' => true, // Optional: Whether the handler should stop buffering after being triggered (default true)
+                    'passthruLevel' => null, // Optional: Minimum level to always flush to handler on close, even if strategy not triggered
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1467,7 +1468,6 @@ return [
 ];
 ```
 Monolog Docs: [FingersCrossedHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/FingersCrossedHandler.php)
-
 
 #### DeduplicationHandler
 Useful if you are sending notifications or emails when critical errors occur. It takes
@@ -1489,13 +1489,13 @@ return [
             'myHandlerName' => [
                 'type' => 'deduplication',
                 'options' => [
-                    'handler' => [],           // Required: Registered Handler to wrap
-                    'deduplicationStore' => '/tmp/somestore',       // Optional: The file/path where the deduplication log should be kept
+                    'handler' => [], // Required: Registered Handler to wrap
+                    'deduplicationStore' => '/tmp/somestore', // Optional: The file/path where the deduplication log should be kept
                     'deduplicationLevel' => \Psr\Log\LogLevel::ERROR, // Optional:The minimum logging level for log records to be looked at for deduplication purposes
-                    'time' => 60,                     // Optional: The period (in seconds) during which duplicate entries should be suppressed after a given log is sent through
-                    'bubble' => true,                   // Optional: Whether the messages that are handled can bubble up the stack or not
+                    'time' => 60, // Optional: The period (in seconds) during which duplicate entries should be suppressed after a given log is sent through
+                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1519,7 +1519,7 @@ return [
             'myHandlerName' => [
                 'type' => 'whatFailureGroup',
                 'options' => [
-                    'handlers' => [],   // Required: Array of Handlers to wrap
+                    'handlers' => [], // Required: Array of Handlers to wrap
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
                     'processors' => [], // Optional: Processors for the handler.
@@ -1547,7 +1547,7 @@ return [
             'myHandlerName' => [
                 'type' => 'fallbackgroup',
                 'options' => [
-                    'handlers' => [],   // Required: Array of Registered Handlers to wrap
+                    'handlers' => [], // Required: Array of Registered Handlers to wrap
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
                     'processors' => [], // Optional: Processors for the handler.
@@ -1574,13 +1574,13 @@ return [
             'myHandlerName' => [
                 'type' => 'buffer',
                 'options' => [
-                    'handler' => [],           // Required: Registered Handler to wrap
-                    'bufferLimit' => 0,                      // Optional: How many entries should be buffered at most, beyond that the oldest items are removed from the buffer.
+                    'handler' => [], // Required: Registered Handler to wrap
+                    'bufferLimit' => 0, // Optional: How many entries should be buffered at most, beyond that the oldest items are removed from the buffer.
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true,                   // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'flushOnOverflow' => true,                  // Optional: If true, the buffer is flushed when the max size has been reached, by default oldest entries are discarded
+                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                    'flushOnOverflow' => true, // Optional: If true, the buffer is flushed when the max size has been reached, by default oldest entries are discarded
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1589,7 +1589,6 @@ return [
 ];
 ```
 Monolog Docs: [BufferHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/BufferHandler.php)
-
 
 #### GroupHandler
 This handler groups other handlers. Every record received is sent to all the handlers it is configured with.
@@ -1604,7 +1603,7 @@ return [
                 'type' => 'group',
                 'options' => [
                     'handlers' => [], // Required: Array of Registered Handlers to wrap
-                    'bubble' => true,                                 // Optional: Whether the messages that are handled can bubble up the stack or not
+                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
                     'processors' => [], // Optional: Processors for the handler.
                 ],
@@ -1614,7 +1613,6 @@ return [
 ];
 ```
 Monolog Docs: [GroupHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/GroupHandler.php)
-
 
 #### FilterHandler
 Simple handler wrapper that filters records based on a list of levels
@@ -1628,12 +1626,12 @@ return [
             'myHandlerName' => [
                 'type' => 'filter',
                 'options' => [
-                    'handler' => [],               // Required: Registered Handler to wrap
-                    'minLevelOrList' => \Psr\Log\LogLevel::DEBUG,     // Optional: An array of levels to accept or a minimum level if maxLevel is provided
+                    'handler' => [], // Required: Registered Handler to wrap
+                    'minLevelOrList' => \Psr\Log\LogLevel::DEBUG, // Optional: An array of levels to accept or a minimum level if maxLevel is provided
                     'maxLevel' => \Psr\Log\LogLevel::EMERGENCY, // Optional: Maximum level to accept, only used if $minLevelOrList is not an array
-                    'bubble' => true,                       // Optional: Whether the messages that are handled can bubble up the stack or not
+                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1642,7 +1640,6 @@ return [
 ];
 ```
 Monolog Docs: [FilterHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/FilterHandler.php)
-
 
 #### SamplingHandler
 A sampled event stream can be useful for logging high frequency events in
@@ -1663,9 +1660,9 @@ return [
                 'type' => 'sampling',
                 'options' => [
                     'handler' => [], // Required: Registered Handler to wrap
-                    'factor' => 5,            // Required: Sample factor
+                    'factor' => 5, // Required: Sample factor
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1718,7 +1715,6 @@ return [
 ```
 Monolog Docs: [NullHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/NullHandler.php)
 
-
 #### PsrHandler
 Can be used to forward log records to an existing PSR-3 logger
 
@@ -1731,11 +1727,11 @@ return [
             'myHandlerName' => [
                 'type' => 'psr',
                 'options' => [
-                    'logger' => 'loggerService',        // Required: Logger Service to wrap from the container
+                    'logger' => 'loggerService', // Required: Logger Service to wrap from the container
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true,                   // Optional: Whether the messages that are handled can bubble up the stack or not
+                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1744,7 +1740,6 @@ return [
 ];
 ```
 Monolog Docs: [PsrHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/PsrHandler.php)
-
 
 #### TestHandler
 Used for testing, it records everything that is sent to it and has accessors to read out the information.
@@ -1759,9 +1754,9 @@ return [
                 'type' => 'test',
                 'options' => [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true,                   // Optional: Whether the messages that are handled can bubble up the stack or not
+                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1788,7 +1783,7 @@ return [
                 'type' => 'overflow',
                 'options' => [
                     'handler' => [], // Required: Registered Handler to wrap
-                    'thresholdMap' => [  // Optional: threshold map
+                    'thresholdMap' => [ // Optional: threshold map
                         'debug' => 2, // Optional: debug threshold.  Default: 0
                         'info' => 2, // Optional: info threshold.  Default: 0
                         'notice' => 2, // Optional: notice threshold.  Default: 0
@@ -1801,7 +1796,7 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [],  // Optional: Formatter for the handler.
+                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1811,6 +1806,91 @@ return [
 ```
 Monolog Docs: [OverflowHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/OverflowHandler.php)
 
+### 3rd Party Handlers
+
+#### MicrosoftTeamsHandler
+Sends Records to a Microsoft Teams Webhook. Requires [actived/microsoft-teams-notifier](https://github.com/actived/microsoft-teams-notifier)
+
+```php
+<?php
+
+return [
+    'log' => [
+        'handlers' => [
+            'myHandlerName' => [
+                'type' => 'microsoft-teams',
+                'options' => [
+                    'url' => '', // Required: Url of the MS Teams Webhook
+                    'title' => '', // Optional: Message Title
+                    'subject' => '', // Optional: Message Subject
+                    'emoji' => '', // Optional: custom emoji for the Message (added to the title)
+                    'color' => '', // Optional: custom color for the Message
+                    'format' => '', // Optional: Message format (only used in the default formatter)
+                    
+                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                    
+                    'formatter' => [], // Optional: Formatter for the handler.
+                    'processors' => [], // Optional: Processors for the handler.
+                ],
+            ],
+        ],
+    ],
+];
+```
+
+#### TeamsLogHandler
+Sends Records to a Microsoft Teams Webhook. Requires [cmdisp/monolog-microsoft-teams](https://github.com/cmdisp/monolog-microsoft-teams)
+
+```php
+<?php
+
+return [
+    'log' => [
+        'handlers' => [
+            'myHandlerName' => [
+                'type' => 'teams',
+                'options' => [
+                    'url' => '', // Required: Url of the MS Teams Webhook
+                    
+                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                    
+                    'formatter' => [], // Optional: Formatter for the handler.
+                    'processors' => [], // Optional: Processors for the handler.
+                ],
+            ],
+        ],
+    ],
+];
+```
+
+#### CallbackFilterHandler
+Filters Records with a Callback function. Requires [bartlett/monolog-callbackfilterhandler](https://github.com/llaville/monolog-callbackfilterhandler)
+
+```php
+<?php
+
+return [
+    'log' => [
+        'handlers' => [
+            'myHandlerName' => [
+                'type' => 'callbackfilter',
+                'options' => [
+                    'handler' => [], // Required: Registered Handler to wrap
+                    
+                    'filters' => [], // Optional: An array of callback functions
+                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                    
+                    'formatter' => [], // Optional: Formatter for the handler.
+                    'processors' => [], // Optional: Processors for the handler.
+                ],
+            ],
+        ],
+    ],
+];
+```
 
 ## Formatters
 
@@ -1826,7 +1906,7 @@ return [
             'myFormatterName' => [
                 'type' => 'line',
                 'options' => [
-                    'format' => "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",  // Optional
+                    'format' => "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n", // Optional
                     'dateFormat' => "c", // Optional : The format of the timestamp: one supported by DateTime::format
                     'allowInlineLineBreaks' => false, // Optional : Whether to allow inline line breaks in log entries
                     'ignoreEmptyContextAndExtra' => false, // Optional
@@ -1976,7 +2056,7 @@ return [
             'myFormatterName' => [
                 'type' => 'gelf',
                 'options' => [
-                    'systemName' => "my-system",  // Optional : the name of the system for the Gelf log message, defaults to the hostname of the machine
+                    'systemName' => "my-system", // Optional : the name of the system for the Gelf log message, defaults to the hostname of the machine
                     'extraPrefix' => "extra_", // Optional : a prefix for 'extra' fields from the Monolog record
                     'contextPrefix' => 'ctxt_', // Optional : a prefix for 'context' fields from the Monolog record
                     'maxLength' => 32766, // Optional : Length per field
@@ -2001,7 +2081,7 @@ return [
                 'type' => 'logstash',
                 'options' => [
                     'applicationName' => 'app-name', // the application that sends the data, used as the "type" field of logstash
-                    'systemName' => "my-system",  // Optional : the system/machine name, used as the "source" field of logstash, defaults to the hostname of the machine
+                    'systemName' => "my-system", // Optional : the system/machine name, used as the "source" field of logstash, defaults to the hostname of the machine
                     'extraPrefix' => "extra_", // Optional : prefix for extra keys inside logstash "fields"
                     'contextPrefix' => 'ctxt_', // Optional : prefix for context keys inside logstash "fields", defaults to ctxt_
                 ],
@@ -2011,7 +2091,6 @@ return [
 ];
 ```
 Monolog Docs: [LogstashFormatter](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Formatter/LogstashFormatter.php)
-
 
 ### ElasticaFormatter
 Used to format log records into an Elastica Document.
@@ -2026,7 +2105,7 @@ return [
                 'type' => 'elastica',
                 'options' => [
                     'index' => 'some-index', // Elastic search index name
-                    'type' => "doc-type",  // Elastic search document type
+                    'type' => "doc-type", // Elastic search document type
                 ],
             ],
         ],
@@ -2048,7 +2127,7 @@ return [
                 'type' => 'elasticsearch',
                 'options' => [
                     'index' => 'some-index', // Elastic search index name
-                    'type' => "doc-type",  // Elastic search document type
+                    'type' => "doc-type", // Elastic search document type
                 ],
             ],
         ],
@@ -2056,7 +2135,6 @@ return [
 ];
 ```
 Monolog Docs: [ElasticsearchFormatter](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Formatter/ElasticsearchFormatter.php)
-
 
 ### LogglyFormatter
 Used to format log records into Loggly messages, only useful for the LogglyHandler.
@@ -2149,7 +2227,6 @@ return [
 ];
 ```
 Monolog Docs: [LogmaticFormatter](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Formatter/LogmaticFormatter.php)
-
 
 ## Processors
 
@@ -2368,7 +2445,6 @@ return [
 ```
 Monolog Docs: [TagProcessor](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Processor/TagProcessor.php)
 
-
 ### HostnameProcessor
 Adds the current hostname to a log record.
 
@@ -2387,6 +2463,26 @@ return [
 ];
 ```
 Monolog Docs: [HostnameProcessor](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Processor/HostnameProcessor.php)
+
+### RequestHeaderProcessor
+Adds Request Headers to a log record. Requires [jk/monolog-request-header-processor](https://github.com/jk/monolog-request-header-processor)
+
+```php
+<?php
+
+return [
+    'log' => [
+        'processors' => [
+            'myProcessorsName' => [
+                'type' => 'requestheader',
+                'options' => [
+                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this processor will be triggered
+                ],
+            ],
+        ],
+    ],
+];
+```
 
 ## License
 

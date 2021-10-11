@@ -38,8 +38,6 @@ final class NewRelicHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
-     *
-     * @requires extension newrelic
      */
     public function testInvoceWithoutConfig(): void
     {
@@ -90,8 +88,6 @@ final class NewRelicHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
-     *
-     * @requires extension newrelic
      */
     public function testInvoceWithEmptyConfig(): void
     {
@@ -142,8 +138,6 @@ final class NewRelicHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
-     *
-     * @requires extension newrelic
      */
     public function testInvoceWithConfig(): void
     {
@@ -195,8 +189,6 @@ final class NewRelicHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     *
-     * @requires extension newrelic
      */
     public function testInvoceWithConfigAndBoolFormatter(): void
     {
@@ -225,8 +217,6 @@ final class NewRelicHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     *
-     * @requires extension newrelic
      */
     public function testInvoceWithConfigAndFormatter(): void
     {
@@ -261,8 +251,6 @@ final class NewRelicHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      * @throws InvalidArgumentException
-     *
-     * @requires extension newrelic
      */
     public function testInvoceWithConfigAndFormatter2(): void
     {
@@ -327,8 +315,6 @@ final class NewRelicHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     *
-     * @requires extension newrelic
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {

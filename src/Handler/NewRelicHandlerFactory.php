@@ -24,9 +24,7 @@ use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function extension_loaded;
 use function is_array;
-use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -51,12 +49,6 @@ final class NewRelicHandlerFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): NewRelicHandler
     {
-        if (!extension_loaded('newrelic')) {
-            throw new ServiceNotCreatedException(
-                sprintf('The newrelic extension is needed to use the %s', NewRelicHandler::class)
-            );
-        }
-
         $level           = LogLevel::DEBUG;
         $bubble          = true;
         $appName         = null;

@@ -48,6 +48,7 @@
     "ext-amqp": "Allow sending log messages to an AMQP server (1.0+ required)",
     "ext-mongodb": "Allow sending log messages to a MongoDB server (via driver)",
     "ext-sockets": "Allow sending log messages to a Syslog server (via UDP driver)",
+    "actived/microsoft-teams-notifier": "Allow sending log messages to Microsoft Teams",
     "aws/aws-sdk-php": "Allow sending log messages to AWS services like DynamoDB",
     "bartlett/monolog-callbackfilterhandler": "Allow filtering log messages based on a callback function",
     "cmdisp/monolog-microsoft-teams": "Allow sending log messages to Microsoft Teams",
