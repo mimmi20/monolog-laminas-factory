@@ -22,9 +22,9 @@ use function is_array;
 final class WildfireFormatterFactory implements FactoryInterface
 {
     /**
-     * @param string                     $requestedName
-     * @param array<string, string>|null $options
-     * @phpstan-param array{dateFormat?: string}|null $options
+     * @param string                              $requestedName
+     * @param array<string, bool|int|string>|null $options
+     * @phpstan-param array{dateFormat?: string, maxNormalizeDepth?: int, maxNormalizeItemCount?: int, prettyPrint?: bool}|null $options
      *
      * @throws void
      *
@@ -33,12 +33,35 @@ final class WildfireFormatterFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): WildfireFormatter
     {
-        $dateFormat = null;
+        $dateFormat            = null;
+        $maxNormalizeDepth     = 9;
+        $maxNormalizeItemCount = 1000;
+        $prettyPrint           = false;
 
-        if (is_array($options) && array_key_exists('dateFormat', $options)) {
-            $dateFormat = $options['dateFormat'];
+        if (is_array($options)) {
+            if (array_key_exists('dateFormat', $options)) {
+                $dateFormat = $options['dateFormat'];
+            }
+
+            if (array_key_exists('maxNormalizeDepth', $options)) {
+                $maxNormalizeDepth = $options['maxNormalizeDepth'];
+            }
+
+            if (array_key_exists('maxNormalizeItemCount', $options)) {
+                $maxNormalizeItemCount = $options['maxNormalizeItemCount'];
+            }
+
+            if (array_key_exists('prettyPrint', $options)) {
+                $prettyPrint = $options['prettyPrint'];
+            }
         }
 
-        return new WildfireFormatter($dateFormat);
+        $formatter = new WildfireFormatter($dateFormat);
+
+        $formatter->setMaxNormalizeDepth($maxNormalizeDepth);
+        $formatter->setMaxNormalizeItemCount($maxNormalizeItemCount);
+        $formatter->setJsonPrettyPrint($prettyPrint);
+
+        return $formatter;
     }
 }

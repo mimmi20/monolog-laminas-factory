@@ -199,8 +199,7 @@ return [
     'log' => [
         'name' => 'name',
         'handlers' => [
- // Array Keys are the names used for the handlers
-            'default' => [
+             'default' => [
  // A Handler type or pre-configured service from the container
                 'type' => 'stream',
                 
@@ -461,7 +460,7 @@ return [
 Monolog Docs: [SwiftMailerHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/SwiftMailerHandler.php)
 
 #### PushoverHandler
-Sends mobile notifications via the [Pushover](https://www.pushover.net/) API.
+Sends mobile notifications via the [Pushover](https://www.pushover.net/) API. Requires the sockets Extension.
 
 ```php
 <?php
@@ -499,7 +498,7 @@ return [
 Monolog Docs: [PushoverHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/PushoverHandler.php)
 
 #### FlowdockHandler
-Logs records to a [Flowdock](https://www.flowdock.com/) account.
+Logs records to a [Flowdock](https://www.flowdock.com/) account. Requires the openssl and sockets Extensions.
 
 ```php
 <?php
@@ -530,7 +529,7 @@ return [
 Monolog Docs: [FlowdockHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/FlowdockHandler.php)
 
 #### SlackWebhookHandler
-Logs records to a [Slack](https://www.slack.com/) account using Slack Webhooks.
+Logs records to a [Slack](https://www.slack.com/) account using Slack Webhooks. Requires the curl Excension.
 
 ```php
 <?php
@@ -564,7 +563,7 @@ return [
 Monolog Docs: [SlackWebhookHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/SlackWebhookHandler.php)
 
 #### SlackHandler
-Logs records to a [SlackHandler](https://www.slack.com/) account using the Slack API (complex setup).
+Logs records to a [SlackHandler](https://www.slack.com/) account using the Slack API (complex setup). Requires the openssl and sockets Extensions.
 
 ```php
 <?php
@@ -602,7 +601,7 @@ return [
 Monolog Docs: [SlackHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/SlackHandler.php)
 
 #### SendGridHandler
-Sends emails via the SendGrid API.
+Sends emails via the SendGrid API. Requires the curl Excension.
 
 ```php
 <?php
@@ -633,7 +632,7 @@ return [
 Monolog Docs: [SendGridHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/SendGridHandler.php)
 
 #### MandrillHandler
-Sends emails via the [Mandrill](http://www.mandrill.com/) API using a [Swift_Message](http://swiftmailer.org/) instance.
+Sends emails via the [Mandrill](http://www.mandrill.com/) API using a [Swift_Message](http://swiftmailer.org/) instance. Requires the curl Excension.
 
 ```php
 <?php
@@ -661,7 +660,7 @@ return [
 Monolog Docs: [MandrillHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/MandrillHandler.php)
 
 #### FleepHookHandler
-Logs records to a [Fleep](https://fleep.io/) conversation using Webhooks.
+Logs records to a [Fleep](https://fleep.io/) conversation using Webhooks. Requires the openssl and sockets Extensions.
 
 ```php
 <?php
@@ -692,7 +691,7 @@ return [
 Monolog Docs: [FleepHookHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/FleepHookHandler.php)
 
 #### TelegramBotHandler
-Logs records to a [Telegram](https://core.telegram.org/bots/api) bot account.
+Logs records to a [Telegram](https://core.telegram.org/bots/api) bot account. Requires the curl Excension.
 
 ```php
 <?php
@@ -708,6 +707,9 @@ return [
                     'channel' => 'channel', // Channel
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                    'parseMode' => null, // Optional: null or one of 'HTML', 'MarkdownV2', 'Markdown'
+                    'disableWebPagePreview' => null, // Optional: null or boolean
+                    'disableNotification' => null, // Optional: null or boolean
                     
                     'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
@@ -722,7 +724,7 @@ Monolog Docs: [TelegramBotHandler](https://github.com/Seldaek/monolog/blob/maste
 ### Log specific servers and networked logging
 
 #### SocketHandler
-Logs records to [sockets](http://php.net/fsockopen), use this for UNIX and TCP sockets. See an [example](https://github.com/Seldaek/monolog/blob/master/doc/sockets.md).
+Logs records to [sockets](http://php.net/fsockopen), use this for UNIX and TCP sockets. See an [example](https://github.com/Seldaek/monolog/blob/master/doc/sockets.md). Requires the sockets Extension.
 
 ```php
 <?php
@@ -807,7 +809,7 @@ return [
 Monolog Docs: [GelfHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/GelfHandler.php)
 
 #### CubeHandler
-Logs records to a [Cube](http://square.github.com/cube/) server.
+Logs records to a [Cube](http://square.github.com/cube/) server. Requires the sockets Extension for https requests or the curl Extension for http requests.
 
 _Note: Cube is not under active development, maintenance or support by
 Square (or by its original author Mike Bostock). It has been deprecated
@@ -863,7 +865,7 @@ return [
 Monolog Docs: [ZendMonitorHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/ZendMonitorHandler.php)
 
 #### NewRelicHandler
-Logs records to a [NewRelic](http://newrelic.com/) application.
+Logs records to a [NewRelic](http://newrelic.com/) application. Requires the newrelic Extension.
 ```php
 <?php
 
@@ -891,7 +893,7 @@ return [
 Monolog Docs: [NewRelicHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/NewRelicHandler.php)
 
 #### LogglyHandler
-Logs records to a [Loggly](http://www.loggly.com/) account.
+Logs records to a [Loggly](http://www.loggly.com/) account. Requires the curl Excension.
 
 ```php
 <?php
@@ -926,7 +928,7 @@ the PsrHandler instead.  See [Rollerbar Docs](https://github.com/rollbar/rollbar
 Monolog Docs: [RollbarHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/RollbarHandler.php)
 
 #### SyslogUdpHandler
-Logs records to a remote [Syslogd](http://www.rsyslog.com/) server.
+Logs records to a remote [Syslogd](http://www.rsyslog.com/) server. Requires the sockets Extension.
 
 ```php
 <?php
@@ -957,7 +959,7 @@ return [
 Monolog Docs: [SyslogUdpHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/SyslogUdpHandler.php)
 
 #### LogEntriesHandler
-Logs records to a [LogEntries](http://logentries.com/) account.
+Logs records to a [LogEntries](http://logentries.com/) account. Requires the openssl and sockets Extensions.
 
 ```php
 <?php
@@ -990,7 +992,7 @@ return [
 Monolog Docs: [LogEntriesHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/LogEntriesHandler.php)
 
 #### InsightOpsHandler
-Logs records to an [InsightOps](https://www.rapid7.com/products/insightops/) account.
+Logs records to an [InsightOps](https://www.rapid7.com/products/insightops/) account. Requires the openssl and sockets Extensions.
 
 ```php
 <?php
@@ -1023,7 +1025,7 @@ return [
 Monolog Docs: [InsightOpsHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/InsightOpsHandler.php)
 
 #### LogmaticHandler
-Logs records to a [Logmatic](http://logmatic.io/) account.
+Logs records to a [Logmatic](http://logmatic.io/) account. Requires the openssl and sockets Extensions.
 
 ```php
 <?php
@@ -1115,7 +1117,7 @@ return [
 Monolog Docs: [FirePHPHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/LogEntriesHandler.php)
 
 #### ChromePHPHandler
-Handler for [ChromePHP](http://www.chromephp.com/), providing inline console messages within Chrome.
+Handler for [ChromePHP](http://www.chromephp.com/), providing inline console messages within Chrome. Requires the json Extension.
 
 ```php
 <?php
@@ -1169,7 +1171,7 @@ Monolog Docs: [BrowserConsoleHandler](https://github.com/Seldaek/monolog/blob/ma
 
 #### PHPConsoleHandler
 Handler for [PHP Console](https://chrome.google.com/webstore/detail/php-console/nfhmhhlpfleoednkpnnnkolmclajemef),
-providing inline console and notification popup messages within Chrome.
+providing inline console and notification popup messages within Chrome. Requires package [barbushin/php-console](https://github.com/barbushin/php-console#installation).
 
 ```php
 <?php
@@ -1732,7 +1734,6 @@ return [
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
                     'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
         ],
@@ -1784,14 +1785,14 @@ return [
                 'options' => [
                     'handler' => [], // Required: Registered Handler to wrap
                     'thresholdMap' => [ // Optional: threshold map
-                        'debug' => 2, // Optional: debug threshold.  Default: 0
-                        'info' => 2, // Optional: info threshold.  Default: 0
-                        'notice' => 2, // Optional: notice threshold.  Default: 0
-                        'warning' => 2, // Optional: warning threshold.  Default: 0
-                        'error' => 2, // Optional: error threshold.  Default: 0
-                        'critical' => 2, // Optional: critical threshold.  Default: 0
-                        'alert' => 2, // Optional: alert threshold.  Default: 0
-                        'emergency' => 2, // Optional: emergency threshold.  Default: 0
+                        'debug' => 0, // Optional: debug threshold.  Default: 0
+                        'info' => 0, // Optional: info threshold.  Default: 0
+                        'notice' => 0, // Optional: notice threshold.  Default: 0
+                        'warning' => 0, // Optional: warning threshold.  Default: 0
+                        'error' => 0, // Optional: error threshold.  Default: 0
+                        'critical' => 0, // Optional: critical threshold.  Default: 0
+                        'alert' => 0, // Optional: alert threshold.  Default: 0
+                        'emergency' => 0, // Optional: emergency threshold.  Default: 0
                     ],
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
@@ -1809,7 +1810,7 @@ Monolog Docs: [OverflowHandler](https://github.com/Seldaek/monolog/blob/master/s
 ### 3rd Party Handlers
 
 #### MicrosoftTeamsHandler
-Sends Records to a Microsoft Teams Webhook. Requires [actived/microsoft-teams-notifier](https://github.com/actived/microsoft-teams-notifier)
+Sends Records to a Microsoft Teams Webhook. Requires package [actived/microsoft-teams-notifier](https://github.com/actived/microsoft-teams-notifier)
 
 ```php
 <?php
@@ -1821,7 +1822,7 @@ return [
                 'type' => 'microsoft-teams',
                 'options' => [
                     'url' => '', // Required: Url of the MS Teams Webhook
-                    'title' => '', // Optional: Message Title
+                    'title' => '', // Optional: Default Message Title
                     'subject' => '', // Optional: Message Subject
                     'emoji' => '', // Optional: custom emoji for the Message (added to the title)
                     'color' => '', // Optional: custom color for the Message
@@ -1840,7 +1841,7 @@ return [
 ```
 
 #### TeamsLogHandler
-Sends Records to a Microsoft Teams Webhook. Requires [cmdisp/monolog-microsoft-teams](https://github.com/cmdisp/monolog-microsoft-teams)
+Sends Records to a Microsoft Teams Webhook. Requires package [cmdisp/monolog-microsoft-teams](https://github.com/cmdisp/monolog-microsoft-teams)
 
 ```php
 <?php
@@ -1883,7 +1884,6 @@ return [
                     'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
                     'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
                     
-                    'formatter' => [], // Optional: Formatter for the handler.
                     'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
@@ -1911,6 +1911,9 @@ return [
                     'allowInlineLineBreaks' => false, // Optional : Whether to allow inline line breaks in log entries
                     'ignoreEmptyContextAndExtra' => false, // Optional
                     'includeStacktraces' => false, // Optional
+                    'maxNormalizeDepth' => 9, // Optional
+                    'maxNormalizeItemCount' => 1000, // Optional
+                    'prettyPrint' => false, // Optional
                 ],
             ],
         ],
@@ -1932,6 +1935,9 @@ return [
                 'type' => 'html',
                 'options' => [
                     'dateFormat' => "c", // Optional
+                    'maxNormalizeDepth' => 9, // Optional
+                    'maxNormalizeItemCount' => 1000, // Optional
+                    'prettyPrint' => false, // Optional
                 ],
             ],
         ],
@@ -1941,7 +1947,7 @@ return [
 Monolog Docs: [HtmlFormatter](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Formatter/HtmlFormatter.php)
 
 ### NormalizerFormatter
-Normalizes objects/resources down to strings so a record can easily be serialized/encoded.
+Normalizes objects/resources down to strings so a record can easily be serialized/encoded. Requires the json Extension.
 
 ```php
 <?php
@@ -1953,6 +1959,9 @@ return [
                 'type' => 'normalizer',
                 'options' => [
                     'dateFormat' => "c", // Optional
+                    'maxNormalizeDepth' => 9, // Optional
+                    'maxNormalizeItemCount' => 1000, // Optional
+                    'prettyPrint' => false, // Optional
                 ],
             ],
         ],
@@ -1972,7 +1981,12 @@ return [
         'formatters' => [
             'myFormatterName' => [
                 'type' => 'scalar',
-                'options' => [], // No options available
+                'options' => [
+                    'dateFormat' => "c", // Optional
+                    'maxNormalizeDepth' => 9, // Optional
+                    'maxNormalizeItemCount' => 1000, // Optional
+                    'prettyPrint' => false, // Optional
+                ],
             ],
         ],
     ],
@@ -1996,6 +2010,10 @@ return [
                     'appendNewline' => true, // Optional
                     'ignoreEmptyContextAndExtra' => false, // Optional
                     'includeStacktraces' => false, // Optional
+                    'dateFormat' => "c", // Optional
+                    'maxNormalizeDepth' => 9, // Optional
+                    'maxNormalizeItemCount' => 1000, // Optional
+                    'prettyPrint' => false, // Optional
                 ],
             ],
         ],
@@ -2017,6 +2035,9 @@ return [
                 'type' => 'wildfire',
                 'options' => [
                     'dateFormat' => "c", // Optional
+                    'maxNormalizeDepth' => 9, // Optional
+                    'maxNormalizeItemCount' => 1000, // Optional
+                    'prettyPrint' => false, // Optional
                 ],
             ],
         ],
@@ -2060,6 +2081,9 @@ return [
                     'extraPrefix' => "extra_", // Optional : a prefix for 'extra' fields from the Monolog record
                     'contextPrefix' => 'ctxt_', // Optional : a prefix for 'context' fields from the Monolog record
                     'maxLength' => 32766, // Optional : Length per field
+                    'maxNormalizeDepth' => 9, // Optional
+                    'maxNormalizeItemCount' => 1000, // Optional
+                    'prettyPrint' => false, // Optional
                 ],
             ],
         ],
@@ -2084,6 +2108,9 @@ return [
                     'systemName' => "my-system", // Optional : the system/machine name, used as the "source" field of logstash, defaults to the hostname of the machine
                     'extraPrefix' => "extra_", // Optional : prefix for extra keys inside logstash "fields"
                     'contextPrefix' => 'ctxt_', // Optional : prefix for context keys inside logstash "fields", defaults to ctxt_
+                    'maxNormalizeDepth' => 9, // Optional
+                    'maxNormalizeItemCount' => 1000, // Optional
+                    'prettyPrint' => false, // Optional
                 ],
             ],
         ],
@@ -2106,6 +2133,9 @@ return [
                 'options' => [
                     'index' => 'some-index', // Elastic search index name
                     'type' => "doc-type", // Elastic search document type
+                    'maxNormalizeDepth' => 9, // Optional
+                    'maxNormalizeItemCount' => 1000, // Optional
+                    'prettyPrint' => false, // Optional
                 ],
             ],
         ],
@@ -2128,6 +2158,9 @@ return [
                 'options' => [
                     'index' => 'some-index', // Elastic search index name
                     'type' => "doc-type", // Elastic search document type
+                    'maxNormalizeDepth' => 9, // Optional
+                    'maxNormalizeItemCount' => 1000, // Optional
+                    'prettyPrint' => false, // Optional
                 ],
             ],
         ],
@@ -2151,6 +2184,10 @@ return [
                     'batchMode' => \Monolog\Formatter\JsonFormatter::BATCH_MODE_NEWLINES, // Optional
                     'appendNewline' => false, // Optional
                     'includeStacktraces' => false, // Optional
+                    'dateFormat' => "c", // Optional
+                    'maxNormalizeDepth' => 9, // Optional
+                    'maxNormalizeItemCount' => 1000, // Optional
+                    'prettyPrint' => false, // Optional
                 ],
             ],
         ],
@@ -2214,12 +2251,16 @@ return [
     'log' => [
         'formatters' => [
             'myFormatterName' => [
-                'type' => 'json',
+                'type' => 'logmatic',
                 'options' => [
                     'batchMode' => \Monolog\Formatter\LogmaticFormatter::BATCH_MODE_JSON, // Optional
                     'appendNewline' => true, // Optional
                     'ignoreEmptyContextAndExtra' => false, // Optional
                     'includeStacktraces' => false, // Optional
+                    'dateFormat' => "c", // Optional
+                    'maxNormalizeDepth' => 9, // Optional
+                    'maxNormalizeItemCount' => 1000, // Optional
+                    'prettyPrint' => false, // Optional
                 ],
             ],
         ],
@@ -2227,6 +2268,27 @@ return [
 ];
 ```
 Monolog Docs: [LogmaticFormatter](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Formatter/LogmaticFormatter.php)
+
+### FluentdFormatter
+Serializes a log message to Fluentd unix socket protocol. Requires the json Extension.
+
+```php
+<?php
+
+return [
+    'log' => [
+        'formatters' => [
+            'myFormatterName' => [
+                'type' => 'fluentd',
+                'options' => [
+                    'levelTag' => false, // Optional
+                ],
+            ],
+        ],
+    ],
+];
+```
+Monolog Docs: [FluentdFormatter](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Formatter/FluentdFormatter.php)
 
 ## Processors
 
@@ -2241,7 +2303,10 @@ return [
         'processors' => [
             'myProcessorsName' => [
                 'type' => 'psrLogMessage',
-                'options' => [], // No options
+                'options' => [
+                    'dateFormat' => "c", // Optional
+                    'removeUsedContextFields' => false, // Optional
+                ],
             ],
         ],
     ],

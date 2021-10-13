@@ -17,13 +17,18 @@ use Mimmi20\LoggerFactory\Formatter\NormalizerFormatterFactory;
 use Monolog\Formatter\NormalizerFormatter;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
+use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+
+use const JSON_PRETTY_PRINT;
 
 final class NormalizerFormatterFactoryTest extends TestCase
 {
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceWithoutConfig(): void
     {
@@ -41,11 +46,21 @@ final class NormalizerFormatterFactoryTest extends TestCase
 
         self::assertInstanceOf(NormalizerFormatter::class, $formatter);
         self::assertSame(NormalizerFormatter::SIMPLE_DATE, $formatter->getDateFormat());
+        self::assertSame(9, $formatter->getMaxNormalizeDepth());
+        self::assertSame(1000, $formatter->getMaxNormalizeItemCount());
+
+        $jeo = new ReflectionProperty($formatter, 'jsonEncodeOptions');
+        $jeo->setAccessible(true);
+
+        $jsonEncodeOptions = $jeo->getValue($formatter);
+
+        self::assertGreaterThanOrEqual(1, $jsonEncodeOptions & ~JSON_PRETTY_PRINT);
     }
 
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceWithEmptyConfig(): void
     {
@@ -63,15 +78,27 @@ final class NormalizerFormatterFactoryTest extends TestCase
 
         self::assertInstanceOf(NormalizerFormatter::class, $formatter);
         self::assertSame(NormalizerFormatter::SIMPLE_DATE, $formatter->getDateFormat());
+        self::assertSame(9, $formatter->getMaxNormalizeDepth());
+        self::assertSame(1000, $formatter->getMaxNormalizeItemCount());
+
+        $jeo = new ReflectionProperty($formatter, 'jsonEncodeOptions');
+        $jeo->setAccessible(true);
+
+        $jsonEncodeOptions = $jeo->getValue($formatter);
+
+        self::assertGreaterThanOrEqual(1, $jsonEncodeOptions & ~JSON_PRETTY_PRINT);
     }
 
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws ReflectionException
      */
     public function testInvoceWithConfig(): void
     {
-        $dateFormat = 'xxx__Y-m-d\TH:i:sP__xxx';
+        $dateFormat            = 'xxx__Y-m-d\TH:i:sP__xxx';
+        $maxNormalizeDepth     = 42;
+        $maxNormalizeItemCount = 4711;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -83,9 +110,18 @@ final class NormalizerFormatterFactoryTest extends TestCase
 
         $factory = new NormalizerFormatterFactory();
 
-        $formatter = $factory($container, '', ['dateFormat' => $dateFormat]);
+        $formatter = $factory($container, '', ['dateFormat' => $dateFormat, 'maxNormalizeDepth' => $maxNormalizeDepth, 'maxNormalizeItemCount' => $maxNormalizeItemCount, 'prettyPrint' => true]);
 
         self::assertInstanceOf(NormalizerFormatter::class, $formatter);
         self::assertSame($dateFormat, $formatter->getDateFormat());
+        self::assertSame($maxNormalizeDepth, $formatter->getMaxNormalizeDepth());
+        self::assertSame($maxNormalizeItemCount, $formatter->getMaxNormalizeItemCount());
+
+        $jeo = new ReflectionProperty($formatter, 'jsonEncodeOptions');
+        $jeo->setAccessible(true);
+
+        $jsonEncodeOptions = $jeo->getValue($formatter);
+
+        self::assertGreaterThanOrEqual(1, $jsonEncodeOptions & ~JSON_PRETTY_PRINT);
     }
 }

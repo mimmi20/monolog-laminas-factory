@@ -22,9 +22,9 @@ use function is_array;
 final class JsonFormatterFactory implements FactoryInterface
 {
     /**
-     * @param string                         $requestedName
-     * @param array<string, (int|bool)>|null $options
-     * @phpstan-param array{batchMode?: JsonFormatter::BATCH_MODE_*, appendNewline?: bool, ignoreEmptyContextAndExtra?: bool, includeStacktraces?: bool}|null $options
+     * @param string                                $requestedName
+     * @param array<string, (string|int|bool)>|null $options
+     * @phpstan-param array{batchMode?: JsonFormatter::BATCH_MODE_*, appendNewline?: bool, ignoreEmptyContextAndExtra?: bool, includeStacktraces?: bool, dateFormat?: string, maxNormalizeDepth?: int, maxNormalizeItemCount?: int, prettyPrint?: bool}|null $options
      *
      * @throws void
      *
@@ -36,6 +36,9 @@ final class JsonFormatterFactory implements FactoryInterface
         $batchMode                  = JsonFormatter::BATCH_MODE_JSON;
         $appendNewline              = true;
         $ignoreEmptyContextAndExtra = false;
+        $maxNormalizeDepth          = 9;
+        $maxNormalizeItemCount      = 1000;
+        $prettyPrint                = false;
 
         if (is_array($options)) {
             if (array_key_exists('batchMode', $options)) {
@@ -49,13 +52,35 @@ final class JsonFormatterFactory implements FactoryInterface
             if (array_key_exists('ignoreEmptyContextAndExtra', $options)) {
                 $ignoreEmptyContextAndExtra = $options['ignoreEmptyContextAndExtra'];
             }
+
+            if (array_key_exists('maxNormalizeDepth', $options)) {
+                $maxNormalizeDepth = $options['maxNormalizeDepth'];
+            }
+
+            if (array_key_exists('maxNormalizeItemCount', $options)) {
+                $maxNormalizeItemCount = $options['maxNormalizeItemCount'];
+            }
+
+            if (array_key_exists('prettyPrint', $options)) {
+                $prettyPrint = $options['prettyPrint'];
+            }
         }
 
         $formatter = new JsonFormatter($batchMode, $appendNewline, $ignoreEmptyContextAndExtra);
 
-        if (is_array($options) && array_key_exists('includeStacktraces', $options)) {
-            $formatter->includeStacktraces($options['includeStacktraces']);
+        if (is_array($options)) {
+            if (array_key_exists('includeStacktraces', $options)) {
+                $formatter->includeStacktraces($options['includeStacktraces']);
+            }
+
+            if (array_key_exists('dateFormat', $options)) {
+                $formatter->setDateFormat($options['dateFormat']);
+            }
         }
+
+        $formatter->setMaxNormalizeDepth($maxNormalizeDepth);
+        $formatter->setMaxNormalizeItemCount($maxNormalizeItemCount);
+        $formatter->setJsonPrettyPrint($prettyPrint);
 
         return $formatter;
     }
