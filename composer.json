@@ -28,7 +28,7 @@
     "jk/monolog-request-header-processor": "^1.0.0",
     "laminas/laminas-config": "^3.7.0",
     "laminas/laminas-dependency-plugin": "^2.2.0",
-    "laminas/laminas-modulemanager": "^2.10.2",
+    "laminas/laminas-modulemanager": "^2.11.0",
     "laminas/laminas-servicemanager": "^3.10.0",
     "mikey179/vfsstream": "^1.6.10",
     "mimmi20/coding-standard": "^2.5.0",
