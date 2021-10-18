@@ -22,9 +22,9 @@ use function is_array;
 final class LineFormatterFactory implements FactoryInterface
 {
     /**
-     * @param string                            $requestedName
-     * @param array<string, (string|bool)>|null $options
-     * @phpstan-param array{format?: string, dateFormat?: string, allowInlineLineBreaks?: bool, ignoreEmptyContextAndExtra?: bool, includeStacktraces?: bool}|null $options
+     * @param string                                $requestedName
+     * @param array<string, (string|int|bool)>|null $options
+     * @phpstan-param array{format?: string, dateFormat?: string, allowInlineLineBreaks?: bool, ignoreEmptyContextAndExtra?: bool, includeStacktraces?: bool, maxNormalizeDepth?: int, maxNormalizeItemCount?: int, prettyPrint?: bool}|null $options
      *
      * @throws void
      *
@@ -37,6 +37,9 @@ final class LineFormatterFactory implements FactoryInterface
         $dateFormat                 = null;
         $allowInlineLineBreaks      = false;
         $ignoreEmptyContextAndExtra = false;
+        $maxNormalizeDepth          = 9;
+        $maxNormalizeItemCount      = 1000;
+        $prettyPrint                = false;
 
         if (is_array($options)) {
             if (array_key_exists('format', $options)) {
@@ -54,6 +57,18 @@ final class LineFormatterFactory implements FactoryInterface
             if (array_key_exists('ignoreEmptyContextAndExtra', $options)) {
                 $ignoreEmptyContextAndExtra = $options['ignoreEmptyContextAndExtra'];
             }
+
+            if (array_key_exists('maxNormalizeDepth', $options)) {
+                $maxNormalizeDepth = $options['maxNormalizeDepth'];
+            }
+
+            if (array_key_exists('maxNormalizeItemCount', $options)) {
+                $maxNormalizeItemCount = $options['maxNormalizeItemCount'];
+            }
+
+            if (array_key_exists('prettyPrint', $options)) {
+                $prettyPrint = $options['prettyPrint'];
+            }
         }
 
         $formatter = new LineFormatter($format, $dateFormat, $allowInlineLineBreaks, $ignoreEmptyContextAndExtra);
@@ -61,6 +76,10 @@ final class LineFormatterFactory implements FactoryInterface
         if (is_array($options) && array_key_exists('includeStacktraces', $options)) {
             $formatter->includeStacktraces($options['includeStacktraces']);
         }
+
+        $formatter->setMaxNormalizeDepth($maxNormalizeDepth);
+        $formatter->setMaxNormalizeItemCount($maxNormalizeItemCount);
+        $formatter->setJsonPrettyPrint($prettyPrint);
 
         return $formatter;
     }

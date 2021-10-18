@@ -25,9 +25,9 @@ use function is_array;
 final class ElasticsearchFormatterFactory implements FactoryInterface
 {
     /**
-     * @param string                     $requestedName
-     * @param array<string, string>|null $options
-     * @phpstan-param array{index?: string, type?: string}|null $options
+     * @param string                              $requestedName
+     * @param array<string, bool|int|string>|null $options
+     * @phpstan-param array{index?: string, type?: string, maxNormalizeDepth?: int, maxNormalizeItemCount?: int, prettyPrint?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -38,8 +38,6 @@ final class ElasticsearchFormatterFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): ElasticsearchFormatter
     {
-        $type = '';
-
         if (!is_array($options)) {
             throw new ServiceNotCreatedException('Options must be an Array');
         }
@@ -48,12 +46,34 @@ final class ElasticsearchFormatterFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No index provided');
         }
 
-        $index = $options['index'];
+        $index                 = $options['index'];
+        $type                  = '';
+        $maxNormalizeDepth     = 9;
+        $maxNormalizeItemCount = 1000;
+        $prettyPrint           = false;
 
         if (array_key_exists('type', $options)) {
             $type = $options['type'];
         }
 
-        return new ElasticsearchFormatter($index, $type);
+        $formatter = new ElasticsearchFormatter($index, $type);
+
+        if (array_key_exists('maxNormalizeDepth', $options)) {
+            $maxNormalizeDepth = $options['maxNormalizeDepth'];
+        }
+
+        if (array_key_exists('maxNormalizeItemCount', $options)) {
+            $maxNormalizeItemCount = $options['maxNormalizeItemCount'];
+        }
+
+        if (array_key_exists('prettyPrint', $options)) {
+            $prettyPrint = $options['prettyPrint'];
+        }
+
+        $formatter->setMaxNormalizeDepth($maxNormalizeDepth);
+        $formatter->setMaxNormalizeItemCount($maxNormalizeItemCount);
+        $formatter->setJsonPrettyPrint($prettyPrint);
+
+        return $formatter;
     }
 }

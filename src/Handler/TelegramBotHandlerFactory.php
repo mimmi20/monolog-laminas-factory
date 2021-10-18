@@ -40,7 +40,7 @@ final class TelegramBotHandlerFactory implements FactoryInterface
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{apiKey?: string, channel?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
+     * @phpstan-param array{apiKey?: string, channel?: string, level?: (Level|LevelName|LogLevel::*), bubble?: bool, parseMode?: string, disableWebPagePreview?: bool, disableNotification?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -63,10 +63,13 @@ final class TelegramBotHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No channel provided');
         }
 
-        $apiKey  = $options['apiKey'];
-        $channel = $options['channel'];
-        $level   = LogLevel::DEBUG;
-        $bubble  = true;
+        $apiKey                = $options['apiKey'];
+        $channel               = $options['channel'];
+        $level                 = LogLevel::DEBUG;
+        $bubble                = true;
+        $parseMode             = null;
+        $disableWebPagePreview = null;
+        $disableNotification   = null;
 
         if (array_key_exists('level', $options)) {
             $level = $options['level'];
@@ -76,12 +79,27 @@ final class TelegramBotHandlerFactory implements FactoryInterface
             $bubble = $options['bubble'];
         }
 
+        if (array_key_exists('parseMode', $options)) {
+            $parseMode = $options['parseMode'];
+        }
+
+        if (array_key_exists('disableWebPagePreview', $options)) {
+            $disableWebPagePreview = $options['disableWebPagePreview'];
+        }
+
+        if (array_key_exists('disableNotification', $options)) {
+            $disableNotification = $options['disableNotification'];
+        }
+
         try {
             $handler = new TelegramBotHandler(
                 $apiKey,
                 $channel,
                 $level,
-                $bubble
+                $bubble,
+                $parseMode,
+                $disableWebPagePreview,
+                $disableNotification
             );
         } catch (MissingExtensionException $e) {
             throw new ServiceNotCreatedException(

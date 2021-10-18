@@ -25,9 +25,9 @@ use function is_array;
 final class LogstashFormatterFactory implements FactoryInterface
 {
     /**
-     * @param string                     $requestedName
-     * @param array<string, string>|null $options
-     * @phpstan-param array{applicationName?: string, systemName?: string, extraPrefix?: string, contextPrefix?: string}|null $options
+     * @param string                              $requestedName
+     * @param array<string, bool|int|string>|null $options
+     * @phpstan-param array{applicationName?: string, systemName?: string, extraPrefix?: string, contextPrefix?: string, maxNormalizeDepth?: int, maxNormalizeItemCount?: int, prettyPrint?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -46,10 +46,13 @@ final class LogstashFormatterFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No applicationName provided');
         }
 
-        $applicationName = $options['applicationName'];
-        $systemName      = null;
-        $extraPrefix     = 'extra';
-        $contextPrefix   = 'context';
+        $applicationName       = $options['applicationName'];
+        $systemName            = null;
+        $extraPrefix           = 'extra';
+        $contextPrefix         = 'context';
+        $maxNormalizeDepth     = 9;
+        $maxNormalizeItemCount = 1000;
+        $prettyPrint           = false;
 
         if (array_key_exists('systemName', $options)) {
             $systemName = $options['systemName'];
@@ -63,6 +66,12 @@ final class LogstashFormatterFactory implements FactoryInterface
             $contextPrefix = $options['contextPrefix'];
         }
 
-        return new LogstashFormatter($applicationName, $systemName, $extraPrefix, $contextPrefix);
+        $formatter = new LogstashFormatter($applicationName, $systemName, $extraPrefix, $contextPrefix);
+
+        $formatter->setMaxNormalizeDepth($maxNormalizeDepth);
+        $formatter->setMaxNormalizeItemCount($maxNormalizeItemCount);
+        $formatter->setJsonPrettyPrint($prettyPrint);
+
+        return $formatter;
     }
 }

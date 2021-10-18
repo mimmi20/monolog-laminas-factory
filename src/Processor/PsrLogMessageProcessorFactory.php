@@ -16,11 +16,15 @@ use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\Processor\PsrLogMessageProcessor;
 
+use function array_key_exists;
+use function is_array;
+
 final class PsrLogMessageProcessorFactory implements FactoryInterface
 {
     /**
-     * @param string            $requestedName
-     * @param array<mixed>|null $options
+     * @param string                            $requestedName
+     * @param array<string, (string|bool)>|null $options
+     * @phpstan-param array{dateFormat?: string, removeUsedContextFields?: bool}|null $options
      *
      * @throws void
      *
@@ -29,6 +33,19 @@ final class PsrLogMessageProcessorFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): PsrLogMessageProcessor
     {
-        return new PsrLogMessageProcessor();
+        $dateFormat              = null;
+        $removeUsedContextFields = false;
+
+        if (is_array($options)) {
+            if (array_key_exists('dateFormat', $options)) {
+                $dateFormat = $options['dateFormat'];
+            }
+
+            if (array_key_exists('removeUsedContextFields', $options)) {
+                $removeUsedContextFields = $options['removeUsedContextFields'];
+            }
+        }
+
+        return new PsrLogMessageProcessor($dateFormat, $removeUsedContextFields);
     }
 }

@@ -147,6 +147,21 @@ final class TelegramBotHandlerFactoryTest extends TestCase
 
         self::assertSame($channel, $ch->getValue($handler));
 
+        $pm = new ReflectionProperty($handler, 'parseMode');
+        $pm->setAccessible(true);
+
+        self::assertNull($pm->getValue($handler));
+
+        $dwpp = new ReflectionProperty($handler, 'disableWebPagePreview');
+        $dwpp->setAccessible(true);
+
+        self::assertNull($dwpp->getValue($handler));
+
+        $dn = new ReflectionProperty($handler, 'disableNotification');
+        $dn->setAccessible(true);
+
+        self::assertNull($dn->getValue($handler));
+
         self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
 
         $proc = new ReflectionProperty($handler, 'processors');
@@ -167,8 +182,9 @@ final class TelegramBotHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfig3(): void
     {
-        $apiKey  = 'test-key';
-        $channel = 'test-channel';
+        $apiKey    = 'test-key';
+        $channel   = 'test-channel';
+        $parseMode = 'HTML';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -180,7 +196,7 @@ final class TelegramBotHandlerFactoryTest extends TestCase
 
         $factory = new TelegramBotHandlerFactory();
 
-        $handler = $factory($container, '', ['apiKey' => $apiKey, 'channel' => $channel, 'level' => LogLevel::ALERT, 'bubble' => false]);
+        $handler = $factory($container, '', ['apiKey' => $apiKey, 'channel' => $channel, 'level' => LogLevel::ALERT, 'bubble' => false, 'parseMode' => $parseMode, 'disableWebPagePreview' => true, 'disableNotification' => false]);
 
         self::assertInstanceOf(TelegramBotHandler::class, $handler);
 
@@ -196,6 +212,21 @@ final class TelegramBotHandlerFactoryTest extends TestCase
         $ch->setAccessible(true);
 
         self::assertSame($channel, $ch->getValue($handler));
+
+        $pm = new ReflectionProperty($handler, 'parseMode');
+        $pm->setAccessible(true);
+
+        self::assertSame($parseMode, $pm->getValue($handler));
+
+        $dwpp = new ReflectionProperty($handler, 'disableWebPagePreview');
+        $dwpp->setAccessible(true);
+
+        self::assertTrue($dwpp->getValue($handler));
+
+        $dn = new ReflectionProperty($handler, 'disableNotification');
+        $dn->setAccessible(true);
+
+        self::assertFalse($dn->getValue($handler));
 
         self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
 
@@ -283,6 +314,7 @@ final class TelegramBotHandlerFactoryTest extends TestCase
     {
         $apiKey    = 'test-key';
         $channel   = 'test-channel';
+        $parseMode = 'MarkdownV2';
         $formatter = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -307,7 +339,7 @@ final class TelegramBotHandlerFactoryTest extends TestCase
 
         $factory = new TelegramBotHandlerFactory();
 
-        $handler = $factory($container, '', ['apiKey' => $apiKey, 'channel' => $channel, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+        $handler = $factory($container, '', ['apiKey' => $apiKey, 'channel' => $channel, 'level' => LogLevel::ALERT, 'bubble' => false, 'parseMode' => $parseMode, 'disableWebPagePreview' => true, 'disableNotification' => false, 'formatter' => $formatter]);
 
         self::assertInstanceOf(TelegramBotHandler::class, $handler);
 
@@ -323,6 +355,21 @@ final class TelegramBotHandlerFactoryTest extends TestCase
         $ch->setAccessible(true);
 
         self::assertSame($channel, $ch->getValue($handler));
+
+        $pm = new ReflectionProperty($handler, 'parseMode');
+        $pm->setAccessible(true);
+
+        self::assertSame($parseMode, $pm->getValue($handler));
+
+        $dwpp = new ReflectionProperty($handler, 'disableWebPagePreview');
+        $dwpp->setAccessible(true);
+
+        self::assertTrue($dwpp->getValue($handler));
+
+        $dn = new ReflectionProperty($handler, 'disableNotification');
+        $dn->setAccessible(true);
+
+        self::assertFalse($dn->getValue($handler));
 
         self::assertSame($formatter, $handler->getFormatter());
 
