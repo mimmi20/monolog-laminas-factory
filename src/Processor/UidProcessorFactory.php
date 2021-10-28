@@ -21,6 +21,8 @@ use function is_array;
 
 final class UidProcessorFactory implements FactoryInterface
 {
+    private const DEFAULT_LENGTH = 7;
+
     /**
      * @param string                  $requestedName
      * @param array<string, int>|null $options
@@ -33,7 +35,7 @@ final class UidProcessorFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): UidProcessor
     {
-        $length = 7;
+        $length = self::DEFAULT_LENGTH;
 
         if (is_array($options) && array_key_exists('length', $options)) {
             $length = $options['length'];
