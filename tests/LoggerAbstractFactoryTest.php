@@ -737,7 +737,73 @@ final class LoggerAbstractFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig10(): void
+    public function testInvoceWithConfig10a(): void
+    {
+        $requestedName = Logger::class;
+        $name          = 'test-name';
+        $config        = [
+            'log' => [
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'processors' => [
+                        ['enabled' => false],
+                        ['name' => true],
+                        [
+                            'enabled' => true,
+                            'name' => 'xyz',
+                        ],
+                        ['name' => 'abc'],
+                    ],
+                    'name' => $name,
+                ],
+            ],
+        ];
+
+        $processorPluginManager = $this->getMockBuilder(ProcessorPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $processorPluginManager->expects(self::never())
+            ->method('has');
+        $processorPluginManager->expects(self::once())
+            ->method('get')
+            ->with('xyz', null)
+            ->willThrowException(new ServiceNotCreatedException());
+
+        $writerPluginManager = $this->getMockBuilder(WriterPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $writerPluginManager->expects(self::never())
+            ->method('has');
+        $writerPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::exactly(2))
+            ->method('has')
+            ->withConsecutive(['LogProcessorManager'], ['LogWriterManager'])
+            ->willReturnOnConsecutiveCalls(true, true);
+        $container->expects(self::exactly(3))
+            ->method('get')
+            ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'])
+            ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager);
+
+        $factory = new LoggerAbstractFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionMessage('An error occured while adding a processor');
+        $this->expectExceptionCode(0);
+
+        $factory($container, $requestedName, null);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvoceWithConfig10b(): void
     {
         $requestedName = Logger::class;
         $name          = 'test-name';
@@ -951,7 +1017,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig10a(): void
+    public function testInvoceWithConfig12(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -1036,7 +1102,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig10b(): void
+    public function testInvoceWithConfig13(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -1119,7 +1185,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig10c(): void
+    public function testInvoceWithConfig14(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -1205,7 +1271,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws \Laminas\Log\Exception\InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig12(): void
+    public function testInvoceWithConfig15(): void
     {
         $requestedName = Logger::class;
         $name          = 'test-name';
@@ -1356,7 +1422,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws \Laminas\Log\Exception\InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig13(): void
+    public function testInvoceWithConfig16(): void
     {
         $requestedName = Logger::class;
         $name          = 'test-name';
@@ -1499,5 +1565,121 @@ final class LoggerAbstractFactoryTest extends TestCase
 
             self::assertSame($monolog, $internalLogger);
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCanCreateWithoutConfig(): void
+    {
+        $requestedName = Logger::class;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with('config')
+            ->willThrowException(new ServiceNotFoundException());
+
+        $factory = new LoggerAbstractFactory();
+
+        $cando = $factory->canCreate($container, $requestedName);
+
+        self::assertFalse($cando);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testCanCreateWithEmptyConfig(): void
+    {
+        $requestedName = Logger::class;
+        $config        = [];
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with('config')
+            ->willReturn($config);
+
+        $factory = new LoggerAbstractFactory();
+
+        $cando = $factory->canCreate($container, $requestedName);
+
+        self::assertFalse($cando);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testCanCreateWithConfig(): void
+    {
+        $requestedName = Logger::class;
+        $config        = [
+            'log' => [
+                'exceptionhandler' => true,
+                'errorhandler' => true,
+                'fatal_error_shutdownfunction' => true,
+            ],
+        ];
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with('config')
+            ->willReturn($config);
+
+        $factory = new LoggerAbstractFactory();
+
+        $cando = $factory->canCreate($container, $requestedName);
+
+        self::assertFalse($cando);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testCanCreateWithConfig2(): void
+    {
+        $requestedName = Logger::class;
+        $config        = [
+            'log' => [
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                ],
+            ],
+        ];
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with('config')
+            ->willReturn($config);
+
+        $factory = new LoggerAbstractFactory();
+
+        $cando = $factory->canCreate($container, $requestedName);
+
+        self::assertTrue($cando);
     }
 }
