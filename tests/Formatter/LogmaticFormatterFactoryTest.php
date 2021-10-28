@@ -202,7 +202,7 @@ final class LogmaticFormatterFactoryTest extends TestCase
 
         $factory = new LogmaticFormatterFactory();
 
-        $formatter = $factory($container, '', ['batchMode' => $batchMode, 'appendNewline' => $appendNewline, 'includeStacktraces' => $include, 'hostname' => $hostname, 'appName' => $appname, 'dateFormat' => $dateFormat, 'maxNormalizeDepth' => $maxNormalizeDepth, 'maxNormalizeItemCount' => $maxNormalizeItemCount, 'prettyPrint' => true]);
+        $formatter = $factory($container, '', ['batchMode' => $batchMode, 'appendNewline' => $appendNewline, 'includeStacktraces' => $include, 'hostname' => $hostname, 'appName' => $appname, 'dateFormat' => $dateFormat, 'maxNormalizeDepth' => $maxNormalizeDepth, 'maxNormalizeItemCount' => $maxNormalizeItemCount, 'prettyPrint' => true, 'ignoreEmptyContextAndExtra' => true]);
 
         self::assertInstanceOf(LogmaticFormatter::class, $formatter);
         self::assertSame($dateFormat, $formatter->getDateFormat());
@@ -214,7 +214,7 @@ final class LogmaticFormatterFactoryTest extends TestCase
         $ig = new ReflectionProperty($formatter, 'ignoreEmptyContextAndExtra');
         $ig->setAccessible(true);
 
-        self::assertFalse($ig->getValue($formatter));
+        self::assertTrue($ig->getValue($formatter));
 
         $st = new ReflectionProperty($formatter, 'includeStacktraces');
         $st->setAccessible(true);
