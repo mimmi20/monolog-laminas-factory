@@ -33,8 +33,8 @@ final class ScalarFormatterFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): ScalarFormatter
     {
-        $maxNormalizeDepth     = 9;
-        $maxNormalizeItemCount = 1000;
+        $maxNormalizeDepth     = NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH;
+        $maxNormalizeItemCount = NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT;
         $prettyPrint           = false;
 
         if (is_array($options)) {

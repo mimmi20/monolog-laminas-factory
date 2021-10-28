@@ -12,9 +12,11 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Formatter;
 
+use DateTimeInterface;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Formatter\ElasticsearchFormatterFactory;
+use Mimmi20\LoggerFactory\Formatter\NormalizerFormatterFactory;
 use Monolog\Formatter\ElasticsearchFormatter;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
@@ -89,6 +91,9 @@ final class ElasticsearchFormatterFactoryTest extends TestCase
         self::assertInstanceOf(ElasticsearchFormatter::class, $formatter);
         self::assertSame($index, $formatter->getIndex());
         self::assertSame('', $formatter->getType());
+        self::assertSame(DateTimeInterface::ISO8601, $formatter->getDateFormat());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH, $formatter->getMaxNormalizeDepth());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT, $formatter->getMaxNormalizeItemCount());
     }
 
     /**
@@ -97,8 +102,10 @@ final class ElasticsearchFormatterFactoryTest extends TestCase
      */
     public function testInvoceWithIndexAndType(): void
     {
-        $index = 'abc';
-        $type  = 'xyz';
+        $maxNormalizeDepth     = 42;
+        $maxNormalizeItemCount = 4711;
+        $index                 = 'abc';
+        $type                  = 'xyz';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -110,10 +117,13 @@ final class ElasticsearchFormatterFactoryTest extends TestCase
 
         $factory = new ElasticsearchFormatterFactory();
 
-        $formatter = $factory($container, '', ['index' => $index, 'type' => $type]);
+        $formatter = $factory($container, '', ['index' => $index, 'type' => $type, 'maxNormalizeDepth' => $maxNormalizeDepth, 'maxNormalizeItemCount' => $maxNormalizeItemCount, 'prettyPrint' => true]);
 
         self::assertInstanceOf(ElasticsearchFormatter::class, $formatter);
         self::assertSame($index, $formatter->getIndex());
         self::assertSame($type, $formatter->getType());
+        self::assertSame(DateTimeInterface::ISO8601, $formatter->getDateFormat());
+        self::assertSame($maxNormalizeDepth, $formatter->getMaxNormalizeDepth());
+        self::assertSame($maxNormalizeItemCount, $formatter->getMaxNormalizeItemCount());
     }
 }

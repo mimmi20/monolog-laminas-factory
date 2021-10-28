@@ -36,8 +36,8 @@ final class LogglyFormatterFactory implements FactoryInterface
     {
         $batchMode             = LogglyFormatter::BATCH_MODE_NEWLINES;
         $appendNewline         = true;
-        $maxNormalizeDepth     = 9;
-        $maxNormalizeItemCount = 1000;
+        $maxNormalizeDepth     = NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH;
+        $maxNormalizeItemCount = NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT;
         $prettyPrint           = false;
 
         if (is_array($options)) {

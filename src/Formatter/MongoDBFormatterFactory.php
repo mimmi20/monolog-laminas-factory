@@ -21,6 +21,8 @@ use function is_array;
 
 final class MongoDBFormatterFactory implements FactoryInterface
 {
+    public const DEFAULT_NESTING_LEVEL = 3;
+
     /**
      * @param string                         $requestedName
      * @param array<string, (bool|int)>|null $options
@@ -33,7 +35,7 @@ final class MongoDBFormatterFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): MongoDBFormatter
     {
-        $maxNestingLevel        = 3;
+        $maxNestingLevel        = self::DEFAULT_NESTING_LEVEL;
         $exceptionTraceAsString = true;
 
         if (is_array($options)) {

@@ -13,6 +13,7 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Formatter;
 
 use Interop\Container\ContainerInterface;
+use Mimmi20\LoggerFactory\Formatter\NormalizerFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\ScalarFormatterFactory;
 use Monolog\Formatter\NormalizerFormatter;
 use Monolog\Formatter\ScalarFormatter;
@@ -42,8 +43,8 @@ final class ScalarFormatterFactoryTest extends TestCase
 
         self::assertInstanceOf(ScalarFormatter::class, $formatter);
         self::assertSame(NormalizerFormatter::SIMPLE_DATE, $formatter->getDateFormat());
-        self::assertSame(9, $formatter->getMaxNormalizeDepth());
-        self::assertSame(1000, $formatter->getMaxNormalizeItemCount());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH, $formatter->getMaxNormalizeDepth());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT, $formatter->getMaxNormalizeItemCount());
     }
 
     /**
@@ -66,8 +67,8 @@ final class ScalarFormatterFactoryTest extends TestCase
 
         self::assertInstanceOf(ScalarFormatter::class, $formatter);
         self::assertSame(NormalizerFormatter::SIMPLE_DATE, $formatter->getDateFormat());
-        self::assertSame(9, $formatter->getMaxNormalizeDepth());
-        self::assertSame(1000, $formatter->getMaxNormalizeItemCount());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH, $formatter->getMaxNormalizeDepth());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT, $formatter->getMaxNormalizeItemCount());
     }
 
     /**

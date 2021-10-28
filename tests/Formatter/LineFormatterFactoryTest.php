@@ -14,6 +14,7 @@ namespace Mimmi20Test\LoggerFactory\Formatter;
 
 use Interop\Container\ContainerInterface;
 use Mimmi20\LoggerFactory\Formatter\LineFormatterFactory;
+use Mimmi20\LoggerFactory\Formatter\NormalizerFormatterFactory;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Formatter\NormalizerFormatter;
 use PHPUnit\Framework\Exception;
@@ -45,6 +46,8 @@ final class LineFormatterFactoryTest extends TestCase
 
         self::assertInstanceOf(LineFormatter::class, $formatter);
         self::assertSame(NormalizerFormatter::SIMPLE_DATE, $formatter->getDateFormat());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH, $formatter->getMaxNormalizeDepth());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT, $formatter->getMaxNormalizeItemCount());
 
         $ailb = new ReflectionProperty($formatter, 'allowInlineLineBreaks');
         $ailb->setAccessible(true);
@@ -88,6 +91,8 @@ final class LineFormatterFactoryTest extends TestCase
 
         self::assertInstanceOf(LineFormatter::class, $formatter);
         self::assertSame(NormalizerFormatter::SIMPLE_DATE, $formatter->getDateFormat());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH, $formatter->getMaxNormalizeDepth());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT, $formatter->getMaxNormalizeItemCount());
 
         $ailb = new ReflectionProperty($formatter, 'allowInlineLineBreaks');
         $ailb->setAccessible(true);
@@ -119,6 +124,8 @@ final class LineFormatterFactoryTest extends TestCase
     {
         $format                     = '[abc] [def]';
         $dateFormat                 = 'xxx__Y-m-d\TH:i:sP__xxx';
+        $maxNormalizeDepth          = 42;
+        $maxNormalizeItemCount      = 4711;
         $allowInlineLineBreaks      = true;
         $ignoreEmptyContextAndExtra = true;
         $include                    = true;
@@ -133,10 +140,12 @@ final class LineFormatterFactoryTest extends TestCase
 
         $factory = new LineFormatterFactory();
 
-        $formatter = $factory($container, '', ['format' => $format, 'dateFormat' => $dateFormat, 'allowInlineLineBreaks' => $allowInlineLineBreaks, 'ignoreEmptyContextAndExtra' => $ignoreEmptyContextAndExtra, 'includeStacktraces' => $include]);
+        $formatter = $factory($container, '', ['format' => $format, 'dateFormat' => $dateFormat, 'allowInlineLineBreaks' => $allowInlineLineBreaks, 'ignoreEmptyContextAndExtra' => $ignoreEmptyContextAndExtra, 'includeStacktraces' => $include, 'maxNormalizeDepth' => $maxNormalizeDepth, 'maxNormalizeItemCount' => $maxNormalizeItemCount, 'prettyPrint' => true]);
 
         self::assertInstanceOf(LineFormatter::class, $formatter);
         self::assertSame($dateFormat, $formatter->getDateFormat());
+        self::assertSame($maxNormalizeDepth, $formatter->getMaxNormalizeDepth());
+        self::assertSame($maxNormalizeItemCount, $formatter->getMaxNormalizeItemCount());
 
         $ailb = new ReflectionProperty($formatter, 'allowInlineLineBreaks');
         $ailb->setAccessible(true);

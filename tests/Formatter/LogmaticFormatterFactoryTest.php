@@ -14,8 +14,10 @@ namespace Mimmi20Test\LoggerFactory\Formatter;
 
 use Interop\Container\ContainerInterface;
 use Mimmi20\LoggerFactory\Formatter\LogmaticFormatterFactory;
+use Mimmi20\LoggerFactory\Formatter\NormalizerFormatterFactory;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Formatter\LogmaticFormatter;
+use Monolog\Formatter\NormalizerFormatter;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
@@ -44,6 +46,9 @@ final class LogmaticFormatterFactoryTest extends TestCase
         $formatter = $factory($container, '');
 
         self::assertInstanceOf(LogmaticFormatter::class, $formatter);
+        self::assertSame(NormalizerFormatter::SIMPLE_DATE, $formatter->getDateFormat());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH, $formatter->getMaxNormalizeDepth());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT, $formatter->getMaxNormalizeItemCount());
         self::assertSame(JsonFormatter::BATCH_MODE_JSON, $formatter->getBatchMode());
         self::assertTrue($formatter->isAppendingNewlines());
 
@@ -88,6 +93,9 @@ final class LogmaticFormatterFactoryTest extends TestCase
         $formatter = $factory($container, '', []);
 
         self::assertInstanceOf(LogmaticFormatter::class, $formatter);
+        self::assertSame(NormalizerFormatter::SIMPLE_DATE, $formatter->getDateFormat());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH, $formatter->getMaxNormalizeDepth());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT, $formatter->getMaxNormalizeItemCount());
         self::assertSame(JsonFormatter::BATCH_MODE_JSON, $formatter->getBatchMode());
         self::assertTrue($formatter->isAppendingNewlines());
 
@@ -119,11 +127,14 @@ final class LogmaticFormatterFactoryTest extends TestCase
      */
     public function testInvoceWithConfig(): void
     {
-        $batchMode     = JsonFormatter::BATCH_MODE_NEWLINES;
-        $appendNewline = false;
-        $include       = true;
-        $hostname      = 'abc';
-        $appname       = 'xyz';
+        $batchMode             = JsonFormatter::BATCH_MODE_NEWLINES;
+        $appendNewline         = false;
+        $include               = true;
+        $hostname              = 'abc';
+        $appname               = 'xyz';
+        $dateFormat            = 'xxx__Y-m-d\TH:i:sP__xxx';
+        $maxNormalizeDepth     = 42;
+        $maxNormalizeItemCount = 4711;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -135,9 +146,12 @@ final class LogmaticFormatterFactoryTest extends TestCase
 
         $factory = new LogmaticFormatterFactory();
 
-        $formatter = $factory($container, '', ['batchMode' => $batchMode, 'appendNewline' => $appendNewline, 'includeStacktraces' => $include, 'hostname' => $hostname, 'appName' => $appname]);
+        $formatter = $factory($container, '', ['batchMode' => $batchMode, 'appendNewline' => $appendNewline, 'includeStacktraces' => $include, 'hostname' => $hostname, 'appName' => $appname, 'dateFormat' => $dateFormat, 'maxNormalizeDepth' => $maxNormalizeDepth, 'maxNormalizeItemCount' => $maxNormalizeItemCount, 'prettyPrint' => true]);
 
         self::assertInstanceOf(LogmaticFormatter::class, $formatter);
+        self::assertSame($dateFormat, $formatter->getDateFormat());
+        self::assertSame($maxNormalizeDepth, $formatter->getMaxNormalizeDepth());
+        self::assertSame($maxNormalizeItemCount, $formatter->getMaxNormalizeItemCount());
         self::assertSame($batchMode, $formatter->getBatchMode());
         self::assertFalse($formatter->isAppendingNewlines());
 
@@ -169,11 +183,14 @@ final class LogmaticFormatterFactoryTest extends TestCase
      */
     public function testInvoceWithConfig2(): void
     {
-        $batchMode     = JsonFormatter::BATCH_MODE_JSON;
-        $appendNewline = false;
-        $include       = true;
-        $hostname      = 'abc';
-        $appname       = 'xyz';
+        $batchMode             = JsonFormatter::BATCH_MODE_JSON;
+        $appendNewline         = false;
+        $include               = true;
+        $hostname              = 'abc';
+        $appname               = 'xyz';
+        $dateFormat            = 'xxx__Y-m-d\TH:i:sP__xxx';
+        $maxNormalizeDepth     = 42;
+        $maxNormalizeItemCount = 4711;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -185,9 +202,12 @@ final class LogmaticFormatterFactoryTest extends TestCase
 
         $factory = new LogmaticFormatterFactory();
 
-        $formatter = $factory($container, '', ['batchMode' => $batchMode, 'appendNewline' => $appendNewline, 'includeStacktraces' => $include, 'hostname' => $hostname, 'appName' => $appname]);
+        $formatter = $factory($container, '', ['batchMode' => $batchMode, 'appendNewline' => $appendNewline, 'includeStacktraces' => $include, 'hostname' => $hostname, 'appName' => $appname, 'dateFormat' => $dateFormat, 'maxNormalizeDepth' => $maxNormalizeDepth, 'maxNormalizeItemCount' => $maxNormalizeItemCount, 'prettyPrint' => true]);
 
         self::assertInstanceOf(LogmaticFormatter::class, $formatter);
+        self::assertSame($dateFormat, $formatter->getDateFormat());
+        self::assertSame($maxNormalizeDepth, $formatter->getMaxNormalizeDepth());
+        self::assertSame($maxNormalizeItemCount, $formatter->getMaxNormalizeItemCount());
         self::assertSame($batchMode, $formatter->getBatchMode());
         self::assertFalse($formatter->isAppendingNewlines());
 

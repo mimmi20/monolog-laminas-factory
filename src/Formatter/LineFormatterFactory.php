@@ -37,8 +37,8 @@ final class LineFormatterFactory implements FactoryInterface
         $dateFormat                 = null;
         $allowInlineLineBreaks      = false;
         $ignoreEmptyContextAndExtra = false;
-        $maxNormalizeDepth          = 9;
-        $maxNormalizeItemCount      = 1000;
+        $maxNormalizeDepth          = NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH;
+        $maxNormalizeItemCount      = NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT;
         $prettyPrint                = false;
 
         if (is_array($options)) {
