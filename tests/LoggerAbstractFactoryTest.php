@@ -1569,6 +1569,156 @@ final class LoggerAbstractFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws \Laminas\Log\Exception\InvalidArgumentException
+     * @throws ReflectionException
+     */
+    public function testInvoceWithConfig17(): void
+    {
+        $requestedName = Logger::class;
+        $name          = 'test-name';
+        $processors    = [
+            static fn (array $record): array => $record,
+        ];
+        $handlers      = [
+            $this->createMock(HandlerInterface::class),
+        ];
+        $timezone      = 42;
+        $config        = [
+            'log' => [
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'name' => $name,
+                    'timezone' => $timezone,
+                    'writers' => [
+                        ['name' => 'abc'],
+                        ['name' => true],
+                        ['name' => 'vwx'],
+                        ['name' => new Noop()],
+                    ],
+                    'processors' => [
+                        [
+                            'enabled' => true,
+                            'name' => 'xyz',
+                        ],
+                        [
+                            'enabled' => true,
+                            'name' => false,
+                        ],
+                        [
+                            'enabled' => true,
+                            'name' => 'abcd',
+                        ],
+                        [
+                            'enabled' => true,
+                            'name' => new RequestId(),
+                        ],
+                    ],
+                    'handlers' => $handlers,
+                    'monolog_processors' => $processors,
+                ],
+            ],
+        ];
+
+        $processor1 = $this->getMockBuilder(WriterInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $processor2 = $this->getMockBuilder(WriterInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $processorPluginManager = $this->getMockBuilder(ProcessorPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $processorPluginManager->expects(self::never())
+            ->method('has');
+        $processorPluginManager->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive(['xyz', null], ['abcd', null])
+            ->willReturnOnConsecutiveCalls($processor1, $processor2);
+
+        $writer1 = $this->getMockBuilder(WriterInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $writer2 = $this->getMockBuilder(WriterInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $writerPluginManager = $this->getMockBuilder(WriterPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $writerPluginManager->expects(self::never())
+            ->method('has');
+        $writerPluginManager->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive(['abc', null], ['vwx', null])
+            ->willReturnOnConsecutiveCalls($writer1, $writer2);
+
+        $monolog = $this->getMockBuilder(\Monolog\Logger::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monolog->expects(self::never())
+            ->method('setTimezone');
+
+        $monologPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologPluginManager->expects(self::never())
+            ->method('has');
+        $monologPluginManager->expects(self::once())
+            ->method('get')
+            ->with(
+                \Monolog\Logger::class,
+                [
+                    'name' => $name,
+                    'handlers' => $handlers,
+                    'processors' => $processors,
+                ]
+            )
+            ->willReturn($monolog);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::exactly(2))
+            ->method('has')
+            ->withConsecutive(['LogProcessorManager'], ['LogWriterManager'])
+            ->willReturnOnConsecutiveCalls(true, true);
+        $container->expects(self::exactly(4))
+            ->method('get')
+            ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'], [MonologPluginManager::class])
+            ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager, $monologPluginManager);
+
+        $factory = new LoggerAbstractFactory();
+
+        $logger = $factory($container, $requestedName, null);
+
+        self::assertInstanceOf(Logger::class, $logger);
+        self::assertInstanceOf(SplPriorityQueue::class, $logger->getWriters());
+        self::assertCount(5, $logger->getWriters());
+        self::assertInstanceOf(SplPriorityQueue::class, $logger->getProcessors());
+        self::assertCount(3, $logger->getProcessors());
+        self::assertSame($writerPluginManager, $logger->getWriterPluginManager());
+        self::assertSame($processorPluginManager, $logger->getProcessorPluginManager());
+
+        foreach ($logger->getWriters() as $writer) {
+            if (!($writer instanceof Psr)) {
+                continue;
+            }
+
+            $prop = new ReflectionProperty($writer, 'logger');
+            $prop->setAccessible(true);
+
+            $internalLogger = $prop->getValue($writer);
+
+            self::assertSame($monolog, $internalLogger);
+        }
+    }
+
+    /**
+     * @throws Exception
      */
     public function testCanCreateWithoutConfig(): void
     {
