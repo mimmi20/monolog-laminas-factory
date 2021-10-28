@@ -132,33 +132,35 @@ config/autoload/monolog.global.php
 <?php
 return [
     'log' => [
-        'name' => 'name',
-        'exceptionhandler' => false,
-        'errorhandler' => false,
-        'shutdownhandler' => false,
-        'writers' => [], // Writers for Laminas Log
-        'processors' => [], // Processors for Laminas Log
-        'handlers' => [ // Handlers for Monolog
- // At the bare minimum you must include a default handler config.
- // Otherwise log entries will be sent to the void.
-            'default' => [
-                'type' => 'stream',
-                'enabled' => true,
-                'options' => [
-                    'stream' => '/var/log/some-log-file.txt',
+        \Laminas\Log\Logger::class => [
+            'name' => 'name',
+            'exceptionhandler' => false,
+            'errorhandler' => false,
+            'shutdownhandler' => false,
+            'writers' => [], // Writers for Laminas Log
+            'processors' => [], // Processors for Laminas Log
+            'handlers' => [ // Handlers for Monolog
+                // At the bare minimum you must include a default handler config.
+                // Otherwise log entries will be sent to the void.
+                'default' => [
+                    'type' => 'stream',
+                    'enabled' => true,
+                    'options' => [
+                        'stream' => '/var/log/some-log-file.txt',
+                    ],
+                ],
+                
+                // Another Handler
+                'myOtherHandler' => [
+                    'type' => 'stream',
+                    'enabled' => false,
+                    'options' => [
+                        'stream' => '/var/log/someother-log-file.txt',
+                    ],
                 ],
             ],
-            
- // Another Handler
-            'myOtherHandler' => [
-                'type' => 'stream',
-                'enabled' => false,
-                'options' => [
-                    'stream' => '/var/log/someother-log-file.txt',
-                ],
-            ],
+            'monolog_processors' => [], // Processors for Monolog
         ],
-        'monolog_processors' => [], // Processors for Monolog
     ],
 ];
 ```
@@ -175,12 +177,14 @@ when you wire up the default logger.
 
 return [
     'log' => [
-        'name' => 'name',
-        'handlers' => [
-            'default' => [
-                'type' => 'stream',
-                'options' => [
-                    'stream' => '/var/log/some-log-file.txt',
+        \Laminas\Log\Logger::class => [
+            'name' => 'name',
+            'handlers' => [
+                'default' => [
+                    'type' => 'stream',
+                    'options' => [
+                        'stream' => '/var/log/some-log-file.txt',
+                    ],
                 ],
             ],
         ],
@@ -197,48 +201,50 @@ return [
 return [
     
     'log' => [
-        'name' => 'name',
-        'handlers' => [
-             'default' => [
- // A Handler type or pre-configured service from the container
-                'type' => 'stream',
-                
- // Handler specific options.  See handlers below
-                'options' => [
-                    'stream' => '/tmp/log_one.txt',
-                
- // Optional: Formatter for the handler.
-                    'formatter' => [
-                        'type' => 'line',
-                            
- // formatter specific options.  See formatters below
-                        'options' => [], 
-                    ], 
+        \Laminas\Log\Logger::class => [
+            'name' => 'name',
+            'handlers' => [
+                'default' => [
+                    // A Handler type or pre-configured service from the container
+                    'type' => 'stream',
                     
- // Optional: Processor for the handler
-                    'processors' => [
-                        [
- // A processor type or pre-configured service from the container
-                            'type' => 'psrLogMessage',
-                            
- // processor specific options.  See processors below
+                    // Handler specific options.  See handlers below
+                    'options' => [
+                        'stream' => '/tmp/log_one.txt',
+                    
+                        // Optional: Formatter for the handler.
+                        'formatter' => [
+                            'type' => 'line',
+                                
+                            // formatter specific options.  See formatters below
                             'options' => [], 
+                        ], 
+                        
+                        // Optional: Processor for the handler
+                        'processors' => [
+                            [
+                                // A processor type or pre-configured service from the container
+                                'type' => 'psrLogMessage',
+                                
+                                // processor specific options.  See processors below
+                                'options' => [], 
+                            ],
                         ],
-                    ],
-                ], 
+                    ], 
+                ],
             ],
-        ],
-        
- // Processors for Monolog/Logger
-        'monolog_processors' => [
- // Array Keys are the names used for the processors
-            'processorOne' => [
- // A processor type or pre-configured service from the container
-                'type' => 'psrLogMessage',
-                
- // processor specific options.  See processors below
-                'options' => [], 
-            ],        
+            
+            // Processors for Monolog/Logger
+            'monolog_processors' => [
+                // Array Keys are the names used for the processors
+                'processorOne' => [
+                    // A processor type or pre-configured service from the container
+                    'type' => 'psrLogMessage',
+                    
+                    // processor specific options.  See processors below
+                    'options' => [], 
+                ],        
+            ],
         ],
     ],
 ];
@@ -256,19 +262,21 @@ Logs records into any PHP stream, use this for log files.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'stream',
-                
-                'options' => [
-                    'stream' => '/tmp/stream_test.txt', // Required:  File Path | Resource | Service Name
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'filePermission' => null, // Optional: file permissions (default (0644) are only for owner read/write)
-                    'useLocking' => false, // Optional: Try to lock log file before doing any writes
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'stream',
                     
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+                    'options' => [
+                        'stream' => '/tmp/stream_test.txt', // Required:  File Path | Resource | Service Name
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'filePermission' => null, // Optional: file permissions (default (0644) are only for owner read/write)
+                        'useLocking' => false, // Optional: Try to lock log file before doing any writes
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -287,22 +295,24 @@ this is just meant as a quick and dirty solution.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'rotating',
-                
-                'options' => [
-                    'filename' => '/tmp/stream_test.txt', // Required:  File Path
-                    'maxFiles' => 0, // Optional:  The maximal amount of files to keep (0 means unlimited)
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'filePermission' => null, // Optional: file permissions (default (0644) are only for owner read/write)
-                    'useLocking' => false, // Optional: Try to lock log file before doing any writes
-                    'filenameFormat' => '{filename}-{date}', // Optional
-                    'dateFormat' => 'Y-m-d', // Optional
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'rotating',
                     
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+                    'options' => [
+                        'filename' => '/tmp/stream_test.txt', // Required:  File Path
+                        'maxFiles' => 0, // Optional:  The maximal amount of files to keep (0 means unlimited)
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'filePermission' => null, // Optional: file permissions (default (0644) are only for owner read/write)
+                        'useLocking' => false, // Optional: Try to lock log file before doing any writes
+                        'filenameFormat' => '{filename}-{date}', // Optional
+                        'dateFormat' => 'Y-m-d', // Optional
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -319,19 +329,21 @@ Logs records to the syslog.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'syslog',
-                
-                'options' => [
-                    'ident' => '/tmp/stream_test.txt', // Required:  The string ident is added to each message. 
-                    'facility' => LOG_USER, // Optional:  The facility argument is used to specify what type of program is logging the message.
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'logOpts' => LOG_PID, // Optional: Option flags for the openlog() call, defaults to LOG_PID
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'syslog',
                     
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+                    'options' => [
+                        'ident' => '/tmp/stream_test.txt', // Required:  The string ident is added to each message. 
+                        'facility' => LOG_USER, // Optional:  The facility argument is used to specify what type of program is logging the message.
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'logOpts' => LOG_PID, // Optional: Option flags for the openlog() call, defaults to LOG_PID
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -349,18 +361,20 @@ Logs records to PHP's [error_log()](http://docs.php.net/manual/en/function.error
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'errorlog',
-                
-                'options' => [
-                    'messageType' => \Monolog\Handler\ErrorLogHandler::OPERATING_SYSTEM, // Optional:  Says where the error should go.
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'expandNewlines' => false, // Optional: If set to true, newlines in the message will be expanded to be take multiple log entries
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'errorlog',
                     
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+                    'options' => [
+                        'messageType' => \Monolog\Handler\ErrorLogHandler::OPERATING_SYSTEM, // Optional:  Says where the error should go.
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'expandNewlines' => false, // Optional: If set to true, newlines in the message will be expanded to be take multiple log entries
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -377,18 +391,20 @@ Logs records to the [STDIN](https://en.wikipedia.org/wiki/Standard_streams#Stand
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'process',
-                  
-                'options' => [
-                    'command' => 'some-command', // Command for the process to start. Absolute paths are recommended, especially if you do not use the $cwd parameter.
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'cwd' => __DIR__, // Optional: "Current working directory" (CWD) for the process to be executed in.
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'process',
+                      
+                    'options' => [
+                        'command' => 'some-command', // Command for the process to start. Absolute paths are recommended, especially if you do not use the $cwd parameter.
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'cwd' => __DIR__, // Optional: "Current working directory" (CWD) for the process to be executed in.
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -407,22 +423,24 @@ Sends emails using PHP's [mail()](http://php.net/manual/en/function.mail.php) fu
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'nativeMailer',
-                  
-                'options' => [
-                    'to' => ['email1@test.com', 'email2@test.com'], // The receiver of the mail. Can be an array or string
-                    'subject' => 'Error Log', // The subject of the mail
-                    'from' => 'sender@test.com', // The sender of the mail
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'maxColumnWidth' => 80, // Optional: The maximum column width that the message lines will have
-                    'contentType' => 'text/html', // Optional
-                    'encoding' => 'utf-8', // Optional
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'nativeMailer',
+                      
+                    'options' => [
+                        'to' => ['email1@test.com', 'email2@test.com'], // The receiver of the mail. Can be an array or string
+                        'subject' => 'Error Log', // The subject of the mail
+                        'from' => 'sender@test.com', // The sender of the mail
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'maxColumnWidth' => 80, // Optional: The maximum column width that the message lines will have
+                        'contentType' => 'text/html', // Optional
+                        'encoding' => 'utf-8', // Optional
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -439,18 +457,20 @@ Sends emails using a [Swift_Mailer](http://swiftmailer.org/) instance.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'swiftMailer',
-                  
-                'options' => [
-                    'mailer' => 'my-service', // The mailer to use.  Must be a valid service name in the container
-                    'message' => 'my-message', // An example message for real messages, only the body will be replaced.  Must be a valid service name or callable
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [ 
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'swiftMailer',
+                      
+                    'options' => [
+                        'mailer' => 'my-service', // The mailer to use.  Must be a valid service name in the container
+                        'message' => 'my-message', // An example message for real messages, only the body will be replaced.  Must be a valid service name or callable
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -467,28 +487,30 @@ Sends mobile notifications via the [Pushover](https://www.pushover.net/) API. Re
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'pushover',
-                  
-                'options' => [
-                    'token' => 'sometokenhere', // Pushover api token
-                    'users' => ['email1@test.com', 'email2@test.com'], // Pushover user id or array of ids the message will be sent to
-                    'title' => 'Error Log', // Optional: Title sent to the Pushover API
-                    'level' => \Psr\Log\LogLevel::INFO, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => false, // Optional:  Whether the messages that are handled can bubble up the stack or not
-                    'useSSL' => false, // Optional:  Whether to connect via SSL. Required when pushing messages to users that are not the pushover.net app owner. OpenSSL is required for this option.
-                    'highPriorityLevel' => \Psr\Log\LogLevel::WARNING, // Optional: The minimum logging level at which this handler will start sending "high priority" requests to the Pushover API
-                    'emergencyLevel' => \Psr\Log\LogLevel::ERROR, // Optional: The minimum logging level at which this handler will start sending "emergency" requests to the Pushover API
-                    'retry' => 22, // Optional: The retry parameter specifies how often (in seconds) the Pushover servers will send the same notification to the user.
-                    'expire' => 300, // Optional: The expire parameter specifies how many seconds your notification will continue to be retried for (every retry seconds).
-                    'timeout' => 10.0, // Optional
-                    'writeTimeout' => 5.0, // Optional
-                    'persistent' => false, // Optional
-                    'chunkSize' => 100, // Optional
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'pushover',
+                      
+                    'options' => [
+                        'token' => 'sometokenhere', // Pushover api token
+                        'users' => ['email1@test.com', 'email2@test.com'], // Pushover user id or array of ids the message will be sent to
+                        'title' => 'Error Log', // Optional: Title sent to the Pushover API
+                        'level' => \Psr\Log\LogLevel::INFO, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => false, // Optional:  Whether the messages that are handled can bubble up the stack or not
+                        'useSSL' => false, // Optional:  Whether to connect via SSL. Required when pushing messages to users that are not the pushover.net app owner. OpenSSL is required for this option.
+                        'highPriorityLevel' => \Psr\Log\LogLevel::WARNING, // Optional: The minimum logging level at which this handler will start sending "high priority" requests to the Pushover API
+                        'emergencyLevel' => \Psr\Log\LogLevel::ERROR, // Optional: The minimum logging level at which this handler will start sending "emergency" requests to the Pushover API
+                        'retry' => 22, // Optional: The retry parameter specifies how often (in seconds) the Pushover servers will send the same notification to the user.
+                        'expire' => 300, // Optional: The expire parameter specifies how many seconds your notification will continue to be retried for (every retry seconds).
+                        'timeout' => 10.0, // Optional
+                        'writeTimeout' => 5.0, // Optional
+                        'persistent' => false, // Optional
+                        'chunkSize' => 100, // Optional
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -505,21 +527,23 @@ Logs records to a [Flowdock](https://www.flowdock.com/) account. Requires the op
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'flowdock',
-                 
-                'options' => [
-                    'apiToken' => 'sometokenhere', // HipChat API Token
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'timeout' => 10.0, // Optional
-                    'writeTimeout' => 5.0, // Optional
-                    'persistent' => false, // Optional
-                    'chunkSize' => 100, // Optional
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'flowdock',
+                     
+                    'options' => [
+                        'apiToken' => 'sometokenhere', // HipChat API Token
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'timeout' => 10.0, // Optional
+                        'writeTimeout' => 5.0, // Optional
+                        'persistent' => false, // Optional
+                        'chunkSize' => 100, // Optional
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -536,24 +560,26 @@ Logs records to a [Slack](https://www.slack.com/) account using Slack Webhooks. 
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'slackWebhook',
-                  
-                'options' => [
-                    'webhookUrl' => 'webhook.slack.com', // Slack Webhook URL
-                    'channel' => 'channel', // Slack channel (encoded ID or name)
-                    'userName' => 'log', // Name of a bot
-                    'useAttachment' => false, // Optional: Whether the message should be added to Slack as attachment (plain text otherwise)
-                    'iconEmoji' => null, // Optional: The emoji name to use (or null)
-                    'useShortAttachment' => true, // Optional: Whether the the context/extra messages added to Slack as attachments are in a short style
-                    'includeContextAndExtra' => true, // Optional: Whether the attachment should include context and extra data
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => false, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'excludeFields' => ['context.field1', 'extra.field2'], // Optional: Dot separated list of fields to exclude from slack message.
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'slackWebhook',
+                      
+                    'options' => [
+                        'webhookUrl' => 'webhook.slack.com', // Slack Webhook URL
+                        'channel' => 'channel', // Slack channel (encoded ID or name)
+                        'userName' => 'log', // Name of a bot
+                        'useAttachment' => false, // Optional: Whether the message should be added to Slack as attachment (plain text otherwise)
+                        'iconEmoji' => null, // Optional: The emoji name to use (or null)
+                        'useShortAttachment' => true, // Optional: Whether the the context/extra messages added to Slack as attachments are in a short style
+                        'includeContextAndExtra' => true, // Optional: Whether the attachment should include context and extra data
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => false, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'excludeFields' => ['context.field1', 'extra.field2'], // Optional: Dot separated list of fields to exclude from slack message.
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -570,28 +596,30 @@ Logs records to a [SlackHandler](https://www.slack.com/) account using the Slack
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'slack',
-                  
-                'options' => [
-                    'token' => 'apiToken', // Slack API token
-                    'channel' => 'channel', // Slack channel (encoded ID or name)
-                    'userName' => 'log', // Name of a bot
-                    'useAttachment' => false, // Optional: Whether the message should be added to Slack as attachment (plain text otherwise)
-                    'iconEmoji' => null, // Optional: The emoji name to use (or null)
-                    'useShortAttachment' => true, // Optional: Whether the the context/extra messages added to Slack as attachments are in a short style
-                    'includeContextAndExtra' => true, // Optional: Whether the attachment should include context and extra data
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => false, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'excludeFields' => ['context.field1', 'extra.field2'], // Optional: Dot separated list of fields to exclude from slack message.
-                    'timeout' => 10.0, // Optional
-                    'writeTimeout' => 5.0, // Optional
-                    'persistent' => false, // Optional
-                    'chunkSize' => 100, // Optional
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'slack',
+                      
+                    'options' => [
+                        'token' => 'apiToken', // Slack API token
+                        'channel' => 'channel', // Slack channel (encoded ID or name)
+                        'userName' => 'log', // Name of a bot
+                        'useAttachment' => false, // Optional: Whether the message should be added to Slack as attachment (plain text otherwise)
+                        'iconEmoji' => null, // Optional: The emoji name to use (or null)
+                        'useShortAttachment' => true, // Optional: Whether the the context/extra messages added to Slack as attachments are in a short style
+                        'includeContextAndExtra' => true, // Optional: Whether the attachment should include context and extra data
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => false, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'excludeFields' => ['context.field1', 'extra.field2'], // Optional: Dot separated list of fields to exclude from slack message.
+                        'timeout' => 10.0, // Optional
+                        'writeTimeout' => 5.0, // Optional
+                        'persistent' => false, // Optional
+                        'chunkSize' => 100, // Optional
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -608,21 +636,23 @@ Sends emails via the SendGrid API. Requires the curl Excension.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'sendgrid',
-                  
-                'options' => [
-                    'apiUser' => 'apiUser', // The SendGrid API User
-                    'apiKey' => 'apiKey', // The SendGrid API Key
-                    'from' => 'from', // The sender of the email
-                    'to' => 'to', // string or array of recipients
-                    'subject' => 'subject', // The subject of the mail
-                    'level' => \Psr\Log\LogLevel::INFO, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => false, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'sendgrid',
+                      
+                    'options' => [
+                        'apiUser' => 'apiUser', // The SendGrid API User
+                        'apiKey' => 'apiKey', // The SendGrid API Key
+                        'from' => 'from', // The sender of the email
+                        'to' => 'to', // string or array of recipients
+                        'subject' => 'subject', // The subject of the mail
+                        'level' => \Psr\Log\LogLevel::INFO, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => false, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -639,18 +669,20 @@ Sends emails via the [Mandrill](http://www.mandrill.com/) API using a [Swift_Mes
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'mandrill',
-                  
-                'options' => [
-                    'apiKey' => 'my-service', // A valid Mandrill API key
-                    'message' => 'my-message', // An example \Swiftmail message for real messages, only the body will be replaced.  Must be a valid service name or callable
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'mandrill',
+                      
+                    'options' => [
+                        'apiKey' => 'my-service', // A valid Mandrill API key
+                        'message' => 'my-message', // An example \Swiftmail message for real messages, only the body will be replaced.  Must be a valid service name or callable
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -667,21 +699,23 @@ Logs records to a [Fleep](https://fleep.io/) conversation using Webhooks. Requir
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'fleepHook',
-                  
-                'options' => [
-                    'token' => 'sometokenhere', // Webhook token
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'timeout' => 10.0, // Optional
-                    'writeTimeout' => 5.0, // Optional
-                    'persistent' => false, // Optional
-                    'chunkSize' => 100, // Optional
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'fleepHook',
+                      
+                    'options' => [
+                        'token' => 'sometokenhere', // Webhook token
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'timeout' => 10.0, // Optional
+                        'writeTimeout' => 5.0, // Optional
+                        'persistent' => false, // Optional
+                        'chunkSize' => 100, // Optional
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -689,6 +723,36 @@ return [
 ];
 ```
 Monolog Docs: [FleepHookHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/FleepHookHandler.php)
+
+#### IFTTTHandler
+IFTTTHandler uses cURL to trigger IFTTT Maker actions. Requires the curl Extensions.
+
+```php
+<?php
+
+return [
+    'log' => [
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'ifttt',
+                      
+                    'options' => [
+                        'eventName' => 'eventName', // name of an event
+                        'secretKey' => 'secretKey',
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
+                ],
+            ],
+        ],
+    ],
+];
+```
+Monolog Docs: [IFTTTHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/IFTTTHandler.php)
 
 #### TelegramBotHandler
 Logs records to a [Telegram](https://core.telegram.org/bots/api) bot account. Requires the curl Excension.
@@ -698,21 +762,23 @@ Logs records to a [Telegram](https://core.telegram.org/bots/api) bot account. Re
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'telegrambot',
-                  
-                'options' => [
-                    'apiKey' => 'api-key', // Api Key
-                    'channel' => 'channel', // Channel
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'parseMode' => null, // Optional: null or one of 'HTML', 'MarkdownV2', 'Markdown'
-                    'disableWebPagePreview' => null, // Optional: null or boolean
-                    'disableNotification' => null, // Optional: null or boolean
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'telegrambot',
+                      
+                    'options' => [
+                        'apiKey' => 'api-key', // Api Key
+                        'channel' => 'channel', // Channel
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'parseMode' => null, // Optional: null or one of 'HTML', 'MarkdownV2', 'Markdown'
+                        'disableWebPagePreview' => null, // Optional: null or boolean
+                        'disableNotification' => null, // Optional: null or boolean
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -731,21 +797,23 @@ Logs records to [sockets](http://php.net/fsockopen), use this for UNIX and TCP s
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'socket',
-                  
-                'options' => [
-                    'connectionString' => 'unix:///var/log/httpd_app_log.socket', // Socket connection string.  You can use a unix:// prefix to access unix sockets and udp:// to open UDP sockets instead of the default TCP.
-                    'timeout' => 30.0, // Optional: The connection timeout, in seconds.
-                    'writeTimeout' => 90.0, // Optional: Set timeout period on a stream.
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'persistent' => false, // Optional
-                    'chunkSize' => 100, // Optional
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'socket',
+                      
+                    'options' => [
+                        'connectionString' => 'unix:///var/log/httpd_app_log.socket', // Socket connection string.  You can use a unix:// prefix to access unix sockets and udp:// to open UDP sockets instead of the default TCP.
+                        'timeout' => 30.0, // Optional: The connection timeout, in seconds.
+                        'writeTimeout' => 90.0, // Optional: Set timeout period on a stream.
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'persistent' => false, // Optional
+                        'chunkSize' => 100, // Optional
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -762,18 +830,20 @@ Logs records to an [AMQP](http://www.amqp.org/) compatible server. Requires the 
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'amqp',
-                  
-                'options' => [
-                    'exchange' => 'my-service', // AMQPExchange (php AMQP ext) or PHP AMQP lib channel.  Must be a valid service.
-                    'exchangeName' => 'log-name', // Optional: Exchange name, for AMQPChannel (PhpAmqpLib) only
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'amqp',
+                      
+                    'options' => [
+                        'exchange' => 'my-service', // AMQPExchange (php AMQP ext) or PHP AMQP lib channel.  Must be a valid service.
+                        'exchangeName' => 'log-name', // Optional: Exchange name, for AMQPChannel (PhpAmqpLib) only
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -789,17 +859,19 @@ Logs records to a [Graylog2](http://www.graylog2.org) server. Requires package [
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'gelf',
-                  
-                'options' => [
-                    'publisher' => 'my-service', // A Gelf\PublisherInterface object.  Must be a valid service.
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'gelf',
+                      
+                    'options' => [
+                        'publisher' => 'my-service', // A Gelf\PublisherInterface object.  Must be a valid service.
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -820,17 +892,19 @@ internally for over a year._
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'cube',
-                  
-                'options' => [
-                    'url' => 'http://test.com:80', // A valid url.  Must consist of three parts : protocol://host:port
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'cube',
+                      
+                    'options' => [
+                        'url' => 'http://test.com:80', // A valid url.  Must consist of three parts : protocol://host:port
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -846,16 +920,18 @@ Logs records to the Zend Monitor present in [Zend Server](http://www.zend.com/en
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'zend',
-                  
-                'options' => [
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'zend',
+                      
+                    'options' => [
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -871,19 +947,21 @@ Logs records to a [NewRelic](http://newrelic.com/) application. Requires the new
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'newRelic',
-                  
-                'options' => [
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'appName' => 'my-app', // Optional: Application name
-                    'explodeArrays' => false, // Optional: Explode Arrays
-                    'transactionName' => 'my-transaction', // Optional: Explode Arrays
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'newRelic',
+                      
+                    'options' => [
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'appName' => 'my-app', // Optional: Application name
+                        'explodeArrays' => false, // Optional: Explode Arrays
+                        'transactionName' => 'my-transaction', // Optional: Explode Arrays
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -900,17 +978,19 @@ Logs records to a [Loggly](http://www.loggly.com/) account. Requires the curl Ex
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'loggly',
-                  
-                'options' => [
-                    'token' => 'sometokenhere', // Webhook token
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'loggly',
+                      
+                    'options' => [
+                        'token' => 'sometokenhere', // Webhook token
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -935,21 +1015,23 @@ Logs records to a remote [Syslogd](http://www.rsyslog.com/) server. Requires the
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'syslogUdp',
-                  
-                'options' => [
-                    'host' => 'somewhere.com', // Host
-                    'port' => 513, //  Optional: Port
-                    'facility' => 'Me', // Optional: Facility
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'ident' => 'me-too', // Optional: Program name or tag for each log message.
-                    'rfc' => '', // Optional
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'syslogUdp',
+                      
+                    'options' => [
+                        'host' => 'somewhere.com', // Host
+                        'port' => 513, //  Optional: Port
+                        'facility' => 'Me', // Optional: Facility
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'ident' => 'me-too', // Optional: Program name or tag for each log message.
+                        'rfc' => '', // Optional
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -966,23 +1048,25 @@ Logs records to a [LogEntries](http://logentries.com/) account. Requires the ope
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'logEntries',
-                  
-                'options' => [
-                    'token' => 'sometokenhere', // Log token supplied by LogEntries
-                    'useSSL' => true, // Optional: Whether or not SSL encryption should be used.
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'timeout' => 10.0, // Optional
-                    'writeTimeout' => 5.0, // Optional
-                    'persistent' => false, // Optional
-                    'chunkSize' => 100, // Optional
-                    'host' => 'data.logentries.com', // Optional
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'logEntries',
+                      
+                    'options' => [
+                        'token' => 'sometokenhere', // Log token supplied by LogEntries
+                        'useSSL' => true, // Optional: Whether or not SSL encryption should be used.
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'timeout' => 10.0, // Optional
+                        'writeTimeout' => 5.0, // Optional
+                        'persistent' => false, // Optional
+                        'chunkSize' => 100, // Optional
+                        'host' => 'data.logentries.com', // Optional
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -999,23 +1083,25 @@ Logs records to an [InsightOps](https://www.rapid7.com/products/insightops/) acc
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'insightops',
-                  
-                'options' => [
-                    'token' => 'sometokenhere', // Log token supplied by InsightOps
-                    'region' => 'region', // Region where InsightOps account is hosted. Could be 'us' or 'eu'.
-                    'useSSL' => true, // Optional: Whether or not SSL encryption should be used.
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'timeout' => 10.0, // Optional
-                    'writeTimeout' => 5.0, // Optional
-                    'persistent' => false, // Optional
-                    'chunkSize' => 100, // Optional
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'insightops',
+                      
+                    'options' => [
+                        'token' => 'sometokenhere', // Log token supplied by InsightOps
+                        'region' => 'region', // Region where InsightOps account is hosted. Could be 'us' or 'eu'.
+                        'useSSL' => true, // Optional: Whether or not SSL encryption should be used.
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'timeout' => 10.0, // Optional
+                        'writeTimeout' => 5.0, // Optional
+                        'persistent' => false, // Optional
+                        'chunkSize' => 100, // Optional
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1032,24 +1118,26 @@ Logs records to a [Logmatic](http://logmatic.io/) account. Requires the openssl 
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'logmatic',
-                  
-                'options' => [
-                    'token' => 'sometokenhere', // Log token supplied by Logmatic.
-                    'hostname' => 'region', //  Optional: Host name supplied by Logmatic.
-                    'appname' => 'region', //  Optional: Application name supplied by Logmatic.
-                    'useSSL' => true, // Optional: Whether or not SSL encryption should be used.
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'timeout' => 10.0, // Optional
-                    'writeTimeout' => 5.0, // Optional
-                    'persistent' => false, // Optional
-                    'chunkSize' => 100, // Optional
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'logmatic',
+                      
+                    'options' => [
+                        'token' => 'sometokenhere', // Log token supplied by Logmatic.
+                        'hostname' => 'region', //  Optional: Host name supplied by Logmatic.
+                        'appname' => 'region', //  Optional: Application name supplied by Logmatic.
+                        'useSSL' => true, // Optional: Whether or not SSL encryption should be used.
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'timeout' => 10.0, // Optional
+                        'writeTimeout' => 5.0, // Optional
+                        'persistent' => false, // Optional
+                        'chunkSize' => 100, // Optional
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1066,18 +1154,20 @@ Logs records to an [AWS SQS](http://docs.aws.amazon.com/aws-sdk-php/v2/guide/ser
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'sqs',
-                  
-                'options' => [
-                    'sqsClient' => 'my-service', // SQS Client.  Must be a valid service name in the container.
-                    'queueUrl' => 'url', // URL to SQS Queue
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'sqs',
+                      
+                    'options' => [
+                        'sqsClient' => 'my-service', // SQS Client.  Must be a valid service name in the container.
+                        'queueUrl' => 'url', // URL to SQS Queue
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1098,16 +1188,18 @@ _Note: The Firebug extension isn't being developed or maintained any longer._
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'firePHP',
-                  
-                'options' => [
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'firePHP',
+                      
+                    'options' => [
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1124,16 +1216,18 @@ Handler for [ChromePHP](http://www.chromephp.com/), providing inline console mes
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'chromePHP',
-                  
-                'options' => [
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'chromePHP',
+                      
+                    'options' => [
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1151,16 +1245,18 @@ console API are supported.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'browserConsole',
-                  
-                'options' => [
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'browserConsole',
+                      
+                    'options' => [
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1178,18 +1274,20 @@ providing inline console and notification popup messages within Chrome. Requires
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'phpConsole',
-                  
-                'options' => [
-                    'options' => [], // Optional: See \Monolog\Handler\PHPConsoleHandler::$options for more details
-                    'connector' => 'my-service', // Optional:  Instance of \PhpConsole\Connector class. Must be a valid service.
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'phpConsole',
+                      
+                    'options' => [
+                        'options' => [], // Optional: See \Monolog\Handler\PHPConsoleHandler::$options for more details
+                        'connector' => 'my-service', // Optional:  Instance of \PhpConsole\Connector class. Must be a valid service.
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1209,19 +1307,21 @@ extension or the [Predis](https://github.com/nrk/predis) library.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'redis',
-                  
-                'options' => [
-                    'client' => 'my-redis-service-name', // The redis instance.  Must be either a [Predis] client OR a Pecl Redis instance
-                    'key' => 'my-service', // The key name to push records to
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'capSize' => true, // Optional: Number of entries to limit list size to, 0 = unlimited
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'redis',
+                      
+                    'options' => [
+                        'client' => 'my-redis-service-name', // The redis instance.  Must be either a [Predis] client OR a Pecl Redis instance
+                        'key' => 'my-service', // The key name to push records to
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'capSize' => true, // Optional: Number of entries to limit list size to, 0 = unlimited
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1239,18 +1339,20 @@ extension or the [Predis](https://github.com/nrk/predis) library.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'redisPubSub',
-                  
-                'options' => [
-                    'client' => 'my-redis-service-name', // The redis instance.  Must be either a [Predis] client OR a Pecl Redis instance
-                    'key' => 'my-service', // The key name to push records to
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'redisPubSub',
+                      
+                    'options' => [
+                        'client' => 'my-redis-service-name', // The redis instance.  Must be either a [Predis] client OR a Pecl Redis instance
+                        'key' => 'my-service', // The key name to push records to
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1267,19 +1369,21 @@ Handler to write records in MongoDB via a [Mongo extension](http://php.net/manua
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'mongo',
-                  
-                'options' => [
-                    'client' => 'my-mongo-service-name', // MongoDB library or driver instance.
-                    'database' => 'my-db', // Database name
-                    'collection' => 'collectionName', // Collection name
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'mongo',
+                      
+                    'options' => [
+                        'client' => 'my-mongo-service-name', // MongoDB library or driver instance.
+                        'database' => 'my-db', // Database name
+                        'collection' => 'collectionName', // Collection name
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1296,21 +1400,23 @@ Logs records to a CouchDB server.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'couchDb',
-                  
-                'options' => [
-                    'host' => 'localhost', // Optional: Hostname/Ip address,  Default: 'localhost'
-                    'port' => 5984, // Optional: port,  Default: 5984
-                    'dbname' => 'db', // Optional: Database Name,  Default: 'logger'
-                    'username' => 'someuser', // Optional: Username,  Default: null
-                    'password' => 'somepass', // Optional: Password,  Default: null
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'couchDb',
+                      
+                    'options' => [
+                        'host' => 'localhost', // Optional: Hostname/Ip address,  Default: 'localhost'
+                        'port' => 5984, // Optional: port,  Default: 5984
+                        'dbname' => 'db', // Optional: Database Name,  Default: 'logger'
+                        'username' => 'someuser', // Optional: Username,  Default: null
+                        'password' => 'somepass', // Optional: Password,  Default: null
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1327,17 +1433,19 @@ Logs records to a CouchDB server via the Doctrine CouchDB ODM.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'doctrineCouchDb',
-                  
-                'options' => [
-                    'client' => 'my-service', //  CouchDBClient service name.  Must be a valid container service
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'doctrineCouchDb',
+                      
+                    'options' => [
+                        'client' => 'my-service', //  CouchDBClient service name.  Must be a valid container service
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1354,20 +1462,22 @@ Logs records to an Elastic Search server.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'elastica',
-                  
-                'options' => [
-                    'client' => 'my-service', //  Elastica Client object.  Must be a valid container service
-                    'index' => 'log', // Optional: Elastic index name
-                    'type' => 'record', // Optional: Elastic document type
-                    'ignoreError' => false, // Optional: Suppress Elastica exceptions
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'elastica',
+                      
+                    'options' => [
+                        'client' => 'my-service', //  Elastica Client object.  Must be a valid container service
+                        'index' => 'log', // Optional: Elastic index name
+                        'type' => 'record', // Optional: Elastic document type
+                        'ignoreError' => false, // Optional: Suppress Elastica exceptions
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1384,20 +1494,22 @@ Logs records to an Elastic Search server.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'elasticsearch',
-                  
-                'options' => [
-                    'client' => 'my-service', //  Elastica Client object.  Must be a valid container service
-                    'index' => 'log', // Optional: Elastic index name
-                    'type' => 'record', // Optional: Elastic document type
-                    'ignoreError' => false, // Optional: Suppress Elastica exceptions
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'elasticsearch',
+                      
+                    'options' => [
+                        'client' => 'my-service', //  Elastica Client object.  Must be a valid container service
+                        'index' => 'log', // Optional: Elastic index name
+                        'type' => 'record', // Optional: Elastic document type
+                        'ignoreError' => false, // Optional: Suppress Elastica exceptions
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1414,18 +1526,20 @@ Logs records to a DynamoDB table with the [AWS SDK](https://github.com/aws/aws-s
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'dynamoDb',
-                  
-                'options' => [
-                    'client' => 'my-service', //  DynamoDbClient object.  Must be a valid container service
-                    'table' => 'log', // Table name
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'dynamoDb',
+                      
+                    'options' => [
+                        'client' => 'my-service', //  DynamoDbClient object.  Must be a valid container service
+                        'table' => 'log', // Table name
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1450,19 +1564,21 @@ need it.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'fingersCrossed',
-                'options' => [
-                    'handler' => [], // Required: Registered Handler to wrap
-                    'activationStrategy' => 'my-service', // Optional: Strategy which determines when this handler takes action.  Must be either the error level or configured ActivationStrategyInterface service
-                    'bufferSize' => 0, // Optional: How many entries should be buffered at most, beyond that the oldest items are removed from the buffer.
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'stopBuffering' => true, // Optional: Whether the handler should stop buffering after being triggered (default true)
-                    'passthruLevel' => null, // Optional: Minimum level to always flush to handler on close, even if strategy not triggered
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'fingersCrossed',
+                    'options' => [
+                        'handler' => [], // Required: Registered Handler to wrap
+                        'activationStrategy' => 'my-service', // Optional: Strategy which determines when this handler takes action.  Must be either the error level or configured ActivationStrategyInterface service
+                        'bufferSize' => 0, // Optional: How many entries should be buffered at most, beyond that the oldest items are removed from the buffer.
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'stopBuffering' => true, // Optional: Whether the handler should stop buffering after being triggered (default true)
+                        'passthruLevel' => null, // Optional: Minimum level to always flush to handler on close, even if strategy not triggered
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1487,18 +1603,20 @@ to a manageable level.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'deduplication',
-                'options' => [
-                    'handler' => [], // Required: Registered Handler to wrap
-                    'deduplicationStore' => '/tmp/somestore', // Optional: The file/path where the deduplication log should be kept
-                    'deduplicationLevel' => \Psr\Log\LogLevel::ERROR, // Optional:The minimum logging level for log records to be looked at for deduplication purposes
-                    'time' => 60, // Optional: The period (in seconds) during which duplicate entries should be suppressed after a given log is sent through
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'deduplication',
+                    'options' => [
+                        'handler' => [], // Required: Registered Handler to wrap
+                        'deduplicationStore' => '/tmp/somestore', // Optional: The file/path where the deduplication log should be kept
+                        'deduplicationLevel' => \Psr\Log\LogLevel::ERROR, // Optional:The minimum logging level for log records to be looked at for deduplication purposes
+                        'time' => 60, // Optional: The period (in seconds) during which duplicate entries should be suppressed after a given log is sent through
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1517,14 +1635,16 @@ do not want your entire application to crash and may wish to continue to log to 
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'whatFailureGroup',
-                'options' => [
-                    'handlers' => [], // Required: Array of Handlers to wrap
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'whatFailureGroup',
+                    'options' => [
+                        'handlers' => [], // Required: Array of Handlers to wrap
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1545,14 +1665,16 @@ attempt log to other handlers, until one does not throw.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'fallbackgroup',
-                'options' => [
-                    'handlers' => [], // Required: Array of Registered Handlers to wrap
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'fallbackgroup',
+                    'options' => [
+                        'handlers' => [], // Required: Array of Registered Handlers to wrap
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1572,18 +1694,20 @@ every log record.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'buffer',
-                'options' => [
-                    'handler' => [], // Required: Registered Handler to wrap
-                    'bufferLimit' => 0, // Optional: How many entries should be buffered at most, beyond that the oldest items are removed from the buffer.
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    'flushOnOverflow' => true, // Optional: If true, the buffer is flushed when the max size has been reached, by default oldest entries are discarded
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'buffer',
+                    'options' => [
+                        'handler' => [], // Required: Registered Handler to wrap
+                        'bufferLimit' => 0, // Optional: How many entries should be buffered at most, beyond that the oldest items are removed from the buffer.
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        'flushOnOverflow' => true, // Optional: If true, the buffer is flushed when the max size has been reached, by default oldest entries are discarded
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1600,14 +1724,16 @@ This handler groups other handlers. Every record received is sent to all the han
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'group',
-                'options' => [
-                    'handlers' => [], // Required: Array of Registered Handlers to wrap
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'group',
+                    'options' => [
+                        'handlers' => [], // Required: Array of Registered Handlers to wrap
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1624,17 +1750,19 @@ Simple handler wrapper that filters records based on a list of levels
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'filter',
-                'options' => [
-                    'handler' => [], // Required: Registered Handler to wrap
-                    'minLevelOrList' => \Psr\Log\LogLevel::DEBUG, // Optional: An array of levels to accept or a minimum level if maxLevel is provided
-                    'maxLevel' => \Psr\Log\LogLevel::EMERGENCY, // Optional: Maximum level to accept, only used if $minLevelOrList is not an array
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'filter',
+                    'options' => [
+                        'handler' => [], // Required: Registered Handler to wrap
+                        'minLevelOrList' => \Psr\Log\LogLevel::DEBUG, // Optional: An array of levels to accept or a minimum level if maxLevel is provided
+                        'maxLevel' => \Psr\Log\LogLevel::EMERGENCY, // Optional: Maximum level to accept, only used if $minLevelOrList is not an array
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1657,15 +1785,17 @@ tend to be close to this ratio with a large number of attempts.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'sampling',
-                'options' => [
-                    'handler' => [], // Required: Registered Handler to wrap
-                    'factor' => 5, // Required: Sample factor
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'sampling',
+                    'options' => [
+                        'handler' => [], // Required: Registered Handler to wrap
+                        'factor' => 5, // Required: Sample factor
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1684,10 +1814,12 @@ disable a handler when overriding a configuration.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'noop',
-                'options' => [],
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'noop',
+                    'options' => [],
+                ],
             ],
         ],
     ],
@@ -1704,11 +1836,13 @@ to put on top of an existing stack to override it temporarily.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'null',
-                'options' => [
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'null',
+                    'options' => [
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                    ],
                 ],
             ],
         ],
@@ -1725,15 +1859,17 @@ Can be used to forward log records to an existing PSR-3 logger
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'psr',
-                'options' => [
-                    'logger' => 'loggerService', // Required: Logger Service to wrap from the container
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'psr',
+                    'options' => [
+                        'logger' => 'loggerService', // Required: Logger Service to wrap from the container
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1750,15 +1886,17 @@ Used for testing, it records everything that is sent to it and has accessors to 
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'test',
-                'options' => [
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'test',
+                    'options' => [
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1779,26 +1917,28 @@ significant failures instead of minor, single erroneous events.
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'overflow',
-                'options' => [
-                    'handler' => [], // Required: Registered Handler to wrap
-                    'thresholdMap' => [ // Optional: threshold map
-                        'debug' => 0, // Optional: debug threshold.  Default: 0
-                        'info' => 0, // Optional: info threshold.  Default: 0
-                        'notice' => 0, // Optional: notice threshold.  Default: 0
-                        'warning' => 0, // Optional: warning threshold.  Default: 0
-                        'error' => 0, // Optional: error threshold.  Default: 0
-                        'critical' => 0, // Optional: critical threshold.  Default: 0
-                        'alert' => 0, // Optional: alert threshold.  Default: 0
-                        'emergency' => 0, // Optional: emergency threshold.  Default: 0
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'overflow',
+                    'options' => [
+                        'handler' => [], // Required: Registered Handler to wrap
+                        'thresholdMap' => [ // Optional: threshold map
+                            'debug' => 0, // Optional: debug threshold.  Default: 0
+                            'info' => 0, // Optional: info threshold.  Default: 0
+                            'notice' => 0, // Optional: notice threshold.  Default: 0
+                            'warning' => 0, // Optional: warning threshold.  Default: 0
+                            'error' => 0, // Optional: error threshold.  Default: 0
+                            'critical' => 0, // Optional: critical threshold.  Default: 0
+                            'alert' => 0, // Optional: alert threshold.  Default: 0
+                            'emergency' => 0, // Optional: emergency threshold.  Default: 0
+                        ],
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
                     ],
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
                 ],
             ],
         ],
@@ -1817,22 +1957,24 @@ Sends Records to a Microsoft Teams Webhook. Requires package [actived/microsoft-
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'microsoft-teams',
-                'options' => [
-                    'url' => '', // Required: Url of the MS Teams Webhook
-                    'title' => '', // Optional: Default Message Title
-                    'subject' => '', // Optional: Message Subject
-                    'emoji' => '', // Optional: custom emoji for the Message (added to the title)
-                    'color' => '', // Optional: custom color for the Message
-                    'format' => '', // Optional: Message format (only used in the default formatter)
-                    
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'microsoft-teams',
+                    'options' => [
+                        'url' => '', // Required: Url of the MS Teams Webhook
+                        'title' => '', // Optional: Default Message Title
+                        'subject' => '', // Optional: Message Subject
+                        'emoji' => '', // Optional: custom emoji for the Message (added to the title)
+                        'color' => '', // Optional: custom color for the Message
+                        'format' => '', // Optional: Message format (only used in the default formatter)
+                        
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1848,17 +1990,19 @@ Sends Records to a Microsoft Teams Webhook. Requires package [cmdisp/monolog-mic
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'teams',
-                'options' => [
-                    'url' => '', // Required: Url of the MS Teams Webhook
-                    
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'formatter' => [], // Optional: Formatter for the handler.
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'teams',
+                    'options' => [
+                        'url' => '', // Required: Url of the MS Teams Webhook
+                        
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1874,17 +2018,19 @@ Filters Records with a Callback function. Requires [bartlett/monolog-callbackfil
 
 return [
     'log' => [
-        'handlers' => [
-            'myHandlerName' => [
-                'type' => 'callbackfilter',
-                'options' => [
-                    'handler' => [], // Required: Registered Handler to wrap
-                    
-                    'filters' => [], // Optional: An array of callback functions
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
-                    'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
-                    
-                    'processors' => [], // Optional: Processors for the handler.
+        \Laminas\Log\Logger::class => [
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'callbackfilter',
+                    'options' => [
+                        'handler' => [], // Required: Registered Handler to wrap
+                        
+                        'filters' => [], // Optional: An array of callback functions
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
                 ],
             ],
         ],
@@ -1902,18 +2048,20 @@ Formats a log record into a one-line string.
 
 return [
     'log' => [
-        'formatters' => [
-            'myFormatterName' => [
-                'type' => 'line',
-                'options' => [
-                    'format' => "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n", // Optional
-                    'dateFormat' => "c", // Optional : The format of the timestamp: one supported by DateTime::format
-                    'allowInlineLineBreaks' => false, // Optional : Whether to allow inline line breaks in log entries
-                    'ignoreEmptyContextAndExtra' => false, // Optional
-                    'includeStacktraces' => false, // Optional
-                    'maxNormalizeDepth' => 9, // Optional
-                    'maxNormalizeItemCount' => 1000, // Optional
-                    'prettyPrint' => false, // Optional
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'line',
+                    'options' => [
+                        'format' => "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n", // Optional
+                        'dateFormat' => "c", // Optional : The format of the timestamp: one supported by DateTime::format
+                        'allowInlineLineBreaks' => false, // Optional : Whether to allow inline line breaks in log entries
+                        'ignoreEmptyContextAndExtra' => false, // Optional
+                        'includeStacktraces' => false, // Optional
+                        'maxNormalizeDepth' => 9, // Optional
+                        'maxNormalizeItemCount' => 1000, // Optional
+                        'prettyPrint' => false, // Optional
+                    ],
                 ],
             ],
         ],
@@ -1930,14 +2078,16 @@ Used to format log records into a human readable html table, mainly suitable for
 
 return [
     'log' => [
-        'formatters' => [
-            'myFormatterName' => [
-                'type' => 'html',
-                'options' => [
-                    'dateFormat' => "c", // Optional
-                    'maxNormalizeDepth' => 9, // Optional
-                    'maxNormalizeItemCount' => 1000, // Optional
-                    'prettyPrint' => false, // Optional
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'html',
+                    'options' => [
+                        'dateFormat' => "c", // Optional
+                        'maxNormalizeDepth' => 9, // Optional
+                        'maxNormalizeItemCount' => 1000, // Optional
+                        'prettyPrint' => false, // Optional
+                    ],
                 ],
             ],
         ],
@@ -1954,14 +2104,16 @@ Normalizes objects/resources down to strings so a record can easily be serialize
 
 return [
     'log' => [
-        'formatters' => [
-            'myFormatterName' => [
-                'type' => 'normalizer',
-                'options' => [
-                    'dateFormat' => "c", // Optional
-                    'maxNormalizeDepth' => 9, // Optional
-                    'maxNormalizeItemCount' => 1000, // Optional
-                    'prettyPrint' => false, // Optional
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'normalizer',
+                    'options' => [
+                        'dateFormat' => "c", // Optional
+                        'maxNormalizeDepth' => 9, // Optional
+                        'maxNormalizeItemCount' => 1000, // Optional
+                        'prettyPrint' => false, // Optional
+                    ],
                 ],
             ],
         ],
@@ -1978,14 +2130,16 @@ Used to format log records into an associative array of scalar values.
 
 return [
     'log' => [
-        'formatters' => [
-            'myFormatterName' => [
-                'type' => 'scalar',
-                'options' => [
-                    'dateFormat' => "c", // Optional
-                    'maxNormalizeDepth' => 9, // Optional
-                    'maxNormalizeItemCount' => 1000, // Optional
-                    'prettyPrint' => false, // Optional
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'scalar',
+                    'options' => [
+                        'dateFormat' => "c", // Optional
+                        'maxNormalizeDepth' => 9, // Optional
+                        'maxNormalizeItemCount' => 1000, // Optional
+                        'prettyPrint' => false, // Optional
+                    ],
                 ],
             ],
         ],
@@ -2002,18 +2156,20 @@ Encodes a log record into json.
 
 return [
     'log' => [
-        'formatters' => [
-            'myFormatterName' => [
-                'type' => 'json',
-                'options' => [
-                    'batchMode' => \Monolog\Formatter\JsonFormatter::BATCH_MODE_JSON, // Optional
-                    'appendNewline' => true, // Optional
-                    'ignoreEmptyContextAndExtra' => false, // Optional
-                    'includeStacktraces' => false, // Optional
-                    'dateFormat' => "c", // Optional
-                    'maxNormalizeDepth' => 9, // Optional
-                    'maxNormalizeItemCount' => 1000, // Optional
-                    'prettyPrint' => false, // Optional
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'json',
+                    'options' => [
+                        'batchMode' => \Monolog\Formatter\JsonFormatter::BATCH_MODE_JSON, // Optional
+                        'appendNewline' => true, // Optional
+                        'ignoreEmptyContextAndExtra' => false, // Optional
+                        'includeStacktraces' => false, // Optional
+                        'dateFormat' => "c", // Optional
+                        'maxNormalizeDepth' => 9, // Optional
+                        'maxNormalizeItemCount' => 1000, // Optional
+                        'prettyPrint' => false, // Optional
+                    ],
                 ],
             ],
         ],
@@ -2030,14 +2186,16 @@ Used to format log records into the Wildfire/FirePHP protocol, only useful for t
 
 return [
     'log' => [
-        'formatters' => [
-            'myFormatterName' => [
-                'type' => 'wildfire',
-                'options' => [
-                    'dateFormat' => "c", // Optional
-                    'maxNormalizeDepth' => 9, // Optional
-                    'maxNormalizeItemCount' => 1000, // Optional
-                    'prettyPrint' => false, // Optional
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'wildfire',
+                    'options' => [
+                        'dateFormat' => "c", // Optional
+                        'maxNormalizeDepth' => 9, // Optional
+                        'maxNormalizeItemCount' => 1000, // Optional
+                        'prettyPrint' => false, // Optional
+                    ],
                 ],
             ],
         ],
@@ -2054,10 +2212,12 @@ Used to format log records into the ChromePHP format, only useful for the Chrome
 
 return [
     'log' => [
-        'formatters' => [
-            'myFormatterName' => [
-                'type' => 'chromePHP',
-                'options' => [], // No options available
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'chromePHP',
+                    'options' => [], // No options available
+                ],
             ],
         ],
     ],
@@ -2073,17 +2233,19 @@ Used to format log records into Gelf message instances, only useful for the Gelf
 
 return [
     'log' => [
-        'formatters' => [
-            'myFormatterName' => [
-                'type' => 'gelf',
-                'options' => [
-                    'systemName' => "my-system", // Optional : the name of the system for the Gelf log message, defaults to the hostname of the machine
-                    'extraPrefix' => "extra_", // Optional : a prefix for 'extra' fields from the Monolog record
-                    'contextPrefix' => 'ctxt_', // Optional : a prefix for 'context' fields from the Monolog record
-                    'maxLength' => 32766, // Optional : Length per field
-                    'maxNormalizeDepth' => 9, // Optional
-                    'maxNormalizeItemCount' => 1000, // Optional
-                    'prettyPrint' => false, // Optional
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'gelf',
+                    'options' => [
+                        'systemName' => "my-system", // Optional : the name of the system for the Gelf log message, defaults to the hostname of the machine
+                        'extraPrefix' => "extra_", // Optional : a prefix for 'extra' fields from the Monolog record
+                        'contextPrefix' => 'ctxt_', // Optional : a prefix for 'context' fields from the Monolog record
+                        'maxLength' => 32766, // Optional : Length per field
+                        'maxNormalizeDepth' => 9, // Optional
+                        'maxNormalizeItemCount' => 1000, // Optional
+                        'prettyPrint' => false, // Optional
+                    ],
                 ],
             ],
         ],
@@ -2100,17 +2262,19 @@ Used to format log records into logstash event json, useful for any handler list
 
 return [
     'log' => [
-        'formatters' => [
-            'myFormatterName' => [
-                'type' => 'logstash',
-                'options' => [
-                    'applicationName' => 'app-name', // the application that sends the data, used as the "type" field of logstash
-                    'systemName' => "my-system", // Optional : the system/machine name, used as the "source" field of logstash, defaults to the hostname of the machine
-                    'extraPrefix' => "extra_", // Optional : prefix for extra keys inside logstash "fields"
-                    'contextPrefix' => 'ctxt_', // Optional : prefix for context keys inside logstash "fields", defaults to ctxt_
-                    'maxNormalizeDepth' => 9, // Optional
-                    'maxNormalizeItemCount' => 1000, // Optional
-                    'prettyPrint' => false, // Optional
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'logstash',
+                    'options' => [
+                        'applicationName' => 'app-name', // the application that sends the data, used as the "type" field of logstash
+                        'systemName' => "my-system", // Optional : the system/machine name, used as the "source" field of logstash, defaults to the hostname of the machine
+                        'extraPrefix' => "extra_", // Optional : prefix for extra keys inside logstash "fields"
+                        'contextPrefix' => 'ctxt_', // Optional : prefix for context keys inside logstash "fields", defaults to ctxt_
+                        'maxNormalizeDepth' => 9, // Optional
+                        'maxNormalizeItemCount' => 1000, // Optional
+                        'prettyPrint' => false, // Optional
+                    ],
                 ],
             ],
         ],
@@ -2127,15 +2291,17 @@ Used to format log records into an Elastica Document.
 
 return [
     'log' => [
-        'formatters' => [
-            'ElasticaFormatter' => [
-                'type' => 'elastica',
-                'options' => [
-                    'index' => 'some-index', // Elastic search index name
-                    'type' => "doc-type", // Elastic search document type
-                    'maxNormalizeDepth' => 9, // Optional
-                    'maxNormalizeItemCount' => 1000, // Optional
-                    'prettyPrint' => false, // Optional
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'ElasticaFormatter' => [
+                    'type' => 'elastica',
+                    'options' => [
+                        'index' => 'some-index', // Elastic search index name
+                        'type' => "doc-type", // Elastic search document type
+                        'maxNormalizeDepth' => 9, // Optional
+                        'maxNormalizeItemCount' => 1000, // Optional
+                        'prettyPrint' => false, // Optional
+                    ],
                 ],
             ],
         ],
@@ -2152,15 +2318,17 @@ Used to format log records into an Elasticsearch Document.
 
 return [
     'log' => [
-        'formatters' => [
-            'ElasticsearchFormatter' => [
-                'type' => 'elasticsearch',
-                'options' => [
-                    'index' => 'some-index', // Elastic search index name
-                    'type' => "doc-type", // Elastic search document type
-                    'maxNormalizeDepth' => 9, // Optional
-                    'maxNormalizeItemCount' => 1000, // Optional
-                    'prettyPrint' => false, // Optional
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'ElasticsearchFormatter' => [
+                    'type' => 'elasticsearch',
+                    'options' => [
+                        'index' => 'some-index', // Elastic search index name
+                        'type' => "doc-type", // Elastic search document type
+                        'maxNormalizeDepth' => 9, // Optional
+                        'maxNormalizeItemCount' => 1000, // Optional
+                        'prettyPrint' => false, // Optional
+                    ],
                 ],
             ],
         ],
@@ -2177,17 +2345,19 @@ Used to format log records into Loggly messages, only useful for the LogglyHandl
 
 return [
     'log' => [
-        'formatters' => [
-            'myFormatterName' => [
-                'type' => 'loggly',
-                'options' => [
-                    'batchMode' => \Monolog\Formatter\JsonFormatter::BATCH_MODE_NEWLINES, // Optional
-                    'appendNewline' => false, // Optional
-                    'includeStacktraces' => false, // Optional
-                    'dateFormat' => "c", // Optional
-                    'maxNormalizeDepth' => 9, // Optional
-                    'maxNormalizeItemCount' => 1000, // Optional
-                    'prettyPrint' => false, // Optional
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'loggly',
+                    'options' => [
+                        'batchMode' => \Monolog\Formatter\JsonFormatter::BATCH_MODE_NEWLINES, // Optional
+                        'appendNewline' => false, // Optional
+                        'includeStacktraces' => false, // Optional
+                        'dateFormat' => "c", // Optional
+                        'maxNormalizeDepth' => 9, // Optional
+                        'maxNormalizeItemCount' => 1000, // Optional
+                        'prettyPrint' => false, // Optional
+                    ],
                 ],
             ],
         ],
@@ -2204,12 +2374,14 @@ Used to format log records into Flowdock messages, only useful for the FlowdockH
 
 return [
     'log' => [
-        'formatters' => [
-            'myFormatterName' => [
-                'type' => 'flowdock',
-                'options' => [
-                    'source' => 'Some Source',
-                    'sourceEmail' => 'source@email.com'
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'flowdock',
+                    'options' => [
+                        'source' => 'Some Source',
+                        'sourceEmail' => 'source@email.com'
+                    ],
                 ],
             ],
         ],
@@ -2226,12 +2398,14 @@ Converts \DateTime instances to \MongoDate and objects recursively to arrays, on
 
 return [
     'log' => [
-        'formatters' => [
-            'myFormatterName' => [
-                'type' => 'mongodb',
-                'options' => [
-                    'maxNestingLevel' => 3, // optional : 0 means infinite nesting, the $record itself is level 1, $record['context'] is 2
-                    'exceptionTraceAsString' => true, // optional : set to false to log exception traces as a sub documents instead of strings
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'mongodb',
+                    'options' => [
+                        'maxNestingLevel' => 3, // optional : 0 means infinite nesting, the $record itself is level 1, $record['context'] is 2
+                        'exceptionTraceAsString' => true, // optional : set to false to log exception traces as a sub documents instead of strings
+                    ],
                 ],
             ],
         ],
@@ -2249,18 +2423,20 @@ LogmaticHandler.
 
 return [
     'log' => [
-        'formatters' => [
-            'myFormatterName' => [
-                'type' => 'logmatic',
-                'options' => [
-                    'batchMode' => \Monolog\Formatter\LogmaticFormatter::BATCH_MODE_JSON, // Optional
-                    'appendNewline' => true, // Optional
-                    'ignoreEmptyContextAndExtra' => false, // Optional
-                    'includeStacktraces' => false, // Optional
-                    'dateFormat' => "c", // Optional
-                    'maxNormalizeDepth' => 9, // Optional
-                    'maxNormalizeItemCount' => 1000, // Optional
-                    'prettyPrint' => false, // Optional
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'logmatic',
+                    'options' => [
+                        'batchMode' => \Monolog\Formatter\LogmaticFormatter::BATCH_MODE_JSON, // Optional
+                        'appendNewline' => true, // Optional
+                        'ignoreEmptyContextAndExtra' => false, // Optional
+                        'includeStacktraces' => false, // Optional
+                        'dateFormat' => "c", // Optional
+                        'maxNormalizeDepth' => 9, // Optional
+                        'maxNormalizeItemCount' => 1000, // Optional
+                        'prettyPrint' => false, // Optional
+                    ],
                 ],
             ],
         ],
@@ -2277,11 +2453,13 @@ Serializes a log message to Fluentd unix socket protocol. Requires the json Exte
 
 return [
     'log' => [
-        'formatters' => [
-            'myFormatterName' => [
-                'type' => 'fluentd',
-                'options' => [
-                    'levelTag' => false, // Optional
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'fluentd',
+                    'options' => [
+                        'levelTag' => false, // Optional
+                    ],
                 ],
             ],
         ],
@@ -2300,12 +2478,14 @@ Processes a log record's message according to PSR-3 rules, replacing {foo} with 
 
 return [
     'log' => [
-        'processors' => [
-            'myProcessorsName' => [
-                'type' => 'psrLogMessage',
-                'options' => [
-                    'dateFormat' => "c", // Optional
-                    'removeUsedContextFields' => false, // Optional
+        \Laminas\Log\Logger::class => [
+            'processors' => [
+                'myProcessorsName' => [
+                    'type' => 'psrLogMessage',
+                    'options' => [
+                        'dateFormat' => "c", // Optional
+                        'removeUsedContextFields' => false, // Optional
+                    ],
                 ],
             ],
         ],
@@ -2322,13 +2502,15 @@ Adds the line/file/class/method from which the log call originated.
 
 return [
     'log' => [
-        'processors' => [
-            'myProcessorsName' => [
-                'type' => 'introspection',
-                'options' => [
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this processor will be triggered
-                    'skipClassesPartials' => [], // Optional
-                    'skipStackFramesCount' => 0, // Optional
+        \Laminas\Log\Logger::class => [
+            'processors' => [
+                'myProcessorsName' => [
+                    'type' => 'introspection',
+                    'options' => [
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this processor will be triggered
+                        'skipClassesPartials' => [], // Optional
+                        'skipStackFramesCount' => 0, // Optional
+                    ],
                 ],
             ],
         ],
@@ -2345,12 +2527,14 @@ Adds the current request URI, request method and client IP to a log record.
 
 return [
     'log' => [
-        'processors' => [
-            'myProcessorsName' => [
-                'type' => 'web',
-                'options' => [
-                    'serverData' => 'my-service', // Optional: Array, object w/ ArrayAccess, or valid service name that provides access to the $_SERVER data
-                    'extraFields' => [], // Optional: Field names and the related key inside $serverData to be added. If not provided it defaults to: url, ip, http_method, server, referrer
+        \Laminas\Log\Logger::class => [
+            'processors' => [
+                'myProcessorsName' => [
+                    'type' => 'web',
+                    'options' => [
+                        'serverData' => 'my-service', // Optional: Array, object w/ ArrayAccess, or valid service name that provides access to the $_SERVER data
+                        'extraFields' => [], // Optional: Field names and the related key inside $serverData to be added. If not provided it defaults to: url, ip, http_method, server, referrer
+                    ],
                 ],
             ],
         ],
@@ -2367,12 +2551,14 @@ Adds the current memory usage to a log record.
 
 return [
     'log' => [
-        'processors' => [
-            'myProcessorsName' => [
-                'type' => 'memoryUsage',
-                'options' => [
-                    'realUsage' => true,
-                    'useFormatting' => true,
+        \Laminas\Log\Logger::class => [
+            'processors' => [
+                'myProcessorsName' => [
+                    'type' => 'memoryUsage',
+                    'options' => [
+                        'realUsage' => true,
+                        'useFormatting' => true,
+                    ],
                 ],
             ],
         ],
@@ -2389,12 +2575,14 @@ Adds the peak memory usage to a log record.
 
 return [
     'log' => [
-        'processors' => [
-            'myProcessorsName' => [
-                'type' => 'memoryPeak',
-                'options' => [
-                    'realUsage' => true,
-                    'useFormatting' => true,
+        \Laminas\Log\Logger::class => [
+            'processors' => [
+                'myProcessorsName' => [
+                    'type' => 'memoryPeak',
+                    'options' => [
+                        'realUsage' => true,
+                        'useFormatting' => true,
+                    ],
                 ],
             ],
         ],
@@ -2411,10 +2599,12 @@ Adds the process id to a log record.
 
 return [
     'log' => [
-        'processors' => [
-            'myProcessorsName' => [
-                'type' => 'processId',
-                'options' => [], // No options
+        \Laminas\Log\Logger::class => [
+            'processors' => [
+                'myProcessorsName' => [
+                    'type' => 'processId',
+                    'options' => [], // No options
+                ],
             ],
         ],
     ],
@@ -2430,11 +2620,13 @@ Adds a unique identifier to a log record.
 
 return [
     'log' => [
-        'processors' => [
-            'myProcessorsName' => [
-                'type' => 'uid',
-                'options' => [
-                    'length' => 7, // Optional: The uid length. Must be an integer between 1 and 32
+        \Laminas\Log\Logger::class => [
+            'processors' => [
+                'myProcessorsName' => [
+                    'type' => 'uid',
+                    'options' => [
+                        'length' => 7, // Optional: The uid length. Must be an integer between 1 and 32
+                    ],
                 ],
             ],
         ],
@@ -2453,11 +2645,13 @@ _Note:  Only works if the git executable is in your working path._
 
 return [
     'log' => [
-        'processors' => [
-            'myProcessorsName' => [
-                'type' => 'git',
-                'options' => [
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this processor will be triggered
+        \Laminas\Log\Logger::class => [
+            'processors' => [
+                'myProcessorsName' => [
+                    'type' => 'git',
+                    'options' => [
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this processor will be triggered
+                    ],
                 ],
             ],
         ],
@@ -2476,11 +2670,13 @@ _Note:  Only works if the hg executable is in your working path._
 
 return [
     'log' => [
-        'processors' => [
-            'myProcessorsName' => [
-                'type' => 'mercurial',
-                'options' => [
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this processor will be triggered
+        \Laminas\Log\Logger::class => [
+            'processors' => [
+                'myProcessorsName' => [
+                    'type' => 'mercurial',
+                    'options' => [
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this processor will be triggered
+                    ],
                 ],
             ],
         ],
@@ -2497,11 +2693,13 @@ Adds an array of predefined tags to a log record.
 
 return [
     'log' => [
-        'processors' => [
-            'myProcessorsName' => [
-                'type' => 'tags',
-                'options' => [
-                    'tags' => [], // Optional: Array of tags to add to records
+        \Laminas\Log\Logger::class => [
+            'processors' => [
+                'myProcessorsName' => [
+                    'type' => 'tags',
+                    'options' => [
+                        'tags' => [], // Optional: Array of tags to add to records
+                    ],
                 ],
             ],
         ],
@@ -2518,10 +2716,12 @@ Adds the current hostname to a log record.
 
 return [
     'log' => [
-        'processors' => [
-            'myProcessorsName' => [
-                'type' => 'hostname',
-                'options' => [], // No options
+        \Laminas\Log\Logger::class => [
+            'processors' => [
+                'myProcessorsName' => [
+                    'type' => 'hostname',
+                    'options' => [], // No options
+                ],
             ],
         ],
     ],
@@ -2537,11 +2737,13 @@ Adds Request Headers to a log record. Requires [jk/monolog-request-header-proces
 
 return [
     'log' => [
-        'processors' => [
-            'myProcessorsName' => [
-                'type' => 'requestheader',
-                'options' => [
-                    'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this processor will be triggered
+        \Laminas\Log\Logger::class => [
+            'processors' => [
+                'myProcessorsName' => [
+                    'type' => 'requestheader',
+                    'options' => [
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this processor will be triggered
+                    ],
                 ],
             ],
         ],

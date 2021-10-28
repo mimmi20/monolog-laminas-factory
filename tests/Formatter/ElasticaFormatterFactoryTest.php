@@ -15,6 +15,7 @@ namespace Mimmi20Test\LoggerFactory\Formatter;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Formatter\ElasticaFormatterFactory;
+use Mimmi20\LoggerFactory\Formatter\NormalizerFormatterFactory;
 use Monolog\Formatter\ElasticaFormatter;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
@@ -89,6 +90,9 @@ final class ElasticaFormatterFactoryTest extends TestCase
         self::assertInstanceOf(ElasticaFormatter::class, $formatter);
         self::assertSame($index, $formatter->getIndex());
         self::assertSame('', $formatter->getType());
+        self::assertSame('Y-m-d\TH:i:s.uP', $formatter->getDateFormat());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH, $formatter->getMaxNormalizeDepth());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT, $formatter->getMaxNormalizeItemCount());
     }
 
     /**
@@ -97,8 +101,10 @@ final class ElasticaFormatterFactoryTest extends TestCase
      */
     public function testInvoceWithIndexAndType(): void
     {
-        $index = 'abc';
-        $type  = 'xyz';
+        $maxNormalizeDepth     = 42;
+        $maxNormalizeItemCount = 4711;
+        $index                 = 'abc';
+        $type                  = 'xyz';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -110,10 +116,13 @@ final class ElasticaFormatterFactoryTest extends TestCase
 
         $factory = new ElasticaFormatterFactory();
 
-        $formatter = $factory($container, '', ['index' => $index, 'type' => $type]);
+        $formatter = $factory($container, '', ['index' => $index, 'type' => $type, 'maxNormalizeDepth' => $maxNormalizeDepth, 'maxNormalizeItemCount' => $maxNormalizeItemCount, 'prettyPrint' => true]);
 
         self::assertInstanceOf(ElasticaFormatter::class, $formatter);
         self::assertSame($index, $formatter->getIndex());
         self::assertSame($type, $formatter->getType());
+        self::assertSame('Y-m-d\TH:i:s.uP', $formatter->getDateFormat());
+        self::assertSame($maxNormalizeDepth, $formatter->getMaxNormalizeDepth());
+        self::assertSame($maxNormalizeItemCount, $formatter->getMaxNormalizeItemCount());
     }
 }

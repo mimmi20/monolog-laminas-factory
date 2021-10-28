@@ -22,9 +22,9 @@ use function is_array;
 final class TagProcessorFactory implements FactoryInterface
 {
     /**
-     * @param string                            $requestedName
-     * @param array<string, array<string>>|null $options
-     * @phpstan-param array{tags?: array<string>}|null $options
+     * @param string                                   $requestedName
+     * @param array<string, array<string>|string>|null $options
+     * @phpstan-param array{tags?: array<string>|string}|null $options
      *
      * @throws void
      *

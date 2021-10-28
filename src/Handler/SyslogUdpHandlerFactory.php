@@ -39,6 +39,8 @@ final class SyslogUdpHandlerFactory implements FactoryInterface
     use AddFormatterTrait;
     use AddProcessorTrait;
 
+    private const DEFAULT_PORT = 514;
+
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
@@ -62,7 +64,7 @@ final class SyslogUdpHandlerFactory implements FactoryInterface
         }
 
         $host     = $options['host'];
-        $port     = 514;
+        $port     = self::DEFAULT_PORT;
         $facility = LOG_USER;
         $level    = LogLevel::DEBUG;
         $bubble   = true;

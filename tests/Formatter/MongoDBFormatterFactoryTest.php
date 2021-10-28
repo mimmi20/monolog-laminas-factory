@@ -47,7 +47,7 @@ final class MongoDBFormatterFactoryTest extends TestCase
         $mnl = new ReflectionProperty($formatter, 'maxNestingLevel');
         $mnl->setAccessible(true);
 
-        self::assertSame(3, $mnl->getValue($formatter));
+        self::assertSame(MongoDBFormatterFactory::DEFAULT_NESTING_LEVEL, $mnl->getValue($formatter));
 
         $ts = new ReflectionProperty($formatter, 'exceptionTraceAsString');
         $ts->setAccessible(true);
@@ -79,7 +79,7 @@ final class MongoDBFormatterFactoryTest extends TestCase
         $mnl = new ReflectionProperty($formatter, 'maxNestingLevel');
         $mnl->setAccessible(true);
 
-        self::assertSame(3, $mnl->getValue($formatter));
+        self::assertSame(MongoDBFormatterFactory::DEFAULT_NESTING_LEVEL, $mnl->getValue($formatter));
 
         $ts = new ReflectionProperty($formatter, 'exceptionTraceAsString');
         $ts->setAccessible(true);

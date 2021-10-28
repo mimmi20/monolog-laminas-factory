@@ -13,6 +13,7 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Formatter;
 
 use Interop\Container\ContainerInterface;
+use Mimmi20\LoggerFactory\Formatter\NormalizerFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\WildfireFormatterFactory;
 use Monolog\Formatter\NormalizerFormatter;
 use Monolog\Formatter\WildfireFormatter;
@@ -42,6 +43,8 @@ final class WildfireFormatterFactoryTest extends TestCase
 
         self::assertInstanceOf(WildfireFormatter::class, $formatter);
         self::assertSame(NormalizerFormatter::SIMPLE_DATE, $formatter->getDateFormat());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH, $formatter->getMaxNormalizeDepth());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT, $formatter->getMaxNormalizeItemCount());
     }
 
     /**
@@ -64,6 +67,8 @@ final class WildfireFormatterFactoryTest extends TestCase
 
         self::assertInstanceOf(WildfireFormatter::class, $formatter);
         self::assertSame(NormalizerFormatter::SIMPLE_DATE, $formatter->getDateFormat());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH, $formatter->getMaxNormalizeDepth());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT, $formatter->getMaxNormalizeItemCount());
     }
 
     /**
@@ -72,7 +77,9 @@ final class WildfireFormatterFactoryTest extends TestCase
      */
     public function testInvoceWithConfig(): void
     {
-        $dateFormat = 'xxx__Y-m-d\TH:i:sP__xxx';
+        $dateFormat            = 'xxx__Y-m-d\TH:i:sP__xxx';
+        $maxNormalizeDepth     = 42;
+        $maxNormalizeItemCount = 4711;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -84,9 +91,11 @@ final class WildfireFormatterFactoryTest extends TestCase
 
         $factory = new WildfireFormatterFactory();
 
-        $formatter = $factory($container, '', ['dateFormat' => $dateFormat]);
+        $formatter = $factory($container, '', ['dateFormat' => $dateFormat, 'maxNormalizeDepth' => $maxNormalizeDepth, 'maxNormalizeItemCount' => $maxNormalizeItemCount, 'prettyPrint' => true]);
 
         self::assertInstanceOf(WildfireFormatter::class, $formatter);
         self::assertSame($dateFormat, $formatter->getDateFormat());
+        self::assertSame($maxNormalizeDepth, $formatter->getMaxNormalizeDepth());
+        self::assertSame($maxNormalizeItemCount, $formatter->getMaxNormalizeItemCount());
     }
 }

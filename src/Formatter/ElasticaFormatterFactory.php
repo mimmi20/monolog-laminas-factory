@@ -48,8 +48,8 @@ final class ElasticaFormatterFactory implements FactoryInterface
 
         $index                 = $options['index'];
         $type                  = '';
-        $maxNormalizeDepth     = 9;
-        $maxNormalizeItemCount = 1000;
+        $maxNormalizeDepth     = NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH;
+        $maxNormalizeItemCount = NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT;
         $prettyPrint           = false;
 
         if (array_key_exists('type', $options)) {

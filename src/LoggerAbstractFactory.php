@@ -23,7 +23,7 @@ use Laminas\Log\Writer\Psr;
 use Laminas\Log\Writer\WriterInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerExceptionInterface;
 
 use function array_key_exists;
@@ -34,7 +34,7 @@ use function sprintf;
 /**
  * Factory for logger instances.
  */
-final class LoggerFactory implements FactoryInterface
+final class LoggerAbstractFactory implements AbstractFactoryInterface
 {
     /**
      * Factory for laminas-servicemanager v3.
@@ -58,12 +58,15 @@ final class LoggerFactory implements FactoryInterface
             throw new ServiceNotFoundException(sprintf('Could not find service %s', 'config'), 0, $e);
         }
 
-        if (array_key_exists('log', $config) && is_array($config['log']) && [] !== $config['log']) {
-            $logConfig = $config['log'];
-        } elseif (array_key_exists('logger', $config) && is_array($config['logger']) && [] !== $config['logger']) {
-            $logConfig = $config['logger'];
-        } else {
-            $logConfig = [];
+        $logConfig = [];
+
+        if (
+            array_key_exists('log', $config)
+            && is_array($config['log'])
+            && array_key_exists($requestedName, $config['log'])
+            && is_array($config['log'][$requestedName])
+        ) {
+            $logConfig = $config['log'][$requestedName];
         }
 
         $loggerOptions = [
@@ -90,14 +93,14 @@ final class LoggerFactory implements FactoryInterface
             try {
                 $logger->setWriterPluginManager($container->get('LogWriterManager'));
             } catch (ContainerExceptionInterface $e) {
-                throw new ServiceNotCreatedException('An error occured while setting the setWriterPluginManager', 0, $e);
+                throw new ServiceNotCreatedException('An error occured while setting the LogWriterManager', 0, $e);
             }
         }
 
         try {
             $logger->addWriter(new Noop());
         } catch (InvalidArgumentException $e) {
-            throw new ServiceNotCreatedException('An error occured while adding a writer', 0, $e);
+            throw new ServiceNotCreatedException('An error occured while adding a noop writer', 0, $e);
         }
 
         if (array_key_exists('writers', $logConfig) && is_array($logConfig['writers'])) {
@@ -150,11 +153,21 @@ final class LoggerFactory implements FactoryInterface
             }
         }
 
-        if (isset($logConfig['name']) && array_key_exists('handlers', $logConfig) && is_array($logConfig['handlers'])) {
+        if (
+            isset($logConfig['name'])
+            && array_key_exists('handlers', $logConfig)
+            && is_array($logConfig['handlers'])
+        ) {
+            $processors = [];
+
+            if (array_key_exists('monolog_processors', $logConfig) && is_array($logConfig['monolog_processors'])) {
+                $processors = $logConfig['monolog_processors'];
+            }
+
             $monologConfig = [
                 'name' => $logConfig['name'],
                 'handlers' => $logConfig['handlers'],
-                'processors' => $logConfig['monolog_processors'] ?? [],
+                'processors' => $processors,
             ];
 
             if (
@@ -181,5 +194,25 @@ final class LoggerFactory implements FactoryInterface
         }
 
         return $logger;
+    }
+
+    /**
+     * Can the factory create an instance for the service?
+     *
+     * @param string $requestedName
+     *
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+     */
+    public function canCreate(ContainerInterface $container, $requestedName): bool
+    {
+        try {
+            $config = $container->get('config');
+        } catch (ContainerExceptionInterface $e) {
+            return false;
+        }
+
+        return array_key_exists('log', $config)
+            && is_array($config['log'])
+            && array_key_exists($requestedName, $config['log']);
     }
 }

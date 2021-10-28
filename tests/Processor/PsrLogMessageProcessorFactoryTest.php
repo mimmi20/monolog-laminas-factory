@@ -17,15 +17,18 @@ use Mimmi20\LoggerFactory\Processor\PsrLogMessageProcessorFactory;
 use Monolog\Processor\PsrLogMessageProcessor;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
+use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 final class PsrLogMessageProcessorFactoryTest extends TestCase
 {
     /**
      * @throws Exception
+     * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoce(): void
+    public function testInvoceWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -40,5 +43,81 @@ final class PsrLogMessageProcessorFactoryTest extends TestCase
         $processor = $factory($container, '');
 
         self::assertInstanceOf(PsrLogMessageProcessor::class, $processor);
+
+        $dateFormatP = new ReflectionProperty($processor, 'dateFormat');
+        $dateFormatP->setAccessible(true);
+
+        self::assertNull($dateFormatP->getValue($processor));
+
+        $rucf = new ReflectionProperty($processor, 'removeUsedContextFields');
+        $rucf->setAccessible(true);
+
+        self::assertFalse($rucf->getValue($processor));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithEmptyConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new PsrLogMessageProcessorFactory();
+
+        $processor = $factory($container, '', []);
+
+        self::assertInstanceOf(PsrLogMessageProcessor::class, $processor);
+
+        $dateFormatP = new ReflectionProperty($processor, 'dateFormat');
+        $dateFormatP->setAccessible(true);
+
+        self::assertNull($dateFormatP->getValue($processor));
+
+        $rucf = new ReflectionProperty($processor, 'removeUsedContextFields');
+        $rucf->setAccessible(true);
+
+        self::assertFalse($rucf->getValue($processor));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig(): void
+    {
+        $dateFormat = 'c';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new PsrLogMessageProcessorFactory();
+
+        $processor = $factory($container, '', ['dateFormat' => $dateFormat, 'removeUsedContextFields' => true]);
+
+        self::assertInstanceOf(PsrLogMessageProcessor::class, $processor);
+
+        $dateFormatP = new ReflectionProperty($processor, 'dateFormat');
+        $dateFormatP->setAccessible(true);
+
+        self::assertSame($dateFormat, $dateFormatP->getValue($processor));
+
+        $rucf = new ReflectionProperty($processor, 'removeUsedContextFields');
+        $rucf->setAccessible(true);
+
+        self::assertTrue($rucf->getValue($processor));
     }
 }

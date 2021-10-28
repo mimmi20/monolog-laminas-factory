@@ -63,21 +63,23 @@ final class LoggerFactoryTest extends AbstractTest
                 'monolog_formatters' => $configProvider->getMonologFormatterConfig(),
                 'monolog' => $configProvider->getMonologConfig(),
                 'log' => [
-                    'writers' => [
-                        'file' => [
-                            'name' => Stream::class,
-                            'options' => [
-                                'stream' => vfsStream::url('log/error.log'),
-                                'chmod' => 0777,
-                                'formatter' => [
-                                    'name' => Simple::class,
+                    Logger::class => [
+                        'writers' => [
+                            'file' => [
+                                'name' => Stream::class,
+                                'options' => [
+                                    'stream' => vfsStream::url('log/error.log'),
+                                    'chmod' => 0777,
+                                    'formatter' => [
+                                        'name' => Simple::class,
+                                    ],
                                 ],
                             ],
                         ],
-                    ],
-                    'processors' => [
-                        'psr3' => [
-                            'name' => PsrPlaceholder::class,
+                        'processors' => [
+                            'psr3' => [
+                                'name' => PsrPlaceholder::class,
+                            ],
                         ],
                     ],
                 ],
@@ -120,23 +122,25 @@ final class LoggerFactoryTest extends AbstractTest
                 'monolog_formatters' => $configProvider->getMonologFormatterConfig(),
                 'monolog' => $configProvider->getMonologConfig(),
                 'log' => [
-                    'name' => 'test',
-                    'handlers' => [
-                        'file' => [
-                            'type' => StreamHandler::class,
-                            'options' => [
-                                'stream' => vfsStream::url('log/error.log'),
-                                'filePermission' => 0777,
-                                'formatter' => [
-                                    'type' => LineFormatter::class,
-                                    'options' => ['allowInlineLineBreaks' => true],
+                    Logger::class => [
+                        'name' => 'test',
+                        'handlers' => [
+                            'file' => [
+                                'type' => StreamHandler::class,
+                                'options' => [
+                                    'stream' => vfsStream::url('log/error.log'),
+                                    'filePermission' => 0777,
+                                    'formatter' => [
+                                        'type' => LineFormatter::class,
+                                        'options' => ['allowInlineLineBreaks' => true],
+                                    ],
                                 ],
                             ],
                         ],
-                    ],
-                    'processors' => [
-                        'psr3' => [
-                            'name' => PsrPlaceholder::class,
+                        'processors' => [
+                            'psr3' => [
+                                'name' => PsrPlaceholder::class,
+                            ],
                         ],
                     ],
                 ],

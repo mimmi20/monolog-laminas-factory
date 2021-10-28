@@ -14,6 +14,7 @@ namespace Mimmi20Test\LoggerFactory\Formatter;
 
 use Interop\Container\ContainerInterface;
 use Mimmi20\LoggerFactory\Formatter\GelfMessageFormatterFactory;
+use Mimmi20\LoggerFactory\Formatter\NormalizerFormatterFactory;
 use Monolog\Formatter\GelfMessageFormatter;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
@@ -45,6 +46,9 @@ final class GelfMessageFormatterFactoryTest extends TestCase
         $formatter = $factory($container, '');
 
         self::assertInstanceOf(GelfMessageFormatter::class, $formatter);
+        self::assertSame('U.u', $formatter->getDateFormat());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH, $formatter->getMaxNormalizeDepth());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT, $formatter->getMaxNormalizeItemCount());
 
         $s = new ReflectionProperty($formatter, 'systemName');
         $s->setAccessible(true);
@@ -87,6 +91,9 @@ final class GelfMessageFormatterFactoryTest extends TestCase
         $formatter = $factory($container, '', []);
 
         self::assertInstanceOf(GelfMessageFormatter::class, $formatter);
+        self::assertSame('U.u', $formatter->getDateFormat());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH, $formatter->getMaxNormalizeDepth());
+        self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT, $formatter->getMaxNormalizeItemCount());
 
         $s = new ReflectionProperty($formatter, 'systemName');
         $s->setAccessible(true);
@@ -116,10 +123,12 @@ final class GelfMessageFormatterFactoryTest extends TestCase
      */
     public function testInvoceWithConfig(): void
     {
-        $systemName    = 'abc';
-        $extraPrefix   = '__xxx';
-        $contextPrefix = 'xyz';
-        $maxLength     = 42;
+        $systemName            = 'abc';
+        $extraPrefix           = '__xxx';
+        $contextPrefix         = 'xyz';
+        $maxLength             = 42;
+        $maxNormalizeDepth     = 42;
+        $maxNormalizeItemCount = 4711;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -131,9 +140,12 @@ final class GelfMessageFormatterFactoryTest extends TestCase
 
         $factory = new GelfMessageFormatterFactory();
 
-        $formatter = $factory($container, '', ['systemName' => $systemName, 'extraPrefix' => $extraPrefix, 'contextPrefix' => $contextPrefix, 'maxLength' => $maxLength]);
+        $formatter = $factory($container, '', ['systemName' => $systemName, 'extraPrefix' => $extraPrefix, 'contextPrefix' => $contextPrefix, 'maxLength' => $maxLength, 'maxNormalizeDepth' => $maxNormalizeDepth, 'maxNormalizeItemCount' => $maxNormalizeItemCount, 'prettyPrint' => true]);
 
         self::assertInstanceOf(GelfMessageFormatter::class, $formatter);
+        self::assertSame('U.u', $formatter->getDateFormat());
+        self::assertSame($maxNormalizeDepth, $formatter->getMaxNormalizeDepth());
+        self::assertSame($maxNormalizeItemCount, $formatter->getMaxNormalizeItemCount());
 
         $s = new ReflectionProperty($formatter, 'systemName');
         $s->setAccessible(true);

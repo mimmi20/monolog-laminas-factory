@@ -105,4 +105,33 @@ final class TagProcessorFactoryTest extends TestCase
 
         self::assertSame($tags, $tagsP->getValue($processor));
     }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithTagsAsString(): void
+    {
+        $tags = 'abc';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new TagProcessorFactory();
+
+        $processor = $factory($container, '', ['tags' => $tags]);
+
+        self::assertInstanceOf(TagProcessor::class, $processor);
+
+        $tagsP = new ReflectionProperty($processor, 'tags');
+        $tagsP->setAccessible(true);
+
+        self::assertSame((array) $tags, $tagsP->getValue($processor));
+    }
 }

@@ -21,6 +21,9 @@ use function is_array;
 
 final class NormalizerFormatterFactory implements FactoryInterface
 {
+    public const DEFAULT_NORMALIZER_DEPTH      = 9;
+    public const DEFAULT_NORMALIZER_ITEM_COUNT = 1000;
+
     /**
      * @param string                              $requestedName
      * @param array<string, bool|int|string>|null $options
@@ -34,8 +37,8 @@ final class NormalizerFormatterFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): NormalizerFormatter
     {
         $dateFormat            = null;
-        $maxNormalizeDepth     = 9;
-        $maxNormalizeItemCount = 1000;
+        $maxNormalizeDepth     = self::DEFAULT_NORMALIZER_DEPTH;
+        $maxNormalizeItemCount = self::DEFAULT_NORMALIZER_ITEM_COUNT;
         $prettyPrint           = false;
 
         if (is_array($options)) {

@@ -601,6 +601,84 @@ final class RotatingFileHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfigAndFormatter3(): void
+    {
+        $filename       = '/tmp/test-file';
+        $maxFiles       = 99;
+        $level          = LogLevel::ALERT;
+        $bubble         = false;
+        $filePermission = '0755';
+        $useLocking     = false;
+        $dateFormat     = RotatingFileHandler::FILE_PER_MONTH;
+        $formatter      = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new RotatingFileHandlerFactory();
+
+        $handler = $factory($container, '', ['filename' => $filename, 'maxFiles' => $maxFiles, 'level' => $level, 'bubble' => $bubble, 'filePermission' => $filePermission, 'useLocking' => $useLocking, 'dateFormat' => $dateFormat, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(RotatingFileHandler::class, $handler);
+
+        self::assertNull($handler->getStream());
+        self::assertSame($filename . '-' . date($dateFormat), $handler->getUrl());
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $fn = new ReflectionProperty($handler, 'filename');
+        $fn->setAccessible(true);
+
+        self::assertSame($filename, $fn->getValue($handler));
+
+        $mf = new ReflectionProperty($handler, 'maxFiles');
+        $mf->setAccessible(true);
+
+        self::assertSame($maxFiles, $mf->getValue($handler));
+
+        $fp = new ReflectionProperty($handler, 'filePermission');
+        $fp->setAccessible(true);
+
+        self::assertSame((int) $filePermission, $fp->getValue($handler));
+
+        $ul = new ReflectionProperty($handler, 'useLocking');
+        $ul->setAccessible(true);
+
+        self::assertFalse($ul->getValue($handler));
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
      */
     public function testInvoceWithConfigAndBoolProcessors(): void
     {
