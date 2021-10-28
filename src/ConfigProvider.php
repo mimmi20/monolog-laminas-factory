@@ -193,7 +193,7 @@ final class ConfigProvider
      * Return general-purpose laminas-navigation configuration.
      *
      * @return array<string, array<string, array<int|string, string>>>
-     * @phpstan-return array{dependencies: array{aliases: array<string, class-string>, factories: array<class-string, class-string>}, monolog_handlers: array{aliases: array<string, class-string>, factories: array<class-string, class-string>}, monolog_processors: array{aliases: array<string, class-string>, factories: array<class-string, class-string>}, monolog_formatters: array{aliases: array<string, class-string>, factories: array<class-string, class-string>}, monolog: array{factories: array<class-string, class-string>}}
+     * @phpstan-return array{dependencies: array{aliases: array<string, class-string>, abstract_factories: array<int, class-string>, factories: array<class-string, class-string>}, monolog_handlers: array{aliases: array<string, class-string>, factories: array<class-string, class-string>}, monolog_processors: array{aliases: array<string, class-string>, factories: array<class-string, class-string>}, monolog_formatters: array{aliases: array<string, class-string>, factories: array<class-string, class-string>}, monolog: array{factories: array<class-string, class-string>}}
      */
     public function __invoke(): array
     {
@@ -209,8 +209,8 @@ final class ConfigProvider
     /**
      * Return application-level dependency configuration.
      *
-     * @return array<string, array<string, string>>
-     * @phpstan-return array{aliases: array<string, class-string>, factories: array<class-string, class-string>}
+     * @return array<string, array<int|string, string>>
+     * @phpstan-return array{aliases: array<string, class-string>, abstract_factories: array<int, class-string>, factories: array<class-string, class-string>}
      */
     public function getDependencyConfig(): array
     {
@@ -218,9 +218,11 @@ final class ConfigProvider
             'aliases' => [
                 LoggerInterface::class => Logger::class,
             ],
+            'abstract_factories' => [
+                LoggerAbstractFactory::class,
+            ],
             'factories' => [
                 ActivationStrategyPluginManager::class => ActivationStrategyPluginManagerFactory::class,
-                Logger::class => LoggerFactory::class,
                 MonologPluginManager::class => MonologPluginManagerFactory::class,
                 MonologHandlerPluginManager::class => MonologHandlerPluginManagerFactory::class,
                 MonologProcessorPluginManager::class => MonologProcessorPluginManagerFactory::class,

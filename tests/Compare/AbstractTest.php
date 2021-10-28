@@ -16,7 +16,7 @@ use Laminas\Log\Logger;
 use Laminas\Log\LoggerInterface;
 use Laminas\ServiceManager\Exception\ContainerModificationsNotAllowedException;
 use Laminas\ServiceManager\ServiceManager;
-use Mimmi20\LoggerFactory\LoggerFactory;
+use Mimmi20\LoggerFactory\LoggerAbstractFactory;
 use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
 use Mimmi20\LoggerFactory\MonologFormatterPluginManagerFactory;
 use Mimmi20\LoggerFactory\MonologHandlerPluginManager;
@@ -45,7 +45,7 @@ abstract class AbstractTest extends TestCase
         $sm->setAllowOverride(true);
 
         $sm->setAlias(LoggerInterface::class, Logger::class);
-        $sm->setFactory(Logger::class, LoggerFactory::class);
+        $sm->setFactory(Logger::class, LoggerAbstractFactory::class);
         $sm->setFactory(MonologPluginManager::class, MonologPluginManagerFactory::class);
         $sm->setFactory(MonologHandlerPluginManager::class, MonologHandlerPluginManagerFactory::class);
         $sm->setFactory(MonologProcessorPluginManager::class, MonologProcessorPluginManagerFactory::class);

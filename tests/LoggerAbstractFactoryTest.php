@@ -25,7 +25,7 @@ use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\Stdlib\SplPriorityQueue;
-use Mimmi20\LoggerFactory\LoggerFactory;
+use Mimmi20\LoggerFactory\LoggerAbstractFactory;
 use Mimmi20\LoggerFactory\MonologPluginManager;
 use Monolog\Handler\HandlerInterface;
 use PHPUnit\Framework\Exception;
@@ -36,7 +36,7 @@ use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function sprintf;
 
-final class LoggerFactoryTest extends TestCase
+final class LoggerAbstractFactoryTest extends TestCase
 {
     /**
      * @throws Exception
@@ -55,7 +55,7 @@ final class LoggerFactoryTest extends TestCase
             ->with('config')
             ->willThrowException(new ServiceNotFoundException());
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionMessage(sprintf('Could not find service %s', 'config'));
@@ -85,7 +85,7 @@ final class LoggerFactoryTest extends TestCase
             ->with('config')
             ->willReturn($config);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $logger = $factory($container, $requestedName, null);
 
@@ -125,7 +125,49 @@ final class LoggerFactoryTest extends TestCase
             ->with('config')
             ->willReturn($config);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
+
+        $logger = $factory($container, $requestedName, null);
+
+        self::assertInstanceOf(Logger::class, $logger);
+        self::assertInstanceOf(SplPriorityQueue::class, $logger->getWriters());
+        self::assertCount(1, $logger->getWriters());
+        self::assertInstanceOf(SplPriorityQueue::class, $logger->getProcessors());
+        self::assertCount(0, $logger->getProcessors());
+        self::assertInstanceOf(WriterPluginManager::class, $logger->getWriterPluginManager());
+        self::assertInstanceOf(ProcessorPluginManager::class, $logger->getProcessorPluginManager());
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testInvoceWithConfig2(): void
+    {
+        $requestedName = Logger::class;
+        $config        = [
+            'log' => [
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                ],
+            ],
+        ];
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::exactly(2))
+            ->method('has')
+            ->withConsecutive(['LogProcessorManager'], ['LogWriterManager'])
+            ->willReturnOnConsecutiveCalls(false, false);
+        $container->expects(self::once())
+            ->method('get')
+            ->with('config')
+            ->willReturn($config);
+
+        $factory = new LoggerAbstractFactory();
 
         $logger = $factory($container, $requestedName, null);
 
@@ -146,9 +188,11 @@ final class LoggerFactoryTest extends TestCase
         $requestedName = Logger::class;
         $config        = [
             'log' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                ],
             ],
         ];
 
@@ -172,7 +216,7 @@ final class LoggerFactoryTest extends TestCase
                 }
             );
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionMessage('An error occured while setting the ProcessorPluginManager');
@@ -189,9 +233,11 @@ final class LoggerFactoryTest extends TestCase
         $requestedName = Logger::class;
         $config        = [
             'log' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                ],
             ],
         ];
 
@@ -227,10 +273,10 @@ final class LoggerFactoryTest extends TestCase
                 }
             );
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
-        $this->expectExceptionMessage('An error occured while setting the setWriterPluginManager');
+        $this->expectExceptionMessage('An error occured while setting the LogWriterManager');
         $this->expectExceptionCode(0);
 
         $factory($container, $requestedName, null);
@@ -240,14 +286,16 @@ final class LoggerFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvoceWithConfig3(): void
     {
         $requestedName = Logger::class;
         $config        = [
             'log' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                ],
             ],
         ];
 
@@ -279,7 +327,7 @@ final class LoggerFactoryTest extends TestCase
             ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'])
             ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $logger = $factory($container, $requestedName, null);
 
@@ -296,23 +344,25 @@ final class LoggerFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig3(): void
+    public function testInvoceWithConfig4(): void
     {
         $requestedName = Logger::class;
         $config        = [
             'log' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
-                'writers' => [
-                    ['enabled' => false],
-                    ['name' => true],
-                    [
-                        'enabled' => true,
-                        'name' => 'xyz',
-                        'options' => ['efg' => 'ijk'],
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'writers' => [
+                        ['enabled' => false],
+                        ['name' => true],
+                        [
+                            'enabled' => true,
+                            'name' => 'xyz',
+                            'options' => ['efg' => 'ijk'],
+                        ],
+                        ['name' => 'abc'],
                     ],
-                    ['name' => 'abc'],
                 ],
             ],
         ];
@@ -351,7 +401,7 @@ final class LoggerFactoryTest extends TestCase
             ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'])
             ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $logger = $factory($container, $requestedName, null);
 
@@ -367,19 +417,21 @@ final class LoggerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig4(): void
+    public function testInvoceWithConfig5(): void
     {
         $requestedName = Logger::class;
         $config        = [
             'log' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
-                'writers' => [
-                    ['enabled' => false],
-                    ['name' => true],
-                    ['enabled' => true],
-                    ['name' => 'abc'],
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'writers' => [
+                        ['enabled' => false],
+                        ['name' => true],
+                        ['enabled' => true],
+                        ['name' => 'abc'],
+                    ],
                 ],
             ],
         ];
@@ -412,7 +464,7 @@ final class LoggerFactoryTest extends TestCase
             ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'])
             ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionMessage('Options must contain a name for the writer');
@@ -424,22 +476,24 @@ final class LoggerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig5(): void
+    public function testInvoceWithConfig6(): void
     {
         $requestedName = Logger::class;
         $config        = [
             'log' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
-                'writers' => [
-                    ['enabled' => false],
-                    ['name' => true],
-                    [
-                        'enabled' => true,
-                        'name' => 'xyz',
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'writers' => [
+                        ['enabled' => false],
+                        ['name' => true],
+                        [
+                            'enabled' => true,
+                            'name' => 'xyz',
+                        ],
+                        ['name' => 'abc'],
                     ],
-                    ['name' => 'abc'],
                 ],
             ],
         ];
@@ -474,7 +528,7 @@ final class LoggerFactoryTest extends TestCase
             ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'])
             ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionMessage('An error occured while adding a writer');
@@ -487,23 +541,25 @@ final class LoggerFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig6(): void
+    public function testInvoceWithConfig7(): void
     {
         $requestedName = Logger::class;
         $config        = [
             'log' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
-                'processors' => [
-                    ['enabled' => false],
-                    ['name' => true],
-                    [
-                        'enabled' => true,
-                        'name' => 'xyz',
-                        'options' => ['efg' => 'ijk'],
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'processors' => [
+                        ['enabled' => false],
+                        ['name' => true],
+                        [
+                            'enabled' => true,
+                            'name' => 'xyz',
+                            'options' => ['efg' => 'ijk'],
+                        ],
+                        ['name' => 'abc'],
                     ],
-                    ['name' => 'abc'],
                 ],
             ],
         ];
@@ -542,7 +598,7 @@ final class LoggerFactoryTest extends TestCase
             ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'])
             ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $logger = $factory($container, $requestedName, null);
 
@@ -558,19 +614,21 @@ final class LoggerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig7(): void
+    public function testInvoceWithConfig8(): void
     {
         $requestedName = Logger::class;
         $config        = [
             'log' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
-                'processors' => [
-                    ['enabled' => false],
-                    ['name' => true],
-                    ['enabled' => true],
-                    ['name' => 'abc'],
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'processors' => [
+                        ['enabled' => false],
+                        ['name' => true],
+                        ['enabled' => true],
+                        ['name' => 'abc'],
+                    ],
                 ],
             ],
         ];
@@ -603,7 +661,7 @@ final class LoggerFactoryTest extends TestCase
             ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'])
             ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionMessage('Options must contain a type for the processor');
@@ -615,22 +673,24 @@ final class LoggerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig8(): void
+    public function testInvoceWithConfig9(): void
     {
         $requestedName = Logger::class;
         $config        = [
             'log' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
-                'processors' => [
-                    ['enabled' => false],
-                    ['name' => true],
-                    [
-                        'enabled' => true,
-                        'name' => 'xyz',
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'processors' => [
+                        ['enabled' => false],
+                        ['name' => true],
+                        [
+                            'enabled' => true,
+                            'name' => 'xyz',
+                        ],
+                        ['name' => 'abc'],
                     ],
-                    ['name' => 'abc'],
                 ],
             ],
         ];
@@ -665,7 +725,7 @@ final class LoggerFactoryTest extends TestCase
             ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'])
             ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionMessage('An error occured while adding a processor');
@@ -677,7 +737,7 @@ final class LoggerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig9(): void
+    public function testInvoceWithConfig10(): void
     {
         $requestedName = Logger::class;
         $name          = 'test-name';
@@ -689,21 +749,23 @@ final class LoggerFactoryTest extends TestCase
         ];
         $config        = [
             'log' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
-                'name' => $name,
-                'writers' => [
-                    ['name' => 'abc'],
-                ],
-                'processors' => [
-                    [
-                        'enabled' => true,
-                        'name' => 'xyz',
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'name' => $name,
+                    'writers' => [
+                        ['name' => 'abc'],
                     ],
+                    'processors' => [
+                        [
+                            'enabled' => true,
+                            'name' => 'xyz',
+                        ],
+                    ],
+                    'handlers' => $handlers,
+                    'monolog_processors' => $processors,
                 ],
-                'handlers' => $handlers,
-                'monolog_processors' => $processors,
             ],
         ];
 
@@ -764,7 +826,7 @@ final class LoggerFactoryTest extends TestCase
             ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'], [MonologPluginManager::class])
             ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager, $monologPluginManager);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionMessage(sprintf('Could not find service %s', MonologPluginManager::class));
@@ -777,7 +839,7 @@ final class LoggerFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig10(): void
+    public function testInvoceWithConfig11(): void
     {
         $requestedName = Logger::class;
         $name          = 'test-name';
@@ -789,21 +851,23 @@ final class LoggerFactoryTest extends TestCase
         ];
         $config        = [
             'log' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
-                'name' => $name,
-                'writers' => [
-                    ['name' => 'abc'],
-                ],
-                'processors' => [
-                    [
-                        'enabled' => true,
-                        'name' => 'xyz',
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'name' => $name,
+                    'writers' => [
+                        ['name' => 'abc'],
                     ],
+                    'processors' => [
+                        [
+                            'enabled' => true,
+                            'name' => 'xyz',
+                        ],
+                    ],
+                    'handlers' => $handlers,
+                    'monolog_processors' => $processors,
                 ],
-                'handlers' => $handlers,
-                'monolog_processors' => $processors,
             ],
         ];
 
@@ -870,7 +934,7 @@ final class LoggerFactoryTest extends TestCase
             ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'], [MonologPluginManager::class])
             ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager, $monologPluginManager);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $logger = $factory($container, $requestedName, null);
 
@@ -892,23 +956,25 @@ final class LoggerFactoryTest extends TestCase
         $requestedName = Logger::class;
         $config        = [
             'log' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
-                'writers' => [
-                    ['name' => 'abc'],
-                ],
-                'processors' => [
-                    [
-                        'enabled' => true,
-                        'name' => 'xyz',
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'writers' => [
+                        ['name' => 'abc'],
                     ],
-                ],
-                'handlers' => [
-                    $this->createMock(HandlerInterface::class),
-                ],
-                'monolog_processors' => [
-                    static fn (array $record): array => $record,
+                    'processors' => [
+                        [
+                            'enabled' => true,
+                            'name' => 'xyz',
+                        ],
+                    ],
+                    'handlers' => [
+                        $this->createMock(HandlerInterface::class),
+                    ],
+                    'monolog_processors' => [
+                        static fn (array $record): array => $record,
+                    ],
                 ],
             ],
         ];
@@ -953,7 +1019,7 @@ final class LoggerFactoryTest extends TestCase
             ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'])
             ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $logger = $factory($container, $requestedName, null);
 
@@ -975,21 +1041,23 @@ final class LoggerFactoryTest extends TestCase
         $requestedName = Logger::class;
         $config        = [
             'log' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
-                'name' => 'test-name',
-                'writers' => [
-                    ['name' => 'abc'],
-                ],
-                'processors' => [
-                    [
-                        'enabled' => true,
-                        'name' => 'xyz',
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'name' => 'test-name',
+                    'writers' => [
+                        ['name' => 'abc'],
                     ],
-                ],
-                'monolog_processors' => [
-                    static fn (array $record): array => $record,
+                    'processors' => [
+                        [
+                            'enabled' => true,
+                            'name' => 'xyz',
+                        ],
+                    ],
+                    'monolog_processors' => [
+                        static fn (array $record): array => $record,
+                    ],
                 ],
             ],
         ];
@@ -1034,7 +1102,7 @@ final class LoggerFactoryTest extends TestCase
             ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'])
             ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $logger = $factory($container, $requestedName, null);
 
@@ -1056,22 +1124,24 @@ final class LoggerFactoryTest extends TestCase
         $requestedName = Logger::class;
         $config        = [
             'log' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
-                'name' => 'test-name',
-                'writers' => [
-                    ['name' => 'abc'],
-                ],
-                'processors' => [
-                    [
-                        'enabled' => true,
-                        'name' => 'xyz',
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'name' => 'test-name',
+                    'writers' => [
+                        ['name' => 'abc'],
                     ],
-                ],
-                'handlers' => true,
-                'monolog_processors' => [
-                    static fn (array $record): array => $record,
+                    'processors' => [
+                        [
+                            'enabled' => true,
+                            'name' => 'xyz',
+                        ],
+                    ],
+                    'handlers' => true,
+                    'monolog_processors' => [
+                        static fn (array $record): array => $record,
+                    ],
                 ],
             ],
         ];
@@ -1116,7 +1186,7 @@ final class LoggerFactoryTest extends TestCase
             ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'])
             ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $logger = $factory($container, $requestedName, null);
 
@@ -1135,7 +1205,7 @@ final class LoggerFactoryTest extends TestCase
      * @throws \Laminas\Log\Exception\InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig11(): void
+    public function testInvoceWithConfig12(): void
     {
         $requestedName = Logger::class;
         $name          = 'test-name';
@@ -1147,38 +1217,40 @@ final class LoggerFactoryTest extends TestCase
         ];
         $timezone      = new DateTimeZone('Europe/London');
         $config        = [
-            'logger' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
-                'name' => $name,
-                'timezone' => $timezone,
-                'writers' => [
-                    ['name' => 'abc'],
-                    ['name' => true],
-                    ['name' => 'vwx'],
-                    ['name' => new Noop()],
+            'log' => [
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'name' => $name,
+                    'timezone' => $timezone,
+                    'writers' => [
+                        ['name' => 'abc'],
+                        ['name' => true],
+                        ['name' => 'vwx'],
+                        ['name' => new Noop()],
+                    ],
+                    'processors' => [
+                        [
+                            'enabled' => true,
+                            'name' => 'xyz',
+                        ],
+                        [
+                            'enabled' => true,
+                            'name' => false,
+                        ],
+                        [
+                            'enabled' => true,
+                            'name' => 'abcd',
+                        ],
+                        [
+                            'enabled' => true,
+                            'name' => new RequestId(),
+                        ],
+                    ],
+                    'handlers' => $handlers,
+                    'monolog_processors' => $processors,
                 ],
-                'processors' => [
-                    [
-                        'enabled' => true,
-                        'name' => 'xyz',
-                    ],
-                    [
-                        'enabled' => true,
-                        'name' => false,
-                    ],
-                    [
-                        'enabled' => true,
-                        'name' => 'abcd',
-                    ],
-                    [
-                        'enabled' => true,
-                        'name' => new RequestId(),
-                    ],
-                ],
-                'handlers' => $handlers,
-                'monolog_processors' => $processors,
             ],
         ];
 
@@ -1252,7 +1324,7 @@ final class LoggerFactoryTest extends TestCase
             ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'], [MonologPluginManager::class])
             ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager, $monologPluginManager);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $logger = $factory($container, $requestedName, null);
 
@@ -1284,7 +1356,7 @@ final class LoggerFactoryTest extends TestCase
      * @throws \Laminas\Log\Exception\InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig12(): void
+    public function testInvoceWithConfig13(): void
     {
         $requestedName = Logger::class;
         $name          = 'test-name';
@@ -1296,38 +1368,40 @@ final class LoggerFactoryTest extends TestCase
         ];
         $timezone      = 'Europe/London';
         $config        = [
-            'logger' => [
-                'exceptionhandler' => true,
-                'errorhandler' => true,
-                'fatal_error_shutdownfunction' => true,
-                'name' => $name,
-                'timezone' => $timezone,
-                'writers' => [
-                    ['name' => 'abc'],
-                    ['name' => true],
-                    ['name' => 'vwx'],
-                    ['name' => new Noop()],
+            'log' => [
+                $requestedName => [
+                    'exceptionhandler' => true,
+                    'errorhandler' => true,
+                    'fatal_error_shutdownfunction' => true,
+                    'name' => $name,
+                    'timezone' => $timezone,
+                    'writers' => [
+                        ['name' => 'abc'],
+                        ['name' => true],
+                        ['name' => 'vwx'],
+                        ['name' => new Noop()],
+                    ],
+                    'processors' => [
+                        [
+                            'enabled' => true,
+                            'name' => 'xyz',
+                        ],
+                        [
+                            'enabled' => true,
+                            'name' => false,
+                        ],
+                        [
+                            'enabled' => true,
+                            'name' => 'abcd',
+                        ],
+                        [
+                            'enabled' => true,
+                            'name' => new RequestId(),
+                        ],
+                    ],
+                    'handlers' => $handlers,
+                    'monolog_processors' => $processors,
                 ],
-                'processors' => [
-                    [
-                        'enabled' => true,
-                        'name' => 'xyz',
-                    ],
-                    [
-                        'enabled' => true,
-                        'name' => false,
-                    ],
-                    [
-                        'enabled' => true,
-                        'name' => 'abcd',
-                    ],
-                    [
-                        'enabled' => true,
-                        'name' => new RequestId(),
-                    ],
-                ],
-                'handlers' => $handlers,
-                'monolog_processors' => $processors,
             ],
         ];
 
@@ -1401,7 +1475,7 @@ final class LoggerFactoryTest extends TestCase
             ->withConsecutive(['config'], ['LogProcessorManager'], ['LogWriterManager'], [MonologPluginManager::class])
             ->willReturnOnConsecutiveCalls($config, $processorPluginManager, $writerPluginManager, $monologPluginManager);
 
-        $factory = new LoggerFactory();
+        $factory = new LoggerAbstractFactory();
 
         $logger = $factory($container, $requestedName, null);
 

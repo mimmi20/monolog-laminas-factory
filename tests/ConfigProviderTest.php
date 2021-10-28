@@ -12,14 +12,15 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory;
 
-use Laminas\Log\Logger;
 use Laminas\Log\LoggerInterface;
 use Mimmi20\LoggerFactory\ConfigProvider;
 use Mimmi20\LoggerFactory\Handler\FingersCrossed\ActivationStrategyPluginManager;
+use Mimmi20\LoggerFactory\LoggerAbstractFactory;
 use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
 use Mimmi20\LoggerFactory\MonologHandlerPluginManager;
 use Mimmi20\LoggerFactory\MonologPluginManager;
 use Mimmi20\LoggerFactory\MonologProcessorPluginManager;
+use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
@@ -41,13 +42,23 @@ final class ConfigProviderTest extends TestCase
     {
         $dependencyConfig = $this->provider->getDependencyConfig();
         self::assertIsArray($dependencyConfig);
-        self::assertCount(2, $dependencyConfig);
+        self::assertCount(3, $dependencyConfig);
+
+        self::assertArrayNotHasKey('delegators', $dependencyConfig);
+        self::assertArrayNotHasKey('initializers', $dependencyConfig);
+        self::assertArrayNotHasKey('invokables', $dependencyConfig);
+        self::assertArrayNotHasKey('services', $dependencyConfig);
+        self::assertArrayNotHasKey('shared', $dependencyConfig);
+
+        self::assertArrayHasKey('abstract_factories', $dependencyConfig);
+        $abstractFactories = $dependencyConfig['abstract_factories'];
+        self::assertIsArray($abstractFactories);
+        self::assertContains(LoggerAbstractFactory::class, $abstractFactories);
 
         self::assertArrayHasKey('factories', $dependencyConfig);
         $factories = $dependencyConfig['factories'];
         self::assertIsArray($factories);
-        self::assertCount(6, $factories);
-        self::assertArrayHasKey(Logger::class, $factories);
+        self::assertCount(5, $factories);
         self::assertArrayHasKey(MonologPluginManager::class, $factories);
         self::assertArrayHasKey(MonologHandlerPluginManager::class, $factories);
         self::assertArrayHasKey(MonologProcessorPluginManager::class, $factories);
@@ -59,8 +70,6 @@ final class ConfigProviderTest extends TestCase
         self::assertIsArray($aliases);
         self::assertCount(1, $aliases);
         self::assertArrayHasKey(LoggerInterface::class, $aliases);
-
-        self::assertArrayNotHasKey('abstract_factories', $dependencyConfig);
     }
 
     /**
@@ -74,6 +83,11 @@ final class ConfigProviderTest extends TestCase
         self::assertCount(2, $monologHandlerConfig);
 
         self::assertArrayNotHasKey('abstract_factories', $monologHandlerConfig);
+        self::assertArrayNotHasKey('delegators', $monologHandlerConfig);
+        self::assertArrayNotHasKey('initializers', $monologHandlerConfig);
+        self::assertArrayNotHasKey('invokables', $monologHandlerConfig);
+        self::assertArrayNotHasKey('services', $monologHandlerConfig);
+        self::assertArrayNotHasKey('shared', $monologHandlerConfig);
 
         self::assertArrayHasKey('aliases', $monologHandlerConfig);
         $aliases = $monologHandlerConfig['aliases'];
@@ -97,6 +111,11 @@ final class ConfigProviderTest extends TestCase
         self::assertCount(2, $monologProcessorConfig);
 
         self::assertArrayNotHasKey('abstract_factories', $monologProcessorConfig);
+        self::assertArrayNotHasKey('delegators', $monologProcessorConfig);
+        self::assertArrayNotHasKey('initializers', $monologProcessorConfig);
+        self::assertArrayNotHasKey('invokables', $monologProcessorConfig);
+        self::assertArrayNotHasKey('services', $monologProcessorConfig);
+        self::assertArrayNotHasKey('shared', $monologProcessorConfig);
 
         self::assertArrayHasKey('aliases', $monologProcessorConfig);
         $aliases = $monologProcessorConfig['aliases'];
@@ -120,6 +139,11 @@ final class ConfigProviderTest extends TestCase
         self::assertCount(2, $monologFormatterConfig);
 
         self::assertArrayNotHasKey('abstract_factories', $monologFormatterConfig);
+        self::assertArrayNotHasKey('delegators', $monologFormatterConfig);
+        self::assertArrayNotHasKey('initializers', $monologFormatterConfig);
+        self::assertArrayNotHasKey('invokables', $monologFormatterConfig);
+        self::assertArrayNotHasKey('services', $monologFormatterConfig);
+        self::assertArrayNotHasKey('shared', $monologFormatterConfig);
 
         self::assertArrayHasKey('aliases', $monologFormatterConfig);
         $aliases = $monologFormatterConfig['aliases'];
@@ -138,18 +162,26 @@ final class ConfigProviderTest extends TestCase
      */
     public function testGetMonologConfig(): void
     {
-        $monologFormatterConfig = $this->provider->getMonologConfig();
-        self::assertIsArray($monologFormatterConfig);
-        self::assertCount(1, $monologFormatterConfig);
+        $monologConfig = $this->provider->getMonologConfig();
+        self::assertIsArray($monologConfig);
+        self::assertCount(1, $monologConfig);
 
-        self::assertArrayHasKey('factories', $monologFormatterConfig);
-        $factories = $monologFormatterConfig['factories'];
+        self::assertArrayNotHasKey('abstract_factories', $monologConfig);
+        self::assertArrayNotHasKey('aliases', $monologConfig);
+        self::assertArrayNotHasKey('delegators', $monologConfig);
+        self::assertArrayNotHasKey('initializers', $monologConfig);
+        self::assertArrayNotHasKey('invokables', $monologConfig);
+        self::assertArrayNotHasKey('services', $monologConfig);
+        self::assertArrayNotHasKey('shared', $monologConfig);
+
+        self::assertArrayHasKey('factories', $monologConfig);
+        $factories = $monologConfig['factories'];
         self::assertIsArray($factories);
         self::assertCount(1, $factories);
-        self::assertArrayHasKey(\Monolog\Logger::class, $factories);
+        self::assertArrayHasKey(Logger::class, $factories);
 
-        self::assertArrayNotHasKey('aliases', $monologFormatterConfig);
-        self::assertArrayNotHasKey('abstract_factories', $monologFormatterConfig);
+        self::assertArrayNotHasKey('aliases', $monologConfig);
+        self::assertArrayNotHasKey('abstract_factories', $monologConfig);
     }
 
     /**
