@@ -58,7 +58,8 @@ final class ConfigProviderTest extends TestCase
         self::assertArrayHasKey('factories', $dependencyConfig);
         $factories = $dependencyConfig['factories'];
         self::assertIsArray($factories);
-        self::assertCount(5, $factories);
+        self::assertCount(6, $factories);
+        self::assertArrayHasKey(\Laminas\Log\Logger::class, $factories);
         self::assertArrayHasKey(MonologPluginManager::class, $factories);
         self::assertArrayHasKey(MonologHandlerPluginManager::class, $factories);
         self::assertArrayHasKey(MonologProcessorPluginManager::class, $factories);

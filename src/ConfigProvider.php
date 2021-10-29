@@ -223,6 +223,7 @@ final class ConfigProvider
             ],
             'factories' => [
                 ActivationStrategyPluginManager::class => ActivationStrategyPluginManagerFactory::class,
+                Logger::class => LoggerAbstractFactory::class,
                 MonologPluginManager::class => MonologPluginManagerFactory::class,
                 MonologHandlerPluginManager::class => MonologHandlerPluginManagerFactory::class,
                 MonologProcessorPluginManager::class => MonologProcessorPluginManagerFactory::class,
