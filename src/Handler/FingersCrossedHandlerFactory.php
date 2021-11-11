@@ -51,6 +51,7 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
      * @throws ContainerException         if any other error occurs
+     * @throws \Laminas\ServiceManager\Exception\InvalidServiceException
      *
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
@@ -121,10 +122,11 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
      * @phpstan-param (Level|LevelName|LogLevel::*|ActivationStrategyInterface|array{type?: string, options?: array<mixed>}|string|null) $activationStrategy
      *
      * @return ActivationStrategyInterface|int|string|null
-     * @phpstan-return (Level|LevelName|LogLevel::*|ActivationStrategyInterface|null)
+     * @phpstan-return (Level|ActivationStrategyInterface|null)
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
+     * @throws \Laminas\ServiceManager\Exception\InvalidServiceException
      */
     private function getActivationStrategy(ContainerInterface $container, $activationStrategy)
     {
@@ -146,24 +148,34 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
             );
         }
 
+        assert($activationStrategyPluginManager instanceof ActivationStrategyPluginManager);
+
         if (is_array($activationStrategy)) {
             if (!array_key_exists('type', $activationStrategy)) {
                 throw new ServiceNotCreatedException('Options must contain a type for the ActivationStrategy');
             }
 
             try {
-                return $activationStrategyPluginManager->get($activationStrategy['type'], $activationStrategy['options'] ?? []);
+                $strategy = $activationStrategyPluginManager->get($activationStrategy['type'], $activationStrategy['options'] ?? []);
             } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
                 throw new ServiceNotFoundException('Could not load ActivationStrategy class', 0, $e);
             }
+
+            assert($strategy instanceof ActivationStrategyInterface);
+
+            return $strategy;
         }
 
         if (is_string($activationStrategy) && $activationStrategyPluginManager->has($activationStrategy)) {
             try {
-                return $activationStrategyPluginManager->get($activationStrategy);
+                $strategy = $activationStrategyPluginManager->get($activationStrategy);
             } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
                 throw new ServiceNotFoundException('Could not load ActivationStrategy class', 0, $e);
             }
+
+            assert($strategy instanceof ActivationStrategyInterface);
+
+            return $strategy;
         }
 
         try {

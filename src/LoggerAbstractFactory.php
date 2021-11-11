@@ -58,6 +58,8 @@ final class LoggerAbstractFactory implements AbstractFactoryInterface
             throw new ServiceNotFoundException(sprintf('Could not find service %s', 'config'), 0, $e);
         }
 
+        assert(is_array($config));
+
         $logConfig = [];
 
         if (

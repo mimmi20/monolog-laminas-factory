@@ -50,7 +50,7 @@ trait CreateProcessorTrait
         }
 
         try {
-            return $monologProcessorPluginManager->get(
+            $processor = $monologProcessorPluginManager->get(
                 $processorConfig['type'],
                 $processorConfig['options'] ?? []
             );
@@ -61,5 +61,9 @@ trait CreateProcessorTrait
                 $e
             );
         }
+
+        assert(is_callable($processor) || null === $processor);
+
+        return $processor;
     }
 }

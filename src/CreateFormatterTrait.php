@@ -25,7 +25,7 @@ trait CreateFormatterTrait
 {
     /**
      * @param array<string, array<string, mixed>|bool|string>|FormatterInterface $formatterConfig
-     * @phpstan-param FormatterInterface|array{enabled?: bool, type?: string, options?: array} $formatterConfig
+     * @phpstan-param FormatterInterface|array{enabled?: bool, type?: string, options?: array<mixed>} $formatterConfig
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -45,7 +45,7 @@ trait CreateFormatterTrait
         }
 
         try {
-            return $monologFormatterPluginManager->get(
+            $formatter = $monologFormatterPluginManager->get(
                 $formatterConfig['type'],
                 $formatterConfig['options'] ?? []
             );
@@ -56,5 +56,9 @@ trait CreateFormatterTrait
                 $e
             );
         }
+
+        assert(null === $formatter || $formatter instanceof FormatterInterface);
+
+        return $formatter;
     }
 }

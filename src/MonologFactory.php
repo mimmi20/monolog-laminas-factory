@@ -42,7 +42,7 @@ final class MonologFactory implements FactoryInterface
 
     /**
      * @param string $requestedName
-     * @phpstan-param array{name?: string, timezone?: (bool|string|DateTimeZone), handlers?: string|array{HandlerInterface|array{enabled?: bool, type?: string}}, processors?: (callable|string|array{enabled?: bool, type?: string, options?: array})}|null $options
+     * @phpstan-param array{name?: string, timezone?: (bool|string|DateTimeZone), handlers?: string|array{HandlerInterface|array{enabled?: bool, type?: string, options?: array}}, processors?: (callable|string|array{enabled?: bool, type?: string, options?: array})}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service

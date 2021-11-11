@@ -57,6 +57,8 @@ final class MonologHandlerPluginManagerFactory implements FactoryInterface
             throw new ServiceNotFoundException(sprintf('Could not find service %s', 'config'), 0, $e);
         }
 
+        assert(is_array($config));
+
         // If we do not have log_processors configuration, nothing more to do
         if (!isset($config['monolog_handlers']) || !is_array($config['monolog_handlers'])) {
             return $pluginManager;

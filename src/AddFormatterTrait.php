@@ -30,7 +30,7 @@ trait AddFormatterTrait
 
     /**
      * @param array<array<string, array<string, mixed>|bool|string>|FormatterInterface>|null $options
-     * @phpstan-param array{formatter?: (bool|FormatterInterface|array{enabled?: bool, type?: string, options?: array})}|null $options
+     * @phpstan-param array{formatter?: (bool|FormatterInterface|array{enabled?: bool, type?: string, options?: array<mixed>})}|null $options
      *
      * @throws ServiceNotCreatedException
      * @throws ServiceNotFoundException
@@ -60,6 +60,8 @@ trait AddFormatterTrait
                 $e
             );
         }
+
+        assert($monologFormatterPluginManager instanceof MonologFormatterPluginManager);
 
         $formatter = $this->createFormatter($options['formatter'], $monologFormatterPluginManager);
 
