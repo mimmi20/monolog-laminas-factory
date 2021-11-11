@@ -14,6 +14,8 @@ namespace Mimmi20\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\AbstractPluginManager;
+use Laminas\ServiceManager\Exception\InvalidServiceException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -28,8 +30,12 @@ use Psr\Log\InvalidArgumentException;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
+use function assert;
+use function get_class;
+use function gettype;
 use function is_array;
 use function is_int;
+use function is_object;
 use function is_string;
 use function sprintf;
 
@@ -51,6 +57,7 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
      * @throws ContainerException         if any other error occurs
+     * @throws InvalidServiceException
      *
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
@@ -121,10 +128,11 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
      * @phpstan-param (Level|LevelName|LogLevel::*|ActivationStrategyInterface|array{type?: string, options?: array<mixed>}|string|null) $activationStrategy
      *
      * @return ActivationStrategyInterface|int|string|null
-     * @phpstan-return (Level|LevelName|LogLevel::*|ActivationStrategyInterface|null)
+     * @phpstan-return (Level|ActivationStrategyInterface|null)
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
+     * @throws InvalidServiceException
      */
     private function getActivationStrategy(ContainerInterface $container, $activationStrategy)
     {
@@ -146,24 +154,41 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
             );
         }
 
+        assert(
+            $activationStrategyPluginManager instanceof ActivationStrategyPluginManager || $activationStrategyPluginManager instanceof AbstractPluginManager,
+            sprintf(
+                '$monologHandlerPluginManager should be an Instance of %s, but was %s',
+                AbstractPluginManager::class,
+                is_object($activationStrategyPluginManager) ? get_class($activationStrategyPluginManager) : gettype($activationStrategyPluginManager)
+            )
+        );
+
         if (is_array($activationStrategy)) {
             if (!array_key_exists('type', $activationStrategy)) {
                 throw new ServiceNotCreatedException('Options must contain a type for the ActivationStrategy');
             }
 
             try {
-                return $activationStrategyPluginManager->get($activationStrategy['type'], $activationStrategy['options'] ?? []);
+                $strategy = $activationStrategyPluginManager->get($activationStrategy['type'], $activationStrategy['options'] ?? []);
             } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
                 throw new ServiceNotFoundException('Could not load ActivationStrategy class', 0, $e);
             }
+
+            assert($strategy instanceof ActivationStrategyInterface);
+
+            return $strategy;
         }
 
         if (is_string($activationStrategy) && $activationStrategyPluginManager->has($activationStrategy)) {
             try {
-                return $activationStrategyPluginManager->get($activationStrategy);
+                $strategy = $activationStrategyPluginManager->get($activationStrategy);
             } catch (ServiceNotFoundException | ServiceNotCreatedException $e) {
                 throw new ServiceNotFoundException('Could not load ActivationStrategy class', 0, $e);
             }
+
+            assert($strategy instanceof ActivationStrategyInterface);
+
+            return $strategy;
         }
 
         try {

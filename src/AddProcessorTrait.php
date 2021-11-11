@@ -13,6 +13,7 @@ declare(strict_types = 1);
 namespace Mimmi20\LoggerFactory;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Monolog\Handler\HandlerInterface;
@@ -21,7 +22,11 @@ use Psr\Container\ContainerExceptionInterface;
 
 use function array_key_exists;
 use function array_reverse;
+use function assert;
+use function get_class;
+use function gettype;
 use function is_array;
+use function is_object;
 use function sprintf;
 
 trait AddProcessorTrait
@@ -30,7 +35,7 @@ trait AddProcessorTrait
 
     /**
      * @param array<array<string, array<string, mixed>|bool|string>|callable>|null $options
-     * @phpstan-param array{processors?: (callable|array{enabled?: bool, type?: string, options?: array{mixed}})}|null $options
+     * @phpstan-param array{processors?: (callable|array{enabled?: bool, type?: string, options?: array<mixed>})}|null $options
      *
      * @throws ServiceNotCreatedException
      * @throws ServiceNotFoundException
@@ -54,6 +59,15 @@ trait AddProcessorTrait
         } catch (ContainerExceptionInterface $e) {
             throw new ServiceNotFoundException(sprintf('Could not find service %s', MonologProcessorPluginManager::class), 0, $e);
         }
+
+        assert(
+            $monologProcessorPluginManager instanceof MonologHandlerPluginManager || $monologProcessorPluginManager instanceof AbstractPluginManager,
+            sprintf(
+                '$monologProcessorPluginManager should be an Instance of %s, but was %s',
+                AbstractPluginManager::class,
+                is_object($monologProcessorPluginManager) ? get_class($monologProcessorPluginManager) : gettype($monologProcessorPluginManager)
+            )
+        );
 
         foreach (array_reverse($options['processors']) as $processorConfig) {
             $processor = $this->createProcessor($processorConfig, $monologProcessorPluginManager);

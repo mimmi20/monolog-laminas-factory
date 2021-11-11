@@ -13,6 +13,7 @@ declare(strict_types = 1);
 namespace Mimmi20\LoggerFactory;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Monolog\Formatter\FormatterInterface;
@@ -21,7 +22,11 @@ use Monolog\Handler\HandlerInterface;
 use Psr\Container\ContainerExceptionInterface;
 
 use function array_key_exists;
+use function assert;
+use function get_class;
+use function gettype;
 use function is_array;
+use function is_object;
 use function sprintf;
 
 trait AddFormatterTrait
@@ -30,7 +35,7 @@ trait AddFormatterTrait
 
     /**
      * @param array<array<string, array<string, mixed>|bool|string>|FormatterInterface>|null $options
-     * @phpstan-param array{formatter?: (bool|FormatterInterface|array{enabled?: bool, type?: string, options?: array})}|null $options
+     * @phpstan-param array{formatter?: (bool|FormatterInterface|array{enabled?: bool, type?: string, options?: array<mixed>})}|null $options
      *
      * @throws ServiceNotCreatedException
      * @throws ServiceNotFoundException
@@ -60,6 +65,15 @@ trait AddFormatterTrait
                 $e
             );
         }
+
+        assert(
+            $monologFormatterPluginManager instanceof MonologHandlerPluginManager || $monologFormatterPluginManager instanceof AbstractPluginManager,
+            sprintf(
+                '$monologFormatterPluginManager should be an Instance of %s, but was %s',
+                AbstractPluginManager::class,
+                is_object($monologFormatterPluginManager) ? get_class($monologFormatterPluginManager) : gettype($monologFormatterPluginManager)
+            )
+        );
 
         $formatter = $this->createFormatter($options['formatter'], $monologFormatterPluginManager);
 

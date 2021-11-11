@@ -20,6 +20,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface;
 
+use function assert;
 use function is_array;
 use function sprintf;
 
@@ -56,6 +57,8 @@ final class MonologProcessorPluginManagerFactory implements FactoryInterface
         } catch (ContainerExceptionInterface $e) {
             throw new ServiceNotFoundException(sprintf('Could not find service %s', 'config'), 0, $e);
         }
+
+        assert(is_array($config));
 
         // If we do not have log_processors configuration, nothing more to do
         if (!isset($config['monolog_processors']) || !is_array($config['monolog_processors'])) {

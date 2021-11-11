@@ -24,20 +24,17 @@ use Mimmi20\LoggerFactory\ConfigProvider;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\Exception;
 use Psr\Container\ContainerExceptionInterface;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 final class LoggerFactoryTest extends AbstractTest
 {
-    private vfsStreamDirectory $root;
-
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->root = vfsStream::setup('log', null, ['error.log' => '']);
+        vfsStream::setup('log', null, ['error.log' => '']);
     }
 
     /**

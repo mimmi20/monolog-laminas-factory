@@ -28,8 +28,11 @@ use Throwable;
 use function array_key_exists;
 use function array_reverse;
 use function assert;
+use function get_class;
+use function gettype;
 use function is_array;
 use function is_iterable;
+use function is_object;
 use function is_string;
 use function sprintf;
 
@@ -42,7 +45,7 @@ final class MonologFactory implements FactoryInterface
 
     /**
      * @param string $requestedName
-     * @phpstan-param array{name?: string, timezone?: (bool|string|DateTimeZone), handlers?: string|array{HandlerInterface|array{enabled?: bool, type?: string}}, processors?: (callable|string|array{enabled?: bool, type?: string, options?: array})}|null $options
+     * @phpstan-param array{name?: string, timezone?: (bool|string|DateTimeZone), handlers?: string|array{HandlerInterface|array{enabled?: bool, type?: string, options?: array<mixed>}}, processors?: (callable|string|array{enabled?: bool, type?: string, options?: array<mixed>})}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -83,7 +86,14 @@ final class MonologFactory implements FactoryInterface
 
             try {
                 $monologHandlerPluginManager = $container->get(MonologHandlerPluginManager::class);
-                assert($monologHandlerPluginManager instanceof MonologHandlerPluginManager || $monologHandlerPluginManager instanceof AbstractPluginManager);
+                assert(
+                    $monologHandlerPluginManager instanceof MonologHandlerPluginManager || $monologHandlerPluginManager instanceof AbstractPluginManager,
+                    sprintf(
+                        '$monologHandlerPluginManager should be an Instance of %s, but was %s',
+                        AbstractPluginManager::class,
+                        is_object($monologHandlerPluginManager) ? get_class($monologHandlerPluginManager) : gettype($monologHandlerPluginManager)
+                    )
+                );
             } catch (ContainerExceptionInterface $e) {
                 throw new ServiceNotFoundException(sprintf('Could not find service %s', MonologHandlerPluginManager::class), 0, $e);
             }
