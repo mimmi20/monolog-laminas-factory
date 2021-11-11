@@ -19,6 +19,7 @@ use Monolog\Formatter\FormatterInterface;
 use Psr\Container\ContainerExceptionInterface;
 
 use function array_key_exists;
+use function assert;
 use function sprintf;
 
 trait CreateFormatterTrait

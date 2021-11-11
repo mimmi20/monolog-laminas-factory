@@ -18,6 +18,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface;
 
 use function array_key_exists;
+use function assert;
 use function is_array;
 use function is_callable;
 use function sprintf;
@@ -26,7 +27,7 @@ trait CreateProcessorTrait
 {
     /**
      * @param array<string, array<string, mixed>|bool|string>|callable $processorConfig
-     * @phpstan-param callable|array{enabled?: bool, type?: string, options?: array{mixed}} $processorConfig
+     * @phpstan-param callable|array{enabled?: bool, type?: string, options?: array<mixed>} $processorConfig
      *
      * @throws ServiceNotCreatedException
      * @throws ServiceNotFoundException

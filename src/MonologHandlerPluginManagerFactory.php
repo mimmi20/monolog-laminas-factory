@@ -20,6 +20,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface;
 
+use function assert;
 use function is_array;
 use function sprintf;
 

@@ -30,7 +30,8 @@ final class ActivationStrategyPluginManager extends AbstractPluginManager
     /**
      * An object type that the created instance must be instanced of
      *
-     * @var class-string|null
+     * @var string|null
+     * @phpstan-var class-string|null
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
     protected $instanceOf = ActivationStrategyInterface::class;
