@@ -53,10 +53,8 @@ final class ScalarFormatterFactory implements FactoryInterface
 
         $formatter = new ScalarFormatter();
 
-        if (is_array($options)) {
-            if (array_key_exists('dateFormat', $options)) {
-                $formatter->setDateFormat($options['dateFormat']);
-            }
+        if (is_array($options) && array_key_exists('dateFormat', $options)) {
+            $formatter->setDateFormat($options['dateFormat']);
         }
 
         $formatter->setMaxNormalizeDepth($maxNormalizeDepth);

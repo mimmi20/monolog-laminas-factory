@@ -803,11 +803,8 @@ final class SamplingHandlerFactoryTest extends TestCase
      */
     public function testInvoceWithConfigAndBoolProcessors2(): void
     {
-        $type           = 'abc';
-        $formatterClass = $this->getMockBuilder(LineFormatter::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $processors     = true;
+        $type       = 'abc';
+        $processors = true;
 
         $handler2 = $this->getMockBuilder(ChromePHPHandler::class)
             ->disableOriginalConstructor()
