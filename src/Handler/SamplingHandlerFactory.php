@@ -19,6 +19,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
+use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\SamplingHandler;
 
 use function array_key_exists;
@@ -58,7 +59,7 @@ final class SamplingHandlerFactory implements FactoryInterface
 
         $handler = $this->getHandler($container, $options['handler']);
 
-        if (null === $handler) {
+        if (!$handler instanceof HandlerInterface) {
             throw new ServiceNotCreatedException('No active handler specified');
         }
 

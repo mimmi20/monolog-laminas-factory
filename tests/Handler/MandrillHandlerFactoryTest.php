@@ -221,9 +221,6 @@ final class MandrillHandlerFactoryTest extends TestCase
     {
         $apiKey      = 'test-key';
         $messageName = 'test-message';
-        $message     = $this->getMockBuilder(Swift_Message::class)
-            ->disableOriginalConstructor()
-            ->getMock();
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()

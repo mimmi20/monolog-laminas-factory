@@ -20,6 +20,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\DeduplicationHandler;
+use Monolog\Handler\HandlerInterface;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
@@ -64,7 +65,7 @@ final class DeduplicationHandlerFactory implements FactoryInterface
 
         $handler = $this->getHandler($container, $options['handler']);
 
-        if (null === $handler) {
+        if (!$handler instanceof HandlerInterface) {
             throw new ServiceNotCreatedException('No active handler specified');
         }
 

@@ -24,6 +24,7 @@ use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Mimmi20\LoggerFactory\Handler\FingersCrossed\ActivationStrategyPluginManager;
 use Monolog\Handler\FingersCrossed\ActivationStrategyInterface;
 use Monolog\Handler\FingersCrossedHandler;
+use Monolog\Handler\HandlerInterface;
 use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Log\InvalidArgumentException;
@@ -78,7 +79,7 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
 
         $handler = $this->getHandler($container, $options['handler']);
 
-        if (null === $handler) {
+        if (!$handler instanceof HandlerInterface) {
             throw new ServiceNotCreatedException('No active handler specified');
         }
 
