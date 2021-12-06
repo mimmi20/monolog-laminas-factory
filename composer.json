@@ -14,7 +14,7 @@
   "require": {
     "php": "^7.4.3 || ^8.0.0",
     "ext-mbstring": "*",
-    "laminas/laminas-log": "^2.13.1",
+    "laminas/laminas-log": "^2.15.0",
     "monolog/monolog": "^2.3.5"
   },
   "require-dev": {
