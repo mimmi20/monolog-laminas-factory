@@ -1,9 +1,8 @@
 {
   "name": "mimmi20/monolog-laminas-factory",
-  "type": "library",
   "description": "Provides a Factory to build a Laminas Logger using Monolog.",
-  "homepage": "https://github.com/mimmi20/monolog-laminas-factory",
   "license": "MIT",
+  "type": "library",
   "authors": [
     {
       "name": "Thomas Müller",
@@ -11,19 +10,25 @@
       "role": "Developer"
     }
   ],
+  "homepage": "https://github.com/mimmi20/monolog-laminas-factory",
+  "support": {
+    "issues": "https://github.com/mimmi20/monolog-laminas-factory/issues",
+    "source": "https://github.com/mimmi20/monolog-laminas-factory"
+  },
   "require": {
     "php": "^7.4.3 || ^8.0.0",
     "ext-mbstring": "*",
-    "laminas/laminas-log": "^2.13.1",
+    "laminas/laminas-log": "^2.15.0",
     "monolog/monolog": "^2.3.5"
   },
   "require-dev": {
     "actived/microsoft-teams-notifier": "^1.1.0",
-    "aws/aws-sdk-php": "^3.204.6",
+    "aws/aws-sdk-php": "^3.208.3",
     "bartlett/monolog-callbackfilterhandler": "^2.0.0",
     "cmdisp/monolog-microsoft-teams": "^1.2.0",
     "doctrine/couchdb": "1.0.0-beta4",
     "elasticsearch/elasticsearch": "^7.15.0",
+    "ergebnis/composer-normalize": "^2.18.0",
     "graylog2/gelf-php": "^1.7.1",
     "jk/monolog-request-header-processor": "^1.0.0",
     "laminas/laminas-config": "^3.7.0",
@@ -41,7 +46,7 @@
     "phpunit/phpunit": "^9.5.10",
     "predis/predis": "^1.1.9",
     "rector/rector": "^0.12.5",
-    "rollbar/rollbar": "^2.1.0",
+    "rollbar/rollbar": "^2.1.0 || ^3.0.0",
     "ruflin/elastica": "^7.1.2",
     "swiftmailer/swiftmailer": "^6.3.0"
   },
@@ -66,16 +71,6 @@
     "ruflin/elastica": "Allow sending log messages to an Elastic Search server",
     "swiftmailer/swiftmailer": "Allow sending log messages to Email clients"
   },
-  "config": {
-    "preferred-install": "dist",
-    "sort-packages": true
-  },
-  "extra": {
-    "laminas": {
-      "component": "Mimmi20\\LoggerFactory",
-      "config-provider": "Mimmi20\\LoggerFactory\\ConfigProvider"
-    }
-  },
   "autoload": {
     "psr-4": {
       "Mimmi20\\LoggerFactory\\": "src/"
@@ -86,8 +81,14 @@
       "Mimmi20Test\\LoggerFactory\\": "tests/"
     }
   },
-  "support": {
-    "issues": "https://github.com/mimmi20/monolog-laminas-factory/issues",
-    "source": "https://github.com/mimmi20/monolog-laminas-factory"
+  "config": {
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "extra": {
+    "laminas": {
+      "component": "Mimmi20\\LoggerFactory",
+      "config-provider": "Mimmi20\\LoggerFactory\\ConfigProvider"
+    }
   }
 }
