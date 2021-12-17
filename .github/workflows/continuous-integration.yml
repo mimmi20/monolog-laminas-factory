@@ -744,7 +744,7 @@ jobs:
         uses: "shivammathur/setup-php@2.16.0"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "${{ env.PHP_EXTENSIONS }}, bcmath"
+          extensions: "${{ env.PHP_EXTENSIONS }}, bcmath, intl"
           ini-values: "${{ env.PHP_INI_VALUES }}"
           coverage: "none"
           tools: "${{ env.TOOLS }}"
