@@ -32,6 +32,9 @@ use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function sprintf;
 
+/**
+ * @requires PHP < 8.0
+ */
 final class PHPConsoleHandlerFactoryTest extends TestCase
 {
     /**

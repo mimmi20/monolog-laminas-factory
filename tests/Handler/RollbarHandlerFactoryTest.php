@@ -35,6 +35,9 @@ use function assert;
 use function class_exists;
 use function sprintf;
 
+/**
+ * @requires PHP < 8.1
+ */
 final class RollbarHandlerFactoryTest extends TestCase
 {
     /**
