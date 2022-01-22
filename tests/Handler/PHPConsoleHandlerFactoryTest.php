@@ -32,6 +32,9 @@ use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function sprintf;
 
+/**
+ * @requires PHP < 8.0
+ */
 final class PHPConsoleHandlerFactoryTest extends TestCase
 {
     /**
@@ -130,8 +133,6 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws ReflectionException
-     *
-     * @requires PHP 7.4
      */
     public function testInvoceConfig3(): void
     {
