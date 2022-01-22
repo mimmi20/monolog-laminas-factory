@@ -130,6 +130,8 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws ReflectionException
+     *
+     * @requires PHP 7.4
      */
     public function testInvoceConfig3(): void
     {
