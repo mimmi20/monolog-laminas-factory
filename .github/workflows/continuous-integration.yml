@@ -577,7 +577,7 @@ jobs:
           tools: "${{ env.TOOLS }}, infection"
 
       - name: "Update dependencies with composer"
-        run: "composer remove --no-update --dev cmdisp/monolog-microsoft-teams rollbar/rollbar"
+        run: "composer remove --no-update --dev cmdisp/monolog-microsoft-teams rollbar/rollbar actived/microsoft-teams-notifier"
 
       - name: "Update dependencies with composer"
         uses: "ramsey/composer-install@v1"
