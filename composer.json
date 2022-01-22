@@ -22,8 +22,8 @@
     "monolog/monolog": "^2.3.5"
   },
   "require-dev": {
-    "actived/microsoft-teams-notifier": "^1.1.0",
-    "aws/aws-sdk-php": "^3.209.6",
+    "actived/microsoft-teams-notifier": "^1.2.0",
+    "aws/aws-sdk-php": "^3.209.10",
     "bartlett/monolog-callbackfilterhandler": "^2.0.0",
     "cmdisp/monolog-microsoft-teams": "^1.2.0",
     "doctrine/couchdb": "1.0.0-beta4",
@@ -35,14 +35,14 @@
     "laminas/laminas-modulemanager": "^2.11.0",
     "laminas/laminas-servicemanager": "^3.10.0",
     "mikey179/vfsstream": "^1.6.10",
-    "mimmi20/coding-standard": "^2.6.1",
-    "php-amqplib/php-amqplib": "^3.1.1",
+    "mimmi20/coding-standard": "^2.6.2",
+    "php-amqplib/php-amqplib": "^3.1.2",
     "php-console/php-console": "^3.1.8",
     "phpstan/extension-installer": "^1.1.0",
-    "phpstan/phpstan": "^1.4.0",
+    "phpstan/phpstan": "^1.4.2",
     "phpstan/phpstan-deprecation-rules": "^1.0.0",
     "phpstan/phpstan-phpunit": "^1.0.0",
-    "phpunit/phpunit": "^9.5.11",
+    "phpunit/phpunit": "^9.5.12",
     "predis/predis": "^1.1.10",
     "rollbar/rollbar": "^v2.1.0 || ^v3.0.0",
     "ruflin/elastica": "^7.1.3",
@@ -81,7 +81,12 @@
   },
   "config": {
     "preferred-install": "dist",
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "laminas/laminas-dependency-plugin": true,
+      "phpstan/extension-installer": true
+    }
   },
   "extra": {
     "laminas": {
