@@ -7,7 +7,7 @@ on:
 name: "Continuous Integration"
 
 env:
-  PHP_EXTENSIONS: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, mongodb, amqp, sockets, curl"
+  PHP_EXTENSIONS: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, mongodb, amqp, sockets, curl, ctype"
   PHP_INI_VALUES: "opcache.enable=1, opcache.fast_shutdown=0, zend.assertions=1, assert.exception=On, intl.default_locale=de, intl.use_exceptions=1, zend.exception_ignore_args=0"
   COMPOSER_OPTIONS: "--optimize-autoloader --prefer-dist --prefer-stable -v"
   TOOLS: "composer:v2"
@@ -768,7 +768,7 @@ jobs:
         uses: "shivammathur/setup-php@2.16.0"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "${{ env.PHP_EXTENSIONS }}, bcmath, intl, ctype, sodium, intl"
+          extensions: "${{ env.PHP_EXTENSIONS }}, bcmath, intl, sodium, intl"
           ini-values: "${{ env.PHP_INI_VALUES }}"
           coverage: "none"
           tools: "${{ env.TOOLS }}"
