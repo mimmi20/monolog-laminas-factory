@@ -42,7 +42,7 @@
     "phpstan/phpstan": "^1.4.2",
     "phpstan/phpstan-deprecation-rules": "^1.0.0",
     "phpstan/phpstan-phpunit": "^1.0.0",
-    "phpunit/phpunit": "^9.5.12",
+    "phpunit/phpunit": "^9.5.13",
     "predis/predis": "^1.1.10",
     "rollbar/rollbar": "^v2.1.0 || ^v3.0.0",
     "ruflin/elastica": "^7.1.3",
