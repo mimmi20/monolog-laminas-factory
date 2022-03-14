@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/monolog-laminas-factory package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -407,6 +407,110 @@ final class PushoverHandlerFactoryTest extends TestCase
         self::assertSame($timeout, $handler->getTimeout());
         self::assertSame($writeTimeout, $handler->getWritingTimeout());
         self::assertSame(60.0, $handler->getConnectionTimeout());
+        self::assertSame($chunkSize, $handler->getChunkSize());
+        self::assertTrue($handler->isPersistent());
+
+        $tk = new ReflectionProperty($handler, 'token');
+        $tk->setAccessible(true);
+
+        self::assertSame($token, $tk->getValue($handler));
+
+        $us = new ReflectionProperty($handler, 'users');
+        $us->setAccessible(true);
+
+        self::assertSame($users, $us->getValue($handler));
+
+        $ti = new ReflectionProperty($handler, 'title');
+        $ti->setAccessible(true);
+
+        self::assertSame($title, $ti->getValue($handler));
+
+        $hpl = new ReflectionProperty($handler, 'highPriorityLevel');
+        $hpl->setAccessible(true);
+
+        self::assertSame(Logger::ERROR, $hpl->getValue($handler));
+
+        $el = new ReflectionProperty($handler, 'emergencyLevel');
+        $el->setAccessible(true);
+
+        self::assertSame(Logger::ALERT, $el->getValue($handler));
+
+        $re = new ReflectionProperty($handler, 'retry');
+        $re->setAccessible(true);
+
+        self::assertSame($retry, $re->getValue($handler));
+
+        $ex = new ReflectionProperty($handler, 'expire');
+        $ex->setAccessible(true);
+
+        self::assertSame($expire, $ex->getValue($handler));
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     *
+     * @requires extension sockets
+     */
+    public function testInvokeWithConfigAndFormatter3(): void
+    {
+        $token  = 'token';
+        $users  = ['abc', 'xyz'];
+        $title  = 'title';
+        $retry  = 24;
+        $expire = 42;
+
+        $timeout           = 42.0;
+        $writeTimeout      = 120.0;
+        $connectionTimeout = 51.0;
+
+        $persistent = true;
+        $chunkSize  = 100;
+        $formatter  = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new PushoverHandlerFactory();
+
+        $handler = $factory($container, '', ['token' => $token, 'users' => $users, 'title' => $title, 'level' => LogLevel::ALERT, 'bubble' => false, 'useSSL' => false, 'highPriorityLevel' => LogLevel::ERROR, 'emergencyLevel' => LogLevel::ALERT, 'retry' => $retry, 'expire' => $expire, 'timeout' => $timeout, 'writingTimeout' => $writeTimeout, 'connectionTimeout' => $connectionTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(PushoverHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+        self::assertSame('api.pushover.net:80', $handler->getConnectionString());
+        self::assertSame($timeout, $handler->getTimeout());
+        self::assertSame($writeTimeout, $handler->getWritingTimeout());
+        self::assertSame($connectionTimeout, $handler->getConnectionTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 
