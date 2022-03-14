@@ -114,7 +114,7 @@ final class LogmaticHandlerFactoryTest extends TestCase
         self::assertSame(60.0, $handler->getTimeout());
         self::assertSame(60.0, $handler->getWritingTimeout());
         self::assertSame(60.0, $handler->getConnectionTimeout());
-        //self::assertSame(0, $handler->getChunkSize());
+        // self::assertSame(0, $handler->getChunkSize());
         self::assertFalse($handler->isPersistent());
 
         $lt = new ReflectionProperty($handler, 'logToken');
