@@ -111,8 +111,8 @@ final class LogEntriesHandlerFactoryTest extends TestCase
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
         self::assertSame('ssl://' . $host . ':443', $handler->getConnectionString());
-        self::assertSame(60.0, $handler->getTimeout());
-        self::assertSame(60.0, $handler->getWritingTimeout());
+        self::assertSame(0.0, $handler->getTimeout());
+        self::assertSame(10.0, $handler->getWritingTimeout());
         self::assertSame(60.0, $handler->getConnectionTimeout());
         self::assertFalse($handler->isPersistent());
 
@@ -164,9 +164,9 @@ final class LogEntriesHandlerFactoryTest extends TestCase
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame($host . ':80', $handler->getConnectionString());
-        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($timeout, $handler->getTimeout());
         self::assertSame($writeTimeout, $handler->getWritingTimeout());
-        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame(60.0, $handler->getConnectionTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 
@@ -299,12 +299,13 @@ final class LogEntriesHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfigAndFormatter2(): void
     {
-        $token        = 'test-token';
-        $host         = 'test.data.logentries.com';
-        $timeout      = 42.0;
-        $writeTimeout = 120.0;
-        $chunkSize    = 100;
-        $formatter    = $this->getMockBuilder(LineFormatter::class)
+        $token             = 'test-token';
+        $host              = 'test.data.logentries.com';
+        $timeout           = 42.0;
+        $writeTimeout      = 120.0;
+        $connectionTimeout = 51.0;
+        $chunkSize         = 100;
+        $formatter         = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -328,16 +329,84 @@ final class LogEntriesHandlerFactoryTest extends TestCase
 
         $factory = new LogEntriesHandlerFactory();
 
-        $handler = $factory($container, '', ['token' => $token, 'useSSL' => false, 'level' => LogLevel::ALERT, 'bubble' => false, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'host' => $host, 'persistent' => true, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+        $handler = $factory($container, '', ['token' => $token, 'useSSL' => false, 'level' => LogLevel::ALERT, 'bubble' => false, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'connectionTimeout' => $connectionTimeout, 'host' => $host, 'persistent' => true, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
 
         self::assertInstanceOf(LogEntriesHandler::class, $handler);
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame($host . ':80', $handler->getConnectionString());
-        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($timeout, $handler->getTimeout());
         self::assertSame($writeTimeout, $handler->getWritingTimeout());
-        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame($connectionTimeout, $handler->getConnectionTimeout());
+        self::assertSame($chunkSize, $handler->getChunkSize());
+        self::assertTrue($handler->isPersistent());
+
+        $lt = new ReflectionProperty($handler, 'logToken');
+        $lt->setAccessible(true);
+
+        self::assertSame($token, $lt->getValue($handler));
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     *
+     * @requires extension openssl
+     */
+    public function testInvokeWithConfigAndFormatter3(): void
+    {
+        $token             = 'test-token';
+        $host              = 'test.data.logentries.com';
+        $timeout           = 42.0;
+        $writeTimeout      = 120.0;
+        $connectionTimeout = 51.0;
+        $chunkSize         = 100;
+        $formatter         = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new LogEntriesHandlerFactory();
+
+        $handler = $factory($container, '', ['token' => $token, 'useSSL' => false, 'level' => LogLevel::ALERT, 'bubble' => false, 'timeout' => $timeout, 'writingTimeout' => $writeTimeout, 'connectionTimeout' => $connectionTimeout, 'host' => $host, 'persistent' => true, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(LogEntriesHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+        self::assertSame($host . ':80', $handler->getConnectionString());
+        self::assertSame($timeout, $handler->getTimeout());
+        self::assertSame($writeTimeout, $handler->getWritingTimeout());
+        self::assertSame($connectionTimeout, $handler->getConnectionTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 

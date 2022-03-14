@@ -111,8 +111,8 @@ final class FlowdockHandlerFactoryTest extends TestCase
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
         self::assertSame('ssl://api.flowdock.com:443', $handler->getConnectionString());
-        self::assertSame(60.0, $handler->getTimeout());
-        self::assertSame(60.0, $handler->getWritingTimeout());
+        self::assertSame(0.0, $handler->getTimeout());
+        self::assertSame(10.0, $handler->getWritingTimeout());
         self::assertSame(60.0, $handler->getConnectionTimeout());
         // self::assertSame(0, $handler->getChunkSize());
         self::assertFalse($handler->isPersistent());
@@ -165,9 +165,9 @@ final class FlowdockHandlerFactoryTest extends TestCase
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame('ssl://api.flowdock.com:443', $handler->getConnectionString());
-        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($timeout, $handler->getTimeout());
         self::assertSame($writeTimeout, $handler->getWritingTimeout());
-        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame(60.0, $handler->getConnectionTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 
@@ -268,14 +268,15 @@ final class FlowdockHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfigAndFormatter2(): void
     {
-        $apiToken     = 'test-token';
-        $timeout      = 42.0;
-        $writeTimeout = 120.0;
-        $level        = LogLevel::ALERT;
-        $bubble       = false;
-        $persistent   = true;
-        $chunkSize    = 100;
-        $formatter    = $this->getMockBuilder(FlowdockFormatter::class)
+        $apiToken          = 'test-token';
+        $timeout           = 42.0;
+        $writeTimeout      = 120.0;
+        $connectionTimeout = 51.0;
+        $level             = LogLevel::ALERT;
+        $bubble            = false;
+        $persistent        = true;
+        $chunkSize         = 100;
+        $formatter         = $this->getMockBuilder(FlowdockFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -299,16 +300,86 @@ final class FlowdockHandlerFactoryTest extends TestCase
 
         $factory = new FlowdockHandlerFactory();
 
-        $handler = $factory($container, '', ['apiToken' => $apiToken, 'level' => $level, 'bubble' => $bubble, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+        $handler = $factory($container, '', ['apiToken' => $apiToken, 'level' => $level, 'bubble' => $bubble, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'connectionTimeout' => $connectionTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
 
         self::assertInstanceOf(FlowdockHandler::class, $handler);
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame('ssl://api.flowdock.com:443', $handler->getConnectionString());
-        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($timeout, $handler->getTimeout());
         self::assertSame($writeTimeout, $handler->getWritingTimeout());
-        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame($connectionTimeout, $handler->getConnectionTimeout());
+        self::assertSame($chunkSize, $handler->getChunkSize());
+        self::assertTrue($handler->isPersistent());
+
+        $at = new ReflectionProperty($handler, 'apiToken');
+        $at->setAccessible(true);
+
+        self::assertSame($apiToken, $at->getValue($handler));
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     *
+     * @requires extension openssl
+     */
+    public function testInvokeWithConfigAndFormatter3(): void
+    {
+        $apiToken          = 'test-token';
+        $timeout           = 42.0;
+        $writeTimeout      = 120.0;
+        $connectionTimeout = 51.0;
+        $level             = LogLevel::ALERT;
+        $bubble            = false;
+        $persistent        = true;
+        $chunkSize         = 100;
+        $formatter         = $this->getMockBuilder(FlowdockFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new FlowdockHandlerFactory();
+
+        $handler = $factory($container, '', ['apiToken' => $apiToken, 'level' => $level, 'bubble' => $bubble, 'timeout' => $timeout, 'writingTimeout' => $writeTimeout, 'connectionTimeout' => $connectionTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(FlowdockHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+        self::assertSame('ssl://api.flowdock.com:443', $handler->getConnectionString());
+        self::assertSame($timeout, $handler->getTimeout());
+        self::assertSame($writeTimeout, $handler->getWritingTimeout());
+        self::assertSame($connectionTimeout, $handler->getConnectionTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 

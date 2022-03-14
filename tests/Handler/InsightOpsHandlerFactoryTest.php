@@ -110,8 +110,8 @@ final class InsightOpsHandlerFactoryTest extends TestCase
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
         self::assertSame('ssl://us.data.logs.insight.rapid7.com:443', $handler->getConnectionString());
-        self::assertSame(60.0, $handler->getTimeout());
-        self::assertSame(60.0, $handler->getWritingTimeout());
+        self::assertSame(0.0, $handler->getTimeout());
+        self::assertSame(10.0, $handler->getWritingTimeout());
         self::assertSame(60.0, $handler->getConnectionTimeout());
         // self::assertSame(0, $handler->getChunkSize());
         self::assertFalse($handler->isPersistent());
@@ -162,9 +162,9 @@ final class InsightOpsHandlerFactoryTest extends TestCase
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame('eu.data.logs.insight.rapid7.com:80', $handler->getConnectionString());
-        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($timeout, $handler->getTimeout());
         self::assertSame($writeTimeout, $handler->getWritingTimeout());
-        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame(60.0, $handler->getConnectionTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 
@@ -299,14 +299,15 @@ final class InsightOpsHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfigAndFormatter2(): void
     {
-        $token        = 'test-token';
-        $timeout      = 42.0;
-        $writeTimeout = 120.0;
-        $level        = LogLevel::ALERT;
-        $bubble       = false;
-        $persistent   = true;
-        $chunkSize    = 100;
-        $formatter    = $this->getMockBuilder(LineFormatter::class)
+        $token             = 'test-token';
+        $timeout           = 42.0;
+        $writeTimeout      = 120.0;
+        $connectionTimeout = 51.0;
+        $level             = LogLevel::ALERT;
+        $bubble            = false;
+        $persistent        = true;
+        $chunkSize         = 100;
+        $formatter         = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -330,16 +331,81 @@ final class InsightOpsHandlerFactoryTest extends TestCase
 
         $factory = new InsightOpsHandlerFactory();
 
-        $handler = $factory($container, '', ['token' => $token, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+        $handler = $factory($container, '', ['token' => $token, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'connectionTimeout' => $connectionTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
 
         self::assertInstanceOf(InsightOpsHandler::class, $handler);
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame('ssl://us.data.logs.insight.rapid7.com:443', $handler->getConnectionString());
-        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($timeout, $handler->getTimeout());
         self::assertSame($writeTimeout, $handler->getWritingTimeout());
-        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame($connectionTimeout, $handler->getConnectionTimeout());
+        self::assertSame($chunkSize, $handler->getChunkSize());
+        self::assertTrue($handler->isPersistent());
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
+     *
+     * @requires extension openssl
+     */
+    public function testInvokeWithConfigAndFormatter3(): void
+    {
+        $token             = 'test-token';
+        $timeout           = 42.0;
+        $writeTimeout      = 120.0;
+        $connectionTimeout = 51.0;
+        $level             = LogLevel::ALERT;
+        $bubble            = false;
+        $persistent        = true;
+        $chunkSize         = 100;
+        $formatter         = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new InsightOpsHandlerFactory();
+
+        $handler = $factory($container, '', ['token' => $token, 'timeout' => $timeout, 'writingTimeout' => $writeTimeout, 'connectionTimeout' => $connectionTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(InsightOpsHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+        self::assertSame('ssl://us.data.logs.insight.rapid7.com:443', $handler->getConnectionString());
+        self::assertSame($timeout, $handler->getTimeout());
+        self::assertSame($writeTimeout, $handler->getWritingTimeout());
+        self::assertSame($connectionTimeout, $handler->getConnectionTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 

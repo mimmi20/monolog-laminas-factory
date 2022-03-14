@@ -137,10 +137,10 @@ final class SlackHandlerFactoryTest extends TestCase
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
         self::assertSame('ssl://slack.com:443', $handler->getConnectionString());
-        self::assertSame(60.0, $handler->getTimeout());
-        self::assertSame(60.0, $handler->getWritingTimeout());
+        self::assertSame(0.0, $handler->getTimeout());
+        self::assertSame(10.0, $handler->getWritingTimeout());
         self::assertSame(60.0, $handler->getConnectionTimeout());
-        // self::assertSame(0, $handler->getChunkSize());
+        self::assertNull($handler->getChunkSize());
         self::assertFalse($handler->isPersistent());
 
         $slackRecord = $handler->getSlackRecord();
@@ -200,15 +200,16 @@ final class SlackHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfig2(): void
     {
-        $token         = 'token';
-        $channel       = 'channel';
-        $userName      = 'user';
-        $iconEmoji     = 'icon';
-        $excludeFields = ['abc', 'xyz'];
-        $timeout       = 42.0;
-        $writeTimeout  = 120.0;
-        $persistent    = true;
-        $chunkSize     = 100;
+        $token             = 'token';
+        $channel           = 'channel';
+        $userName          = 'user';
+        $iconEmoji         = 'icon';
+        $excludeFields     = ['abc', 'xyz'];
+        $timeout           = 42.0;
+        $writeTimeout      = 120.0;
+        $connectionTimeout = 51.0;
+        $persistent        = true;
+        $chunkSize         = 100;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -220,16 +221,107 @@ final class SlackHandlerFactoryTest extends TestCase
 
         $factory = new SlackHandlerFactory();
 
-        $handler = $factory($container, '', ['token' => $token, 'channel' => $channel, 'userName' => $userName, 'useAttachment' => false, 'iconEmoji' => $iconEmoji, 'level' => LogLevel::ALERT, 'bubble' => false, 'useShortAttachment' => true, 'includeContextAndExtra' => true, 'excludeFields' => $excludeFields, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
+        $handler = $factory($container, '', ['token' => $token, 'channel' => $channel, 'userName' => $userName, 'useAttachment' => false, 'iconEmoji' => $iconEmoji, 'level' => LogLevel::ALERT, 'bubble' => false, 'useShortAttachment' => true, 'includeContextAndExtra' => true, 'excludeFields' => $excludeFields, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'connectionTimeout' => $connectionTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
 
         self::assertInstanceOf(SlackHandler::class, $handler);
         self::assertSame($token, $handler->getToken());
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame('ssl://slack.com:443', $handler->getConnectionString());
-        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($timeout, $handler->getTimeout());
         self::assertSame($writeTimeout, $handler->getWritingTimeout());
-        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame($connectionTimeout, $handler->getConnectionTimeout());
+        self::assertSame($chunkSize, $handler->getChunkSize());
+        self::assertTrue($handler->isPersistent());
+
+        $slackRecord = $handler->getSlackRecord();
+
+        $ch = new ReflectionProperty($slackRecord, 'channel');
+        $ch->setAccessible(true);
+
+        self::assertSame($channel, $ch->getValue($slackRecord));
+
+        $un = new ReflectionProperty($slackRecord, 'username');
+        $un->setAccessible(true);
+
+        self::assertSame($userName, $un->getValue($slackRecord));
+
+        $ua = new ReflectionProperty($slackRecord, 'useAttachment');
+        $ua->setAccessible(true);
+
+        self::assertFalse($ua->getValue($slackRecord));
+
+        $ui = new ReflectionProperty($slackRecord, 'userIcon');
+        $ui->setAccessible(true);
+
+        self::assertSame($iconEmoji, $ui->getValue($slackRecord));
+
+        $usa = new ReflectionProperty($slackRecord, 'useShortAttachment');
+        $usa->setAccessible(true);
+
+        self::assertTrue($usa->getValue($slackRecord));
+
+        $ice = new ReflectionProperty($slackRecord, 'includeContextAndExtra');
+        $ice->setAccessible(true);
+
+        self::assertTrue($ice->getValue($slackRecord));
+
+        $ef = new ReflectionProperty($slackRecord, 'excludeFields');
+        $ef->setAccessible(true);
+
+        self::assertSame($excludeFields, $ef->getValue($slackRecord));
+
+        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     *
+     * @requires extension openssl
+     */
+    public function testInvokeWithConfig3(): void
+    {
+        $token             = 'token';
+        $channel           = 'channel';
+        $userName          = 'user';
+        $iconEmoji         = 'icon';
+        $excludeFields     = ['abc', 'xyz'];
+        $timeout           = 42.0;
+        $writeTimeout      = 120.0;
+        $connectionTimeout = 51.0;
+        $persistent        = true;
+        $chunkSize         = 100;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SlackHandlerFactory();
+
+        $handler = $factory($container, '', ['token' => $token, 'channel' => $channel, 'userName' => $userName, 'useAttachment' => false, 'iconEmoji' => $iconEmoji, 'level' => LogLevel::ALERT, 'bubble' => false, 'useShortAttachment' => true, 'includeContextAndExtra' => true, 'excludeFields' => $excludeFields, 'timeout' => $timeout, 'writingTimeout' => $writeTimeout, 'connectionTimeout' => $connectionTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
+
+        self::assertInstanceOf(SlackHandler::class, $handler);
+        self::assertSame($token, $handler->getToken());
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+        self::assertSame('ssl://slack.com:443', $handler->getConnectionString());
+        self::assertSame($timeout, $handler->getTimeout());
+        self::assertSame($writeTimeout, $handler->getWritingTimeout());
+        self::assertSame($connectionTimeout, $handler->getConnectionTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 
@@ -408,9 +500,9 @@ final class SlackHandlerFactoryTest extends TestCase
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame('ssl://slack.com:443', $handler->getConnectionString());
-        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($timeout, $handler->getTimeout());
         self::assertSame($writeTimeout, $handler->getWritingTimeout());
-        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame(60.0, $handler->getConnectionTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 
@@ -499,8 +591,6 @@ final class SlackHandlerFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     *
-     * @requires extension openssl
      */
     public function testInvokeWithError(): void
     {

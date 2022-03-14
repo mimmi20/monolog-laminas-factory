@@ -25,7 +25,6 @@ use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function ini_get;
 use function is_array;
 use function sprintf;
 
@@ -60,13 +59,16 @@ final class InsightOpsHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No token provided');
         }
 
-        $token        = $options['token'];
-        $region       = 'us';
-        $useSSL       = true;
-        $level        = LogLevel::DEBUG;
-        $bubble       = true;
-        $timeout      = (float) ini_get('default_socket_timeout');
-        $writeTimeout = (float) ini_get('default_socket_timeout');
+        $token             = $options['token'];
+        $region            = 'us';
+        $useSSL            = true;
+        $level             = LogLevel::DEBUG;
+        $bubble            = true;
+        $timeout           = 0.0;
+        $writingTimeout    = 10.0;
+        $connectionTimeout = null;
+        $persistent        = false;
+        $chunkSize         = null;
 
         if (array_key_exists('region', $options)) {
             $region = $options['region'];
@@ -74,14 +76,6 @@ final class InsightOpsHandlerFactory implements FactoryInterface
 
         if (array_key_exists('useSSL', $options)) {
             $useSSL = $options['useSSL'];
-        }
-
-        if (array_key_exists('timeout', $options)) {
-            $timeout = $options['timeout'];
-        }
-
-        if (array_key_exists('writeTimeout', $options)) {
-            $writeTimeout = $options['writeTimeout'];
         }
 
         if (array_key_exists('level', $options)) {
@@ -92,13 +86,40 @@ final class InsightOpsHandlerFactory implements FactoryInterface
             $bubble = $options['bubble'];
         }
 
+        if (array_key_exists('timeout', $options)) {
+            $timeout = $options['timeout'];
+        }
+
+        if (array_key_exists('writingTimeout', $options)) {
+            $writingTimeout = $options['writingTimeout'];
+        } elseif (array_key_exists('writeTimeout', $options)) {
+            $writingTimeout = $options['writeTimeout'];
+        }
+
+        if (array_key_exists('connectionTimeout', $options)) {
+            $connectionTimeout = $options['connectionTimeout'];
+        }
+
+        if (array_key_exists('persistent', $options)) {
+            $persistent = (bool) $options['persistent'];
+        }
+
+        if (array_key_exists('chunkSize', $options)) {
+            $chunkSize = $options['chunkSize'];
+        }
+
         try {
             $handler = new InsightOpsHandler(
                 $token,
                 $region,
                 $useSSL,
                 $level,
-                $bubble
+                $bubble,
+                $persistent,
+                $timeout,
+                $writingTimeout,
+                $connectionTimeout,
+                $chunkSize
             );
         } catch (MissingExtensionException $e) {
             throw new ServiceNotCreatedException(
@@ -106,23 +127,6 @@ final class InsightOpsHandlerFactory implements FactoryInterface
                 0,
                 $e
             );
-        }
-
-        if (!empty($timeout)) {
-            $handler->setConnectionTimeout($timeout);
-        }
-
-        if (!empty($writeTimeout)) {
-            $handler->setTimeout($writeTimeout);
-            $handler->setWritingTimeout($writeTimeout);
-        }
-
-        if (array_key_exists('persistent', $options)) {
-            $handler->setPersistent($options['persistent']);
-        }
-
-        if (array_key_exists('chunkSize', $options)) {
-            $handler->setChunkSize($options['chunkSize']);
         }
 
         $this->addFormatter($container, $handler, $options);
