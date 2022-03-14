@@ -17,7 +17,6 @@ use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\GroupHandler;
 
@@ -26,7 +25,6 @@ use function is_array;
 
 final class GroupHandlerFactory implements FactoryInterface
 {
-    use AddFormatterTrait;
     use AddProcessorTrait;
     use GetHandlersTrait;
 

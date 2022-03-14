@@ -35,6 +35,7 @@ trait AddProcessorTrait
 
     /**
      * @param array<array<string, array<string, mixed>|bool|string>|callable>|null $options
+     * @phpstan-param HandlerInterface&ProcessableHandlerInterface $handler
      * @phpstan-param array{processors?: (callable|array{enabled?: bool, type?: string, options?: array<mixed>})}|null $options
      *
      * @throws ServiceNotCreatedException

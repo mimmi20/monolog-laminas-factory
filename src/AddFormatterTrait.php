@@ -35,6 +35,7 @@ trait AddFormatterTrait
 
     /**
      * @param array<array<string, array<string, mixed>|bool|string>|FormatterInterface>|null $options
+     * @phpstan-param HandlerInterface&FormattableHandlerInterface $handler
      * @phpstan-param array{formatter?: (bool|FormatterInterface|array{enabled?: bool, type?: string, options?: array<mixed>})}|null $options
      *
      * @throws ServiceNotCreatedException
