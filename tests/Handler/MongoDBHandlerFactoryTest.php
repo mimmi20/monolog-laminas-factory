@@ -41,7 +41,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -63,7 +63,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -85,7 +85,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $client = true;
 
@@ -109,7 +109,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         $client   = true;
         $database = 'test-database';
@@ -134,7 +134,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig3(): void
+    public function testInvokeWithConfig3(): void
     {
         $client     = true;
         $database   = 'test-database';
@@ -160,7 +160,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig4(): void
+    public function testInvokeWithConfig4(): void
     {
         $client     = 'test-client';
         $database   = 'test-database';
@@ -190,7 +190,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig5(): void
+    public function testInvokeWithConfig5(): void
     {
         if (!class_exists(Client::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Client::class));
@@ -238,7 +238,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig6(): void
+    public function testInvokeWithConfig6(): void
     {
         if (!class_exists(Client::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Client::class));
@@ -285,7 +285,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws \MongoDB\Driver\Exception\InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig7(): void
+    public function testInvokeWithConfig7(): void
     {
         if (!class_exists(Manager::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
@@ -333,7 +333,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws \MongoDB\Driver\Exception\InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig8(): void
+    public function testInvokeWithConfig8(): void
     {
         if (!class_exists(Manager::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
@@ -376,7 +376,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig9(): void
+    public function testInvokeWithConfig9(): void
     {
         if (!class_exists(Client::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Client::class));
@@ -427,7 +427,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig10(): void
+    public function testInvokeWithConfig10(): void
     {
         if (!class_exists(Client::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Client::class));
@@ -477,7 +477,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws \MongoDB\Driver\Exception\InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig11(): void
+    public function testInvokeWithConfig11(): void
     {
         if (!class_exists(Manager::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
@@ -528,7 +528,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws \MongoDB\Driver\Exception\InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig12(): void
+    public function testInvokeWithConfig12(): void
     {
         if (!class_exists(Manager::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
@@ -572,7 +572,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig13(): void
+    public function testInvokeWithConfig13(): void
     {
         $client     = 'test-client';
         $database   = 'test-database';
@@ -602,7 +602,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws RuntimeException
      * @throws \MongoDB\Driver\Exception\InvalidArgumentException
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         if (!class_exists(Manager::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
@@ -640,7 +640,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws RuntimeException
      * @throws \MongoDB\Driver\Exception\InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         if (!class_exists(Manager::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
@@ -684,7 +684,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws \MongoDB\Driver\Exception\InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         if (!class_exists(Manager::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));
@@ -743,7 +743,7 @@ final class MongoDBHandlerFactoryTest extends TestCase
      * @throws RuntimeException
      * @throws \MongoDB\Driver\Exception\InvalidArgumentException
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         if (!class_exists(Manager::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Manager::class));

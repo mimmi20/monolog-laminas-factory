@@ -28,7 +28,7 @@ final class MongoDBFormatterFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -60,7 +60,7 @@ final class MongoDBFormatterFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -92,7 +92,7 @@ final class MongoDBFormatterFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $maxNestingLevel        = 42;
         $exceptionTraceAsString = false;
@@ -127,7 +127,7 @@ final class MongoDBFormatterFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         $maxNestingLevel        = -42;
         $exceptionTraceAsString = true;

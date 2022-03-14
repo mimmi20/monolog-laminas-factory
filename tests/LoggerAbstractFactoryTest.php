@@ -41,7 +41,7 @@ final class LoggerAbstractFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $requestedName = Logger::class;
 
@@ -68,7 +68,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $requestedName = Logger::class;
         $config        = [];
@@ -102,7 +102,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -142,7 +142,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -183,7 +183,7 @@ final class LoggerAbstractFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigException(): void
+    public function testInvokeWithConfigException(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -228,7 +228,7 @@ final class LoggerAbstractFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigException2(): void
+    public function testInvokeWithConfigException2(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -286,7 +286,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig3(): void
+    public function testInvokeWithConfig3(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -344,7 +344,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig4(): void
+    public function testInvokeWithConfig4(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -417,7 +417,7 @@ final class LoggerAbstractFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig5(): void
+    public function testInvokeWithConfig5(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -476,7 +476,7 @@ final class LoggerAbstractFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig6(): void
+    public function testInvokeWithConfig6(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -541,7 +541,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig7(): void
+    public function testInvokeWithConfig7(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -614,7 +614,7 @@ final class LoggerAbstractFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig8(): void
+    public function testInvokeWithConfig8(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -673,7 +673,7 @@ final class LoggerAbstractFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig9(): void
+    public function testInvokeWithConfig9(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -737,7 +737,7 @@ final class LoggerAbstractFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig10a(): void
+    public function testInvokeWithConfig10a(): void
     {
         $requestedName = Logger::class;
         $name          = 'test-name';
@@ -803,7 +803,7 @@ final class LoggerAbstractFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig10b(): void
+    public function testInvokeWithConfig10b(): void
     {
         $requestedName = Logger::class;
         $name          = 'test-name';
@@ -905,7 +905,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig11(): void
+    public function testInvokeWithConfig11(): void
     {
         $requestedName = Logger::class;
         $name          = 'test-name';
@@ -1017,7 +1017,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig12(): void
+    public function testInvokeWithConfig12(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -1102,7 +1102,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig13(): void
+    public function testInvokeWithConfig13(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -1185,7 +1185,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig14(): void
+    public function testInvokeWithConfig14(): void
     {
         $requestedName = Logger::class;
         $config        = [
@@ -1271,7 +1271,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws \Laminas\Log\Exception\InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig15(): void
+    public function testInvokeWithConfig15(): void
     {
         $requestedName = Logger::class;
         $name          = 'test-name';
@@ -1422,7 +1422,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws \Laminas\Log\Exception\InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig16(): void
+    public function testInvokeWithConfig16(): void
     {
         $requestedName = Logger::class;
         $name          = 'test-name';
@@ -1573,7 +1573,7 @@ final class LoggerAbstractFactoryTest extends TestCase
      * @throws \Laminas\Log\Exception\InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig17(): void
+    public function testInvokeWithConfig17(): void
     {
         $requestedName = Logger::class;
         $name          = 'test-name';

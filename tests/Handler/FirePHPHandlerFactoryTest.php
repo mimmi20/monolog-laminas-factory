@@ -39,7 +39,7 @@ final class FirePHPHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -74,7 +74,7 @@ final class FirePHPHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -109,7 +109,7 @@ final class FirePHPHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -142,7 +142,7 @@ final class FirePHPHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $formatter = true;
 
@@ -168,7 +168,7 @@ final class FirePHPHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $formatter = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
@@ -200,7 +200,7 @@ final class FirePHPHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $formatter = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
@@ -247,7 +247,7 @@ final class FirePHPHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $processors = true;
 

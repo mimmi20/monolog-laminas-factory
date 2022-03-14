@@ -40,7 +40,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -64,7 +64,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -88,7 +88,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigWithoutUsers(): void
+    public function testInvokeWithConfigWithoutUsers(): void
     {
         $token = 'token';
 
@@ -116,7 +116,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndUsers(): void
+    public function testInvokeWithConfigAndUsers(): void
     {
         $token = 'token';
         $users = 'abc';
@@ -138,8 +138,8 @@ final class PushoverHandlerFactoryTest extends TestCase
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
         self::assertSame('ssl://api.pushover.net:443', $handler->getConnectionString());
-        self::assertSame(60.0, $handler->getTimeout());
-        self::assertSame(60.0, $handler->getWritingTimeout());
+        self::assertSame(0.0, $handler->getTimeout());
+        self::assertSame(10.0, $handler->getWritingTimeout());
         self::assertSame(60.0, $handler->getConnectionTimeout());
         self::assertFalse($handler->isPersistent());
 
@@ -196,7 +196,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndUsers2(): void
+    public function testInvokeWithConfigAndUsers2(): void
     {
         $token        = 'token';
         $users        = ['abc', 'xyz'];
@@ -225,9 +225,9 @@ final class PushoverHandlerFactoryTest extends TestCase
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame('api.pushover.net:80', $handler->getConnectionString());
-        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($timeout, $handler->getTimeout());
         self::assertSame($writeTimeout, $handler->getWritingTimeout());
-        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame(60.0, $handler->getConnectionTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 
@@ -282,7 +282,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $token        = 'token';
         $users        = ['abc', 'xyz'];
@@ -319,7 +319,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $token        = 'token';
         $users        = ['abc', 'xyz'];
@@ -362,7 +362,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $token        = 'token';
         $users        = ['abc', 'xyz'];
@@ -404,9 +404,9 @@ final class PushoverHandlerFactoryTest extends TestCase
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame('api.pushover.net:80', $handler->getConnectionString());
-        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($timeout, $handler->getTimeout());
         self::assertSame($writeTimeout, $handler->getWritingTimeout());
-        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame(60.0, $handler->getConnectionTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 
@@ -461,7 +461,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $token        = 'token';
         $users        = ['abc', 'xyz'];
@@ -494,7 +494,7 @@ final class PushoverHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutExtension(): void
+    public function testInvokeWithoutExtension(): void
     {
         if (extension_loaded('sockets')) {
             self::markTestSkipped('This test checks the exception if the sockets extension is missing');
@@ -525,5 +525,40 @@ final class PushoverHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage(sprintf('The sockets extension is needed to use the %s', PushoverHandler::class));
 
         $factory($container, '', ['token' => $token, 'users' => $users, 'title' => $title, 'level' => LogLevel::ALERT, 'bubble' => false, 'useSSL' => false, 'highPriorityLevel' => LogLevel::ERROR, 'emergencyLevel' => LogLevel::ALERT, 'retry' => $retry, 'expire' => $expire, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @requires extension sockets
+     */
+    public function testInvokeWithNegativeTimeout(): void
+    {
+        $token        = 'token';
+        $users        = ['abc', 'xyz'];
+        $title        = 'title';
+        $retry        = 24;
+        $expire       = 42;
+        $timeout      = -1;
+        $writeTimeout = 120.0;
+        $persistent   = true;
+        $chunkSize    = 100;
+        $processors   = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new PushoverHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', PushoverHandler::class));
+
+        $factory($container, '', ['token' => $token, 'users' => $users, 'title' => $title, 'level' => LogLevel::ALERT, 'bubble' => false, 'useSSL' => false, 'highPriorityLevel' => LogLevel::ERROR, 'emergencyLevel' => LogLevel::ALERT, 'retry' => $retry, 'expire' => $expire, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'processors' => $processors]);
     }
 }

@@ -39,7 +39,7 @@ final class FleepHookHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -63,7 +63,7 @@ final class FleepHookHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceEmptyConfig(): void
+    public function testInvokeEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -89,7 +89,7 @@ final class FleepHookHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceConfig(): void
+    public function testInvokeConfig(): void
     {
         $token = 'test-token';
 
@@ -139,7 +139,7 @@ final class FleepHookHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceConfig2(): void
+    public function testInvokeConfig2(): void
     {
         $token        = 'test-token';
         $timeout      = 42.0;
@@ -193,7 +193,7 @@ final class FleepHookHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $token        = 'test-token';
         $timeout      = 42.0;
@@ -228,7 +228,7 @@ final class FleepHookHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $token        = 'test-token';
         $timeout      = 42.0;
@@ -269,7 +269,7 @@ final class FleepHookHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $token        = 'test-token';
         $timeout      = 42.0;
@@ -336,7 +336,7 @@ final class FleepHookHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $token        = 'test-token';
         $timeout      = 42.0;
@@ -367,7 +367,7 @@ final class FleepHookHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutException(): void
+    public function testInvokeWithoutException(): void
     {
         if (extension_loaded('openssl')) {
             self::markTestSkipped('This test checks the exception if the openssl extension is missing');

@@ -28,7 +28,7 @@ final class MemoryUsageProcessorFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -60,7 +60,7 @@ final class MemoryUsageProcessorFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -92,7 +92,7 @@ final class MemoryUsageProcessorFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()

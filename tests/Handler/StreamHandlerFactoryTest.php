@@ -40,7 +40,7 @@ final class StreamHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -62,7 +62,7 @@ final class StreamHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -86,7 +86,7 @@ final class StreamHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigWithStream(): void
+    public function testInvokeWithConfigWithStream(): void
     {
         $stream = fopen(__FILE__, 'r');
 
@@ -132,7 +132,7 @@ final class StreamHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigWithInt(): void
+    public function testInvokeWithConfigWithInt(): void
     {
         $stream = 42;
 
@@ -158,7 +158,7 @@ final class StreamHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigWithString(): void
+    public function testInvokeWithConfigWithString(): void
     {
         $stream = 'http://test.test';
 
@@ -208,7 +208,7 @@ final class StreamHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigWithString2(): void
+    public function testInvokeWithConfigWithString2(): void
     {
         $streamName = 'xyz';
         $stream     = 'http://test.test';
@@ -259,7 +259,7 @@ final class StreamHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigWithString3(): void
+    public function testInvokeWithConfigWithString3(): void
     {
         $streamName = 'xyz';
 
@@ -289,7 +289,7 @@ final class StreamHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $streamName     = 'xyz';
         $stream         = 'http://test.test';
@@ -344,7 +344,7 @@ final class StreamHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $streamName     = 'xyz';
         $stream         = 'http://test.test';
@@ -380,7 +380,7 @@ final class StreamHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $streamName     = 'xyz';
         $stream         = 'http://test.test';
@@ -428,7 +428,7 @@ final class StreamHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $streamName     = 'xyz';
         $stream         = 'http://test.test';
@@ -496,7 +496,7 @@ final class StreamHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter3(): void
+    public function testInvokeWithConfigAndFormatter3(): void
     {
         $streamName     = 'xyz';
         $stream         = 'http://test.test';
@@ -568,7 +568,7 @@ final class StreamHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter4(): void
+    public function testInvokeWithConfigAndFormatter4(): void
     {
         $streamName     = 'xyz';
         $stream         = 'http://test.test';
@@ -620,7 +620,7 @@ final class StreamHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter5(): void
+    public function testInvokeWithConfigAndFormatter5(): void
     {
         $streamName     = 'xyz';
         $stream         = 'http://test.test';
@@ -700,7 +700,7 @@ final class StreamHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter6(): void
+    public function testInvokeWithConfigAndFormatter6(): void
     {
         $streamName     = 'xyz';
         $stream         = 'http://test.test';
@@ -779,7 +779,7 @@ final class StreamHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter7(): void
+    public function testInvokeWithConfigAndFormatter7(): void
     {
         $streamName     = 'xyz';
         $stream         = 'http://test.test';
@@ -833,7 +833,7 @@ final class StreamHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $streamName     = 'xyz';
         $stream         = 'http://test.test';
@@ -867,7 +867,7 @@ final class StreamHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndProcessors(): void
+    public function testInvokeWithConfigAndProcessors(): void
     {
         $streamName     = 'xyz';
         $stream         = 'http://test.test';
@@ -917,7 +917,7 @@ final class StreamHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndProcessors2(): void
+    public function testInvokeWithConfigAndProcessors2(): void
     {
         $streamName     = 'xyz';
         $stream         = 'http://test.test';
@@ -983,7 +983,7 @@ final class StreamHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndProcessors3(): void
+    public function testInvokeWithConfigAndProcessors3(): void
     {
         $streamName     = 'xyz';
         $stream         = 'http://test.test';
@@ -1081,7 +1081,7 @@ final class StreamHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndProcessors4(): void
+    public function testInvokeWithConfigAndProcessors4(): void
     {
         $streamName     = 'xyz';
         $stream         = 'http://test.test';

@@ -34,7 +34,7 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutName(): void
+    public function testInvokeWithoutName(): void
     {
         $requestedName = Logger::class;
 
@@ -58,7 +58,7 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutName2(): void
+    public function testInvokeWithoutName2(): void
     {
         $requestedName = Logger::class;
         $options       = [];
@@ -83,7 +83,7 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithTimezone(): void
+    public function testInvokeWithTimezone(): void
     {
         $requestedName = Logger::class;
         $options       = ['name' => 'xyz', 'timezone' => 'Mars/One'];
@@ -108,7 +108,7 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithTimezone2(): void
+    public function testInvokeWithTimezone2(): void
     {
         $requestedName = Logger::class;
         $options       = ['name' => 'xyz', 'timezone' => true];
@@ -134,7 +134,7 @@ final class MonologFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithTimezone3(): void
+    public function testInvokeWithTimezone3(): void
     {
         $requestedName = Logger::class;
         $options       = ['name' => 'xyz', 'timezone' => 'Europe/Berlin'];
@@ -159,7 +159,7 @@ final class MonologFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithTimezone4(): void
+    public function testInvokeWithTimezone4(): void
     {
         $requestedName = Logger::class;
         $timezone      = new DateTimeZone('Europe/Berlin');
@@ -184,7 +184,7 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlers(): void
+    public function testInvokeWithHandlers(): void
     {
         $requestedName = Logger::class;
         $timezone      = new DateTimeZone('Europe/Berlin');
@@ -210,7 +210,7 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlers2(): void
+    public function testInvokeWithHandlers2(): void
     {
         $requestedName = Logger::class;
         $timezone      = new DateTimeZone('Europe/Berlin');
@@ -238,7 +238,7 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlers3(): void
+    public function testInvokeWithHandlers3(): void
     {
         $requestedName = Logger::class;
         $timezone      = new DateTimeZone('Europe/Berlin');
@@ -274,7 +274,7 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlers4(): void
+    public function testInvokeWithHandlers4(): void
     {
         $requestedName = Logger::class;
         $timezone      = new DateTimeZone('Europe/Berlin');
@@ -325,7 +325,7 @@ final class MonologFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithHandlers5(): void
+    public function testInvokeWithHandlers5(): void
     {
         $requestedName = Logger::class;
         $timezone      = new DateTimeZone('Europe/Berlin');
@@ -380,7 +380,7 @@ final class MonologFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithHandlers6(): void
+    public function testInvokeWithHandlers6(): void
     {
         $requestedName = Logger::class;
         $timezone      = new DateTimeZone('Europe/Berlin');
@@ -434,7 +434,7 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithProcessors(): void
+    public function testInvokeWithProcessors(): void
     {
         $requestedName = Logger::class;
         $timezone      = new DateTimeZone('Europe/Berlin');
@@ -460,7 +460,7 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithProcessors2(): void
+    public function testInvokeWithProcessors2(): void
     {
         $requestedName = Logger::class;
         $timezone      = new DateTimeZone('Europe/Berlin');
@@ -488,7 +488,7 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithProcessors3(): void
+    public function testInvokeWithProcessors3(): void
     {
         $requestedName = Logger::class;
         $timezone      = new DateTimeZone('Europe/Berlin');
@@ -524,7 +524,7 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithProcessors4(): void
+    public function testInvokeWithProcessors4(): void
     {
         $requestedName = Logger::class;
         $timezone      = new DateTimeZone('Europe/Berlin');
@@ -574,7 +574,7 @@ final class MonologFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithProcessors5(): void
+    public function testInvokeWithProcessors5(): void
     {
         $requestedName = Logger::class;
         $timezone      = new DateTimeZone('Europe/Berlin');
@@ -628,7 +628,7 @@ final class MonologFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithProcessors6(): void
+    public function testInvokeWithProcessors6(): void
     {
         $requestedName = Logger::class;
         $timezone      = new DateTimeZone('Europe/Berlin');
@@ -682,7 +682,7 @@ final class MonologFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithProcessors7(): void
+    public function testInvokeWithProcessors7(): void
     {
         $requestedName = Logger::class;
         $timezone      = 'Europe/London';

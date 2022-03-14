@@ -38,7 +38,7 @@ final class OverflowHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -60,7 +60,7 @@ final class OverflowHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -82,7 +82,7 @@ final class OverflowHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutHandlerConfig(): void
+    public function testInvokeWithoutHandlerConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -104,7 +104,7 @@ final class OverflowHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerConfigWithoutType(): void
+    public function testInvokeWithHandlerConfigWithoutType(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -126,7 +126,7 @@ final class OverflowHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerConfigWithDisabledType(): void
+    public function testInvokeWithHandlerConfigWithDisabledType(): void
     {
         $type = 'abc';
 
@@ -150,7 +150,7 @@ final class OverflowHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerConfigWithLoaderError(): void
+    public function testInvokeWithHandlerConfigWithLoaderError(): void
     {
         $type = 'abc';
 
@@ -176,7 +176,7 @@ final class OverflowHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerConfigWithLoaderError2(): void
+    public function testInvokeWithHandlerConfigWithLoaderError2(): void
     {
         $type = 'abc';
 
@@ -214,7 +214,7 @@ final class OverflowHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithHandlerConfig(): void
+    public function testInvokeWithHandlerConfig(): void
     {
         $type                 = 'abc';
         $thresholdMapExpected = [
@@ -287,7 +287,7 @@ final class OverflowHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithHandlerConfig2(): void
+    public function testInvokeWithHandlerConfig2(): void
     {
         $type                 = 'abc';
         $thresholdMapExpected = [
@@ -369,7 +369,7 @@ final class OverflowHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $type      = 'abc';
         $formatter = true;
@@ -427,7 +427,7 @@ final class OverflowHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter2(): void
+    public function testInvokeWithConfigAndBoolFormatter2(): void
     {
         $type      = 'abc';
         $formatter = true;
@@ -485,7 +485,7 @@ final class OverflowHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $type      = 'abc';
         $formatter = $this->getMockBuilder(LineFormatter::class)
@@ -555,7 +555,7 @@ final class OverflowHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $type                 = 'abc';
         $thresholdMapExpected = [
@@ -646,7 +646,7 @@ final class OverflowHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter3(): void
+    public function testInvokeWithConfigAndFormatter3(): void
     {
         $type      = 'abc';
         $formatter = $this->getMockBuilder(LineFormatter::class)
@@ -716,7 +716,7 @@ final class OverflowHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter4(): void
+    public function testInvokeWithConfigAndFormatter4(): void
     {
         $type                 = 'abc';
         $thresholdMapExpected = [
@@ -809,7 +809,7 @@ final class OverflowHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $type                 = 'abc';
         $thresholdMapExpected = [
@@ -886,7 +886,7 @@ final class OverflowHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors2(): void
+    public function testInvokeWithConfigAndBoolProcessors2(): void
     {
         $type       = 'abc';
         $processors = true;

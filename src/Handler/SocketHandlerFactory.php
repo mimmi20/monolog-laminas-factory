@@ -14,6 +14,7 @@ namespace Mimmi20\LoggerFactory\Handler;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
+use InvalidArgumentException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -24,8 +25,8 @@ use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function ini_get;
 use function is_array;
+use function sprintf;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -39,7 +40,7 @@ final class SocketHandlerFactory implements FactoryInterface
     /**
      * @param string                                      $requestedName
      * @param array<string, (string|int|bool|float)>|null $options
-     * @phpstan-param array{connectionString?: string, timeout?: float, writeTimeout?: float, level?: (Level|LevelName|LogLevel::*), bubble?: bool, persistent?: bool, chunkSize?: int}|null $options
+     * @phpstan-param array{connectionString?: string, timeout?: float, writingTimeout?: float, writeTimeout?: float, connectionTimeout?: float, level?: (Level|LevelName|LogLevel::*), bubble?: bool, persistent?: bool, chunkSize?: int}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -58,18 +59,35 @@ final class SocketHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No connectionString provided');
         }
 
-        $connectionString = $options['connectionString'];
-        $timeout          = (float) ini_get('default_socket_timeout');
-        $writeTimeout     = (float) ini_get('default_socket_timeout');
-        $level            = LogLevel::DEBUG;
-        $bubble           = true;
+        $connectionString  = $options['connectionString'];
+        $level             = LogLevel::DEBUG;
+        $bubble            = true;
+        $timeout           = 0.0;
+        $writingTimeout    = 10.0;
+        $connectionTimeout = null;
+        $persistent        = false;
+        $chunkSize         = null;
 
         if (array_key_exists('timeout', $options)) {
             $timeout = $options['timeout'];
         }
 
-        if (array_key_exists('writeTimeout', $options)) {
-            $writeTimeout = $options['writeTimeout'];
+        if (array_key_exists('writingTimeout', $options)) {
+            $writingTimeout = $options['writingTimeout'];
+        } elseif (array_key_exists('writeTimeout', $options)) {
+            $writingTimeout = $options['writeTimeout'];
+        }
+
+        if (array_key_exists('connectionTimeout', $options)) {
+            $connectionTimeout = $options['connectionTimeout'];
+        }
+
+        if (array_key_exists('persistent', $options)) {
+            $persistent = (bool) $options['persistent'];
+        }
+
+        if (array_key_exists('chunkSize', $options)) {
+            $chunkSize = $options['chunkSize'];
         }
 
         if (array_key_exists('level', $options)) {
@@ -80,27 +98,23 @@ final class SocketHandlerFactory implements FactoryInterface
             $bubble = $options['bubble'];
         }
 
-        $handler = new SocketHandler(
-            $connectionString,
-            $level,
-            $bubble
-        );
-
-        if (!empty($timeout)) {
-            $handler->setConnectionTimeout($timeout);
-        }
-
-        if (!empty($writeTimeout)) {
-            $handler->setTimeout($writeTimeout);
-            $handler->setWritingTimeout($writeTimeout);
-        }
-
-        if (array_key_exists('persistent', $options)) {
-            $handler->setPersistent($options['persistent']);
-        }
-
-        if (array_key_exists('chunkSize', $options)) {
-            $handler->setChunkSize($options['chunkSize']);
+        try {
+            $handler = new SocketHandler(
+                $connectionString,
+                $level,
+                $bubble,
+                $persistent,
+                $timeout,
+                $writingTimeout,
+                $connectionTimeout,
+                $chunkSize
+            );
+        } catch (InvalidArgumentException $e) {
+            throw new ServiceNotCreatedException(
+                sprintf('Could not create %s', SocketHandler::class),
+                0,
+                $e
+            );
         }
 
         $this->addFormatter($container, $handler, $options);

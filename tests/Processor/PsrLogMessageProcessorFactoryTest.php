@@ -28,7 +28,7 @@ final class PsrLogMessageProcessorFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -60,7 +60,7 @@ final class PsrLogMessageProcessorFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -92,7 +92,7 @@ final class PsrLogMessageProcessorFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $dateFormat = 'c';
 

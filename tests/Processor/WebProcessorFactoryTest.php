@@ -44,7 +44,7 @@ final class WebProcessorFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $_SERVER = ['xyz'];
 
@@ -87,7 +87,7 @@ final class WebProcessorFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $_SERVER = ['xyz'];
 
@@ -130,7 +130,7 @@ final class WebProcessorFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithEmptyServerdataConfig(): void
+    public function testInvokeWithEmptyServerdataConfig(): void
     {
         $_SERVER = ['xyz'];
 
@@ -173,7 +173,7 @@ final class WebProcessorFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithServerdataConfig(): void
+    public function testInvokeWithServerdataConfig(): void
     {
         $serverData = ['xyz' => 'abc'];
 
@@ -216,7 +216,7 @@ final class WebProcessorFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithServerdataArrayaccess(): void
+    public function testInvokeWithServerdataArrayaccess(): void
     {
         $serverData = new ArrayObject(['xyz' => 'abc']);
 
@@ -257,7 +257,7 @@ final class WebProcessorFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithServerdataInt(): void
+    public function testInvokeWithServerdataInt(): void
     {
         $serverData = 42;
 
@@ -281,7 +281,7 @@ final class WebProcessorFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithServerdataString(): void
+    public function testInvokeWithServerdataString(): void
     {
         $serverData = 'xyz';
 
@@ -309,7 +309,7 @@ final class WebProcessorFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithServerdataString2(): void
+    public function testInvokeWithServerdataString2(): void
     {
         $serverData       = 'xyz';
         $serverDataObject = new ArrayObject(['xyz' => 'abc']);
@@ -355,7 +355,7 @@ final class WebProcessorFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithServerdataString3(): void
+    public function testInvokeWithServerdataString3(): void
     {
         $serverData = 'xyz';
 
@@ -385,7 +385,7 @@ final class WebProcessorFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithServerdataString4(): void
+    public function testInvokeWithServerdataString4(): void
     {
         $serverData       = 'xyz';
         $serverDataObject = new ArrayObject(['xyz' => 'abc']);
@@ -428,7 +428,7 @@ final class WebProcessorFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithServerdataString5(): void
+    public function testInvokeWithServerdataString5(): void
     {
         $serverData       = 'xyz';
         $serverDataObject = new ArrayObject(['xyz']);

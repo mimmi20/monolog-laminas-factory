@@ -39,7 +39,7 @@ final class TelegramBotHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -63,7 +63,7 @@ final class TelegramBotHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -87,7 +87,7 @@ final class TelegramBotHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $apiKey = 'test-key';
 
@@ -115,7 +115,7 @@ final class TelegramBotHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         $apiKey  = 'test-key';
         $channel = 'test-channel';
@@ -180,7 +180,7 @@ final class TelegramBotHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfig3(): void
+    public function testInvokeWithConfig3(): void
     {
         $apiKey    = 'test-key';
         $channel   = 'test-channel';
@@ -244,7 +244,7 @@ final class TelegramBotHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $apiKey    = 'test-key';
         $channel   = 'test-channel';
@@ -274,7 +274,7 @@ final class TelegramBotHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $apiKey    = 'test-key';
         $channel   = 'test-channel';
@@ -310,7 +310,7 @@ final class TelegramBotHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $apiKey    = 'test-key';
         $channel   = 'test-channel';
@@ -387,7 +387,7 @@ final class TelegramBotHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $apiKey     = 'test-key';
         $channel    = 'test-channel';
@@ -413,7 +413,7 @@ final class TelegramBotHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutExtension(): void
+    public function testInvokeWithoutExtension(): void
     {
         if (extension_loaded('curl')) {
             self::markTestSkipped('This test checks the exception if the curl extension is missing');

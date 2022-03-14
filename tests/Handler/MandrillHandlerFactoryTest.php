@@ -38,7 +38,7 @@ final class MandrillHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -60,7 +60,7 @@ final class MandrillHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -82,7 +82,7 @@ final class MandrillHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $apiKey = 'test-key';
 
@@ -106,7 +106,7 @@ final class MandrillHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         $apiKey  = 'test-key';
         $message = 'test-message';
@@ -133,7 +133,7 @@ final class MandrillHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig3(): void
+    public function testInvokeWithConfig3(): void
     {
         $apiKey  = 'test-key';
         $message = 'test-message';
@@ -164,7 +164,7 @@ final class MandrillHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig4(): void
+    public function testInvokeWithConfig4(): void
     {
         $apiKey      = 'test-key';
         $messageName = 'test-message';
@@ -217,7 +217,7 @@ final class MandrillHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig5(): void
+    public function testInvokeWithConfig5(): void
     {
         $apiKey      = 'test-key';
         $messageName = 'test-message';
@@ -248,7 +248,7 @@ final class MandrillHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig6(): void
+    public function testInvokeWithConfig6(): void
     {
         $apiKey      = 'test-key';
         $messageName = 'test-message';
@@ -303,7 +303,7 @@ final class MandrillHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig7(): void
+    public function testInvokeWithConfig7(): void
     {
         $apiKey  = 'test-key';
         $message = $this->getMockBuilder(Swift_Message::class)
@@ -353,7 +353,7 @@ final class MandrillHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig8(): void
+    public function testInvokeWithConfig8(): void
     {
         $apiKey  = 'test-key';
         $message = $this->getMockBuilder(Swift_Message::class)
@@ -403,7 +403,7 @@ final class MandrillHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig9(): void
+    public function testInvokeWithConfig9(): void
     {
         $apiKey       = 'test-key';
         $messageClass = $this->getMockBuilder(Swift_Message::class)
@@ -454,7 +454,7 @@ final class MandrillHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig10(): void
+    public function testInvokeWithConfig10(): void
     {
         $apiKey       = 'test-key';
         $messageClass = $this->getMockBuilder(Swift_Message::class)
@@ -503,7 +503,7 @@ final class MandrillHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $apiKey       = 'test-key';
         $messageClass = $this->getMockBuilder(Swift_Message::class)
@@ -534,7 +534,7 @@ final class MandrillHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $apiKey       = 'test-key';
         $messageClass = $this->getMockBuilder(Swift_Message::class)
@@ -571,7 +571,7 @@ final class MandrillHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $apiKey       = 'test-key';
         $messageClass = $this->getMockBuilder(Swift_Message::class)
@@ -633,7 +633,7 @@ final class MandrillHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $apiKey       = 'test-key';
         $messageClass = $this->getMockBuilder(Swift_Message::class)

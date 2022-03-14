@@ -40,7 +40,7 @@ final class SendGridHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -64,7 +64,7 @@ final class SendGridHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -88,7 +88,7 @@ final class SendGridHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $apiUser = 'test-api-user';
 
@@ -114,7 +114,7 @@ final class SendGridHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         $apiUser = 'test-api-user';
         $apiKey  = 'test-api-key';
@@ -141,7 +141,7 @@ final class SendGridHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfig3(): void
+    public function testInvokeWithConfig3(): void
     {
         $apiUser = 'test-api-user';
         $apiKey  = 'test-api-key';
@@ -169,7 +169,7 @@ final class SendGridHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfig4(): void
+    public function testInvokeWithConfig4(): void
     {
         $apiUser = 'test-api-user';
         $apiKey  = 'test-api-key';
@@ -200,7 +200,7 @@ final class SendGridHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfig5(): void
+    public function testInvokeWithConfig5(): void
     {
         $apiUser = 'test-api-user';
         $apiKey  = 'test-api-key';
@@ -268,7 +268,7 @@ final class SendGridHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfig6(): void
+    public function testInvokeWithConfig6(): void
     {
         $apiUser = 'test-api-user';
         $apiKey  = 'test-api-key';
@@ -334,7 +334,7 @@ final class SendGridHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutExtension(): void
+    public function testInvokeWithoutExtension(): void
     {
         if (extension_loaded('curl')) {
             self::markTestSkipped('This test checks the exception if the curl extension is missing');
@@ -370,7 +370,7 @@ final class SendGridHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $apiUser   = 'test-api-user';
         $apiKey    = 'test-api-key';
@@ -405,7 +405,7 @@ final class SendGridHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $apiUser   = 'test-api-user';
         $apiKey    = 'test-api-key';
@@ -446,7 +446,7 @@ final class SendGridHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $apiUser   = 'test-api-user';
         $apiKey    = 'test-api-key';
@@ -527,7 +527,7 @@ final class SendGridHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $apiUser    = 'test-api-user';
         $apiKey     = 'test-api-key';

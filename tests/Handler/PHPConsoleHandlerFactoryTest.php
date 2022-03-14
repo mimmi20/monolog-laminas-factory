@@ -40,7 +40,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -62,7 +62,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceEmptyConfig(): void
+    public function testInvokeEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -84,7 +84,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceConfig(): void
+    public function testInvokeConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -106,7 +106,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceConfig2(): void
+    public function testInvokeConfig2(): void
     {
         $connector = 'abc';
 
@@ -134,7 +134,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceConfig3(): void
+    public function testInvokeConfig3(): void
     {
         $connectorName = 'abc';
         $connector     = $this->getMockBuilder(Connector::class)
@@ -179,7 +179,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceConfig4(): void
+    public function testInvokeConfig4(): void
     {
         $connectorName = 'abc';
         $connector     = $this->getMockBuilder(Connector::class)
@@ -224,7 +224,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceConfig5(): void
+    public function testInvokeConfig5(): void
     {
         $connectorName = 'abc';
         $connector     = $this->getMockBuilder(Connector::class)
@@ -257,7 +257,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceConfig6(): void
+    public function testInvokeConfig6(): void
     {
         $connector = $this->getMockBuilder(Connector::class)
             ->disableOriginalConstructor()
@@ -299,7 +299,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceConfig7(): void
+    public function testInvokeConfig7(): void
     {
         $connector = $this->getMockBuilder(Connector::class)
             ->disableOriginalConstructor()
@@ -341,7 +341,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceConfig8(): void
+    public function testInvokeConfig8(): void
     {
         $connector = 'abc';
 
@@ -367,7 +367,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $connector = $this->getMockBuilder(Connector::class)
             ->disableOriginalConstructor()
@@ -398,7 +398,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $connector = $this->getMockBuilder(Connector::class)
             ->disableOriginalConstructor()
@@ -435,7 +435,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $connector = $this->getMockBuilder(Connector::class)
             ->disableOriginalConstructor()
@@ -490,7 +490,7 @@ final class PHPConsoleHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $connector  = $this->getMockBuilder(Connector::class)
             ->disableOriginalConstructor()

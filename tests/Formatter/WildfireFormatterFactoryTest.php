@@ -27,7 +27,7 @@ final class WildfireFormatterFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -51,7 +51,7 @@ final class WildfireFormatterFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -75,7 +75,7 @@ final class WildfireFormatterFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $dateFormat            = 'xxx__Y-m-d\TH:i:sP__xxx';
         $maxNormalizeDepth     = 42;

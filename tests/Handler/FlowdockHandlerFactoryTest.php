@@ -40,7 +40,7 @@ final class FlowdockHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -64,7 +64,7 @@ final class FlowdockHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -90,7 +90,7 @@ final class FlowdockHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $apiToken = 'test-token';
 
@@ -138,7 +138,7 @@ final class FlowdockHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         $apiToken     = 'test-token';
         $timeout      = 42.0;
@@ -190,7 +190,7 @@ final class FlowdockHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $apiToken     = 'test-token';
         $timeout      = 42.0;
@@ -225,7 +225,7 @@ final class FlowdockHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $apiToken     = 'test-token';
         $timeout      = 42.0;
@@ -266,7 +266,7 @@ final class FlowdockHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $apiToken     = 'test-token';
         $timeout      = 42.0;
@@ -333,7 +333,7 @@ final class FlowdockHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $apiToken     = 'test-token';
         $timeout      = 42.0;
@@ -364,7 +364,7 @@ final class FlowdockHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithError(): void
+    public function testInvokeWithError(): void
     {
         if (extension_loaded('openssl')) {
             self::markTestSkipped('This test checks the exception if the openssl extension is missing');

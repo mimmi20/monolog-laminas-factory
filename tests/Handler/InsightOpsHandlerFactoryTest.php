@@ -39,7 +39,7 @@ final class InsightOpsHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -63,7 +63,7 @@ final class InsightOpsHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -89,7 +89,7 @@ final class InsightOpsHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $token = 'test-token';
 
@@ -134,7 +134,7 @@ final class InsightOpsHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         $token        = 'test-token';
         $timeout      = 42.0;
@@ -182,7 +182,7 @@ final class InsightOpsHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutExtension(): void
+    public function testInvokeWithoutExtension(): void
     {
         if (extension_loaded('openssl')) {
             self::markTestSkipped('This test checks the exception if the openssl extension is missing');
@@ -221,7 +221,7 @@ final class InsightOpsHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $token        = 'test-token';
         $timeout      = 42.0;
@@ -256,7 +256,7 @@ final class InsightOpsHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $token        = 'test-token';
         $timeout      = 42.0;
@@ -297,7 +297,7 @@ final class InsightOpsHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $token        = 'test-token';
         $timeout      = 42.0;
@@ -359,7 +359,7 @@ final class InsightOpsHandlerFactoryTest extends TestCase
      *
      * @requires extension openssl
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $token        = 'test-token';
         $timeout      = 42.0;

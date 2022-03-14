@@ -39,7 +39,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -61,7 +61,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -83,7 +83,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $mailer = true;
 
@@ -107,7 +107,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         $mailer = 'test-mailer';
 
@@ -133,7 +133,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig3(): void
+    public function testInvokeWithConfig3(): void
     {
         $mailerName = 'test-mailer';
         $mailer     = $this->getMockBuilder(Swift_Mailer::class)
@@ -162,7 +162,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig4(): void
+    public function testInvokeWithConfig4(): void
     {
         $mailerName = 'test-mailer';
         $mailer     = $this->getMockBuilder(Swift_Mailer::class)
@@ -194,7 +194,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig5(): void
+    public function testInvokeWithConfig5(): void
     {
         $mailerName  = 'test-mailer';
         $mailer      = $this->getMockBuilder(Swift_Mailer::class)
@@ -236,7 +236,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig6(): void
+    public function testInvokeWithConfig6(): void
     {
         $mailerName  = 'test-mailer';
         $mailer      = $this->getMockBuilder(Swift_Mailer::class)
@@ -294,7 +294,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig7(): void
+    public function testInvokeWithConfig7(): void
     {
         $mailerName  = 'test-mailer';
         $mailer      = $this->getMockBuilder(Swift_Mailer::class)
@@ -352,7 +352,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig8(): void
+    public function testInvokeWithConfig8(): void
     {
         $mailer  = $this->getMockBuilder(Swift_Mailer::class)
             ->disableOriginalConstructor()
@@ -404,7 +404,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig9(): void
+    public function testInvokeWithConfig9(): void
     {
         $mailer  = $this->getMockBuilder(Swift_Mailer::class)
             ->disableOriginalConstructor()
@@ -456,7 +456,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig10(): void
+    public function testInvokeWithConfig10(): void
     {
         $mailer  = $this->getMockBuilder(Swift_Mailer::class)
             ->disableOriginalConstructor()
@@ -507,7 +507,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig11(): void
+    public function testInvokeWithConfig11(): void
     {
         $mailer  = $this->getMockBuilder(Swift_Mailer::class)
             ->disableOriginalConstructor()
@@ -556,7 +556,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig12(): void
+    public function testInvokeWithConfig12(): void
     {
         $mailer = 'test-mailer';
 
@@ -582,7 +582,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $mailer    = $this->getMockBuilder(Swift_Mailer::class)
             ->disableOriginalConstructor()
@@ -613,7 +613,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $mailer    = $this->getMockBuilder(Swift_Mailer::class)
             ->disableOriginalConstructor()
@@ -650,7 +650,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $mailer    = $this->getMockBuilder(Swift_Mailer::class)
             ->disableOriginalConstructor()
@@ -712,7 +712,7 @@ final class SwiftMailerHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $mailer     = $this->getMockBuilder(Swift_Mailer::class)
             ->disableOriginalConstructor()

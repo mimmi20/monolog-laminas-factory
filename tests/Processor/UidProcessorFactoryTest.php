@@ -25,7 +25,7 @@ final class UidProcessorFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -46,7 +46,7 @@ final class UidProcessorFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -67,7 +67,7 @@ final class UidProcessorFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithLength(): void
+    public function testInvokeWithLength(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -87,7 +87,7 @@ final class UidProcessorFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithLengthTooShort(): void
+    public function testInvokeWithLengthTooShort(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -109,7 +109,7 @@ final class UidProcessorFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithLengthTooLong(): void
+    public function testInvokeWithLengthTooLong(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()

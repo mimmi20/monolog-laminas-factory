@@ -37,7 +37,7 @@ final class RotatingFileHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -59,7 +59,7 @@ final class RotatingFileHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -83,7 +83,7 @@ final class RotatingFileHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $filename = '/tmp/test-file';
 
@@ -142,7 +142,7 @@ final class RotatingFileHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         $filename       = '/tmp/test-file';
         $filenameFormat = '{filename}_{date}';
@@ -202,7 +202,7 @@ final class RotatingFileHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig3(): void
+    public function testInvokeWithConfig3(): void
     {
         $filename   = '/tmp/test-file';
         $dateFormat = RotatingFileHandler::FILE_PER_MONTH;
@@ -262,7 +262,7 @@ final class RotatingFileHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig4(): void
+    public function testInvokeWithConfig4(): void
     {
         $filename       = '/tmp/test-file';
         $maxFiles       = 99;
@@ -326,7 +326,7 @@ final class RotatingFileHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig5(): void
+    public function testInvokeWithConfig5(): void
     {
         $filename       = '/tmp/test-file';
         $maxFiles       = 99;
@@ -391,7 +391,7 @@ final class RotatingFileHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig6(): void
+    public function testInvokeWithConfig6(): void
     {
         $filename       = '/tmp/test-file';
         $maxFiles       = 99;
@@ -454,7 +454,7 @@ final class RotatingFileHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $filename       = '/tmp/test-file';
         $maxFiles       = 99;
@@ -487,7 +487,7 @@ final class RotatingFileHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $filename       = '/tmp/test-file';
         $maxFiles       = 99;
@@ -526,7 +526,7 @@ final class RotatingFileHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $filename       = '/tmp/test-file';
         $maxFiles       = 99;
@@ -604,7 +604,7 @@ final class RotatingFileHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter3(): void
+    public function testInvokeWithConfigAndFormatter3(): void
     {
         $filename       = '/tmp/test-file';
         $maxFiles       = 99;
@@ -680,7 +680,7 @@ final class RotatingFileHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $filename       = '/tmp/test-file';
         $maxFiles       = 99;

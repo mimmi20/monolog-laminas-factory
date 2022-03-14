@@ -40,7 +40,7 @@ final class LogglyHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -64,7 +64,7 @@ final class LogglyHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -90,7 +90,7 @@ final class LogglyHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $token = 'test-token';
 
@@ -134,7 +134,7 @@ final class LogglyHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         $token = 'test-token';
 
@@ -176,7 +176,7 @@ final class LogglyHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $token     = 'test-token';
         $formatter = true;
@@ -205,7 +205,7 @@ final class LogglyHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $token     = 'test-token';
         $formatter = $this->getMockBuilder(LineFormatter::class)
@@ -240,7 +240,7 @@ final class LogglyHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $token     = 'test-token';
         $formatter = $this->getMockBuilder(LineFormatter::class)
@@ -295,7 +295,7 @@ final class LogglyHandlerFactoryTest extends TestCase
      *
      * @requires extension curl
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $token      = 'test-token';
         $processors = true;
@@ -320,7 +320,7 @@ final class LogglyHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithErrors(): void
+    public function testInvokeWithErrors(): void
     {
         if (extension_loaded('curl')) {
             self::markTestSkipped('This test checks the exception if the curl extension is missing');

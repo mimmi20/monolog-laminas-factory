@@ -29,7 +29,7 @@ final class MonologProcessorPluginManagerFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoce1(): void
+    public function testInvoke1(): void
     {
         $requestedName = PsrPlaceholder::class;
         $options       = ['abc' => 'xyz'];
@@ -53,7 +53,7 @@ final class MonologProcessorPluginManagerFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoce2(): void
+    public function testInvoke2(): void
     {
         $requestedName = PsrPlaceholder::class;
         $options       = ['abc' => 'xyz'];
@@ -76,7 +76,7 @@ final class MonologProcessorPluginManagerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoce3(): void
+    public function testInvoke3(): void
     {
         $requestedName = PsrPlaceholder::class;
         $options       = ['abc' => 'xyz'];
@@ -106,7 +106,7 @@ final class MonologProcessorPluginManagerFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoce4(): void
+    public function testInvoke4(): void
     {
         $requestedName = PsrPlaceholder::class;
         $options       = ['abc' => 'xyz'];
@@ -133,7 +133,7 @@ final class MonologProcessorPluginManagerFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoce5(): void
+    public function testInvoke5(): void
     {
         $requestedName = PsrPlaceholder::class;
         $options       = ['abc' => 'xyz'];
@@ -160,7 +160,7 @@ final class MonologProcessorPluginManagerFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoce6(): void
+    public function testInvoke6(): void
     {
         $requestedName = PsrPlaceholder::class;
         $options       = ['abc' => 'xyz'];

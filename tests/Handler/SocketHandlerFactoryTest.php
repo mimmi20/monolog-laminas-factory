@@ -36,7 +36,7 @@ final class SocketHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -58,7 +58,7 @@ final class SocketHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -82,7 +82,7 @@ final class SocketHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $connectionString = 'conn-string';
 
@@ -103,8 +103,8 @@ final class SocketHandlerFactoryTest extends TestCase
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
         self::assertSame($connectionString, $handler->getConnectionString());
-        self::assertSame(60.0, $handler->getTimeout());
-        self::assertSame(60.0, $handler->getWritingTimeout());
+        self::assertSame(0.0, $handler->getTimeout());
+        self::assertSame(10.0, $handler->getWritingTimeout());
         self::assertSame(60.0, $handler->getConnectionTimeout());
         // self::assertSame(0, $handler->getChunkSize());
         self::assertFalse($handler->isPersistent());
@@ -125,11 +125,11 @@ final class SocketHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         $connectionString = 'conn-string';
         $timeout          = 42.0;
-        $writeTimeout     = 120.0;
+        $writingTimeout   = 120.0;
         $level            = LogLevel::ALERT;
         $bubble           = false;
         $persistent       = true;
@@ -145,16 +145,15 @@ final class SocketHandlerFactoryTest extends TestCase
 
         $factory = new SocketHandlerFactory();
 
-        $handler = $factory($container, '', ['connectionString' => $connectionString, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
+        $handler = $factory($container, '', ['connectionString' => $connectionString, 'timeout' => $timeout, 'writeTimeout' => $writingTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
 
         self::assertInstanceOf(SocketHandler::class, $handler);
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame($connectionString, $handler->getConnectionString());
-        self::assertSame($writeTimeout, $handler->getTimeout());
-        self::assertSame($writeTimeout, $handler->getWritingTimeout());
-        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame($timeout, $handler->getTimeout());
+        self::assertSame($writingTimeout, $handler->getWritingTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 
@@ -172,11 +171,11 @@ final class SocketHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $connectionString = 'conn-string';
         $timeout          = 42.0;
-        $writeTimeout     = 120.0;
+        $writingTimeout   = 120.0;
         $level            = LogLevel::ALERT;
         $bubble           = false;
         $persistent       = true;
@@ -199,17 +198,17 @@ final class SocketHandlerFactoryTest extends TestCase
             sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
         );
 
-        $factory($container, '', ['connectionString' => $connectionString, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+        $factory($container, '', ['connectionString' => $connectionString, 'timeout' => $timeout, 'writeTimeout' => $writingTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
     }
 
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $connectionString = 'conn-string';
         $timeout          = 42.0;
-        $writeTimeout     = 120.0;
+        $writingTimeout   = 120.0;
         $level            = LogLevel::ALERT;
         $bubble           = false;
         $persistent       = true;
@@ -236,7 +235,7 @@ final class SocketHandlerFactoryTest extends TestCase
             sprintf('Could not find service %s', MonologFormatterPluginManager::class)
         );
 
-        $factory($container, '', ['connectionString' => $connectionString, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+        $factory($container, '', ['connectionString' => $connectionString, 'timeout' => $timeout, 'writeTimeout' => $writingTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
     }
 
     /**
@@ -244,16 +243,17 @@ final class SocketHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
-        $connectionString = 'conn-string';
-        $timeout          = 42.0;
-        $writeTimeout     = 120.0;
-        $level            = LogLevel::ALERT;
-        $bubble           = false;
-        $persistent       = true;
-        $chunkSize        = 100;
-        $formatter        = $this->getMockBuilder(LineFormatter::class)
+        $connectionString  = 'conn-string';
+        $timeout           = 42.0;
+        $writingTimeout    = 120.0;
+        $connectionTimeout = 72.0;
+        $level             = LogLevel::ALERT;
+        $bubble            = false;
+        $persistent        = true;
+        $chunkSize         = 100;
+        $formatter         = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -277,16 +277,79 @@ final class SocketHandlerFactoryTest extends TestCase
 
         $factory = new SocketHandlerFactory();
 
-        $handler = $factory($container, '', ['connectionString' => $connectionString, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+        $handler = $factory($container, '', ['connectionString' => $connectionString, 'timeout' => $timeout, 'writeTimeout' => $writingTimeout, 'connectionTimeout' => $connectionTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
 
         self::assertInstanceOf(SocketHandler::class, $handler);
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame($connectionString, $handler->getConnectionString());
-        self::assertSame($writeTimeout, $handler->getTimeout());
-        self::assertSame($writeTimeout, $handler->getWritingTimeout());
-        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame($timeout, $handler->getTimeout());
+        self::assertSame($writingTimeout, $handler->getWritingTimeout());
+        self::assertSame($connectionTimeout, $handler->getConnectionTimeout());
+        self::assertSame($chunkSize, $handler->getChunkSize());
+        self::assertTrue($handler->isPersistent());
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
+     */
+    public function testInvokeWithConfigAndFormatter3(): void
+    {
+        $connectionString  = 'conn-string';
+        $timeout           = 42.0;
+        $writingTimeout    = 120.0;
+        $connectionTimeout = 72.0;
+        $level             = LogLevel::ALERT;
+        $bubble            = false;
+        $persistent        = true;
+        $chunkSize         = 100;
+        $formatter         = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new SocketHandlerFactory();
+
+        $handler = $factory($container, '', ['connectionString' => $connectionString, 'timeout' => $timeout, 'writingTimeout' => $writingTimeout, 'connectionTimeout' => $connectionTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(SocketHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+        self::assertSame($connectionString, $handler->getConnectionString());
+        self::assertSame($timeout, $handler->getTimeout());
+        self::assertSame($writingTimeout, $handler->getWritingTimeout());
+        self::assertSame($connectionTimeout, $handler->getConnectionTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 
@@ -304,11 +367,11 @@ final class SocketHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $connectionString = 'conn-string';
         $timeout          = 42.0;
-        $writeTimeout     = 120.0;
+        $writingTimeout   = 120.0;
         $level            = LogLevel::ALERT;
         $bubble           = false;
         $persistent       = true;
@@ -329,6 +392,37 @@ final class SocketHandlerFactoryTest extends TestCase
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage('Processors must be an Array');
 
-        $factory($container, '', ['connectionString' => $connectionString, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'processors' => $processors]);
+        $factory($container, '', ['connectionString' => $connectionString, 'timeout' => $timeout, 'writeTimeout' => $writingTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'processors' => $processors]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvokeWithNegativeTimeout(): void
+    {
+        $connectionString = 'conn-string';
+        $timeout          = -1;
+        $writingTimeout   = 120.0;
+        $level            = LogLevel::ALERT;
+        $bubble           = false;
+        $persistent       = true;
+        $chunkSize        = 100;
+        $processors       = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new SocketHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', SocketHandler::class));
+
+        $factory($container, '', ['connectionString' => $connectionString, 'timeout' => $timeout, 'writeTimeout' => $writingTimeout, 'level' => $level, 'bubble' => $bubble, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'processors' => $processors]);
     }
 }

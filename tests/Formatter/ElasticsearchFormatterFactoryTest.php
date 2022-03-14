@@ -27,7 +27,7 @@ final class ElasticsearchFormatterFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -49,7 +49,7 @@ final class ElasticsearchFormatterFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutIndex(): void
+    public function testInvokeWithoutIndex(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -72,7 +72,7 @@ final class ElasticsearchFormatterFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithIndex(): void
+    public function testInvokeWithIndex(): void
     {
         $index = 'abc';
 
@@ -100,7 +100,7 @@ final class ElasticsearchFormatterFactoryTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithIndexAndType(): void
+    public function testInvokeWithIndexAndType(): void
     {
         $maxNormalizeDepth     = 42;
         $maxNormalizeItemCount = 4711;
