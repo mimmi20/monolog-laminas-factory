@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/monolog-laminas-factory package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -37,7 +37,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -59,7 +59,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -81,7 +81,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigWithWrongClient(): void
+    public function testInvokeWithConfigWithWrongClient(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -103,7 +103,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigWithWrongClientString(): void
+    public function testInvokeWithConfigWithWrongClientString(): void
     {
         $client = 'xyz';
 
@@ -129,7 +129,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigError(): void
+    public function testInvokeWithConfigError(): void
     {
         $client = 'xyz';
 
@@ -157,7 +157,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigWithClientClass(): void
+    public function testInvokeWithConfigWithClientClass(): void
     {
         $client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
@@ -212,7 +212,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigWithClassString(): void
+    public function testInvokeWithConfigWithClassString(): void
     {
         $client      = 'xyz';
         $clientClass = $this->getMockBuilder(Client::class)
@@ -270,7 +270,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $client      = 'xyz';
         $clientClass = $this->getMockBuilder(Client::class)
@@ -304,7 +304,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $client      = 'xyz';
         $clientClass = $this->getMockBuilder(Client::class)
@@ -350,7 +350,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $client      = 'xyz';
         $clientClass = $this->getMockBuilder(Client::class)
@@ -419,7 +419,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $client      = 'xyz';
         $clientClass = $this->getMockBuilder(Client::class)

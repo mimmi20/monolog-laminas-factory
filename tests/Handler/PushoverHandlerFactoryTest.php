@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/monolog-laminas-factory package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -40,7 +40,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -64,7 +64,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -88,7 +88,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigWithoutUsers(): void
+    public function testInvokeWithConfigWithoutUsers(): void
     {
         $token = 'token';
 
@@ -116,7 +116,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndUsers(): void
+    public function testInvokeWithConfigAndUsers(): void
     {
         $token = 'token';
         $users = 'abc';
@@ -138,8 +138,8 @@ final class PushoverHandlerFactoryTest extends TestCase
         self::assertSame(Logger::DEBUG, $handler->getLevel());
         self::assertTrue($handler->getBubble());
         self::assertSame('ssl://api.pushover.net:443', $handler->getConnectionString());
-        self::assertSame(60.0, $handler->getTimeout());
-        self::assertSame(60.0, $handler->getWritingTimeout());
+        self::assertSame(0.0, $handler->getTimeout());
+        self::assertSame(10.0, $handler->getWritingTimeout());
         self::assertSame(60.0, $handler->getConnectionTimeout());
         self::assertFalse($handler->isPersistent());
 
@@ -196,7 +196,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndUsers2(): void
+    public function testInvokeWithConfigAndUsers2(): void
     {
         $token        = 'token';
         $users        = ['abc', 'xyz'];
@@ -225,9 +225,9 @@ final class PushoverHandlerFactoryTest extends TestCase
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame('api.pushover.net:80', $handler->getConnectionString());
-        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($timeout, $handler->getTimeout());
         self::assertSame($writeTimeout, $handler->getWritingTimeout());
-        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame(60.0, $handler->getConnectionTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 
@@ -282,7 +282,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $token        = 'token';
         $users        = ['abc', 'xyz'];
@@ -319,7 +319,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $token        = 'token';
         $users        = ['abc', 'xyz'];
@@ -362,7 +362,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $token        = 'token';
         $users        = ['abc', 'xyz'];
@@ -404,9 +404,113 @@ final class PushoverHandlerFactoryTest extends TestCase
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
         self::assertSame('api.pushover.net:80', $handler->getConnectionString());
-        self::assertSame($writeTimeout, $handler->getTimeout());
+        self::assertSame($timeout, $handler->getTimeout());
         self::assertSame($writeTimeout, $handler->getWritingTimeout());
-        self::assertSame($timeout, $handler->getConnectionTimeout());
+        self::assertSame(60.0, $handler->getConnectionTimeout());
+        self::assertSame($chunkSize, $handler->getChunkSize());
+        self::assertTrue($handler->isPersistent());
+
+        $tk = new ReflectionProperty($handler, 'token');
+        $tk->setAccessible(true);
+
+        self::assertSame($token, $tk->getValue($handler));
+
+        $us = new ReflectionProperty($handler, 'users');
+        $us->setAccessible(true);
+
+        self::assertSame($users, $us->getValue($handler));
+
+        $ti = new ReflectionProperty($handler, 'title');
+        $ti->setAccessible(true);
+
+        self::assertSame($title, $ti->getValue($handler));
+
+        $hpl = new ReflectionProperty($handler, 'highPriorityLevel');
+        $hpl->setAccessible(true);
+
+        self::assertSame(Logger::ERROR, $hpl->getValue($handler));
+
+        $el = new ReflectionProperty($handler, 'emergencyLevel');
+        $el->setAccessible(true);
+
+        self::assertSame(Logger::ALERT, $el->getValue($handler));
+
+        $re = new ReflectionProperty($handler, 'retry');
+        $re->setAccessible(true);
+
+        self::assertSame($retry, $re->getValue($handler));
+
+        $ex = new ReflectionProperty($handler, 'expire');
+        $ex->setAccessible(true);
+
+        self::assertSame($expire, $ex->getValue($handler));
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     *
+     * @requires extension sockets
+     */
+    public function testInvokeWithConfigAndFormatter3(): void
+    {
+        $token  = 'token';
+        $users  = ['abc', 'xyz'];
+        $title  = 'title';
+        $retry  = 24;
+        $expire = 42;
+
+        $timeout           = 42.0;
+        $writeTimeout      = 120.0;
+        $connectionTimeout = 51.0;
+
+        $persistent = true;
+        $chunkSize  = 100;
+        $formatter  = $this->getMockBuilder(LineFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with(MonologFormatterPluginManager::class)
+            ->willReturn($monologFormatterPluginManager);
+
+        $factory = new PushoverHandlerFactory();
+
+        $handler = $factory($container, '', ['token' => $token, 'users' => $users, 'title' => $title, 'level' => LogLevel::ALERT, 'bubble' => false, 'useSSL' => false, 'highPriorityLevel' => LogLevel::ERROR, 'emergencyLevel' => LogLevel::ALERT, 'retry' => $retry, 'expire' => $expire, 'timeout' => $timeout, 'writingTimeout' => $writeTimeout, 'connectionTimeout' => $connectionTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(PushoverHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+        self::assertSame('api.pushover.net:80', $handler->getConnectionString());
+        self::assertSame($timeout, $handler->getTimeout());
+        self::assertSame($writeTimeout, $handler->getWritingTimeout());
+        self::assertSame($connectionTimeout, $handler->getConnectionTimeout());
         self::assertSame($chunkSize, $handler->getChunkSize());
         self::assertTrue($handler->isPersistent());
 
@@ -461,7 +565,7 @@ final class PushoverHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $token        = 'token';
         $users        = ['abc', 'xyz'];
@@ -494,7 +598,7 @@ final class PushoverHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutExtension(): void
+    public function testInvokeWithoutExtension(): void
     {
         if (extension_loaded('sockets')) {
             self::markTestSkipped('This test checks the exception if the sockets extension is missing');
@@ -525,5 +629,40 @@ final class PushoverHandlerFactoryTest extends TestCase
         $this->expectExceptionMessage(sprintf('The sockets extension is needed to use the %s', PushoverHandler::class));
 
         $factory($container, '', ['token' => $token, 'users' => $users, 'title' => $title, 'level' => LogLevel::ALERT, 'bubble' => false, 'useSSL' => false, 'highPriorityLevel' => LogLevel::ERROR, 'emergencyLevel' => LogLevel::ALERT, 'retry' => $retry, 'expire' => $expire, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize]);
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @requires extension sockets
+     */
+    public function testInvokeWithNegativeTimeout(): void
+    {
+        $token        = 'token';
+        $users        = ['abc', 'xyz'];
+        $title        = 'title';
+        $retry        = 24;
+        $expire       = 42;
+        $timeout      = -1;
+        $writeTimeout = 120.0;
+        $persistent   = true;
+        $chunkSize    = 100;
+        $processors   = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new PushoverHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(sprintf('Could not create %s', PushoverHandler::class));
+
+        $factory($container, '', ['token' => $token, 'users' => $users, 'title' => $title, 'level' => LogLevel::ALERT, 'bubble' => false, 'useSSL' => false, 'highPriorityLevel' => LogLevel::ERROR, 'emergencyLevel' => LogLevel::ALERT, 'retry' => $retry, 'expire' => $expire, 'timeout' => $timeout, 'writeTimeout' => $writeTimeout, 'persistent' => $persistent, 'chunkSize' => $chunkSize, 'processors' => $processors]);
     }
 }

@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/monolog-laminas-factory package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -37,7 +37,7 @@ final class RedisHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -59,7 +59,7 @@ final class RedisHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -81,7 +81,7 @@ final class RedisHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithWrongClient(): void
+    public function testInvokeWithWrongClient(): void
     {
         $client = true;
 
@@ -105,7 +105,7 @@ final class RedisHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithWrongClient2(): void
+    public function testInvokeWithWrongClient2(): void
     {
         $client = 'abc';
 
@@ -131,7 +131,7 @@ final class RedisHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithError(): void
+    public function testInvokeWithError(): void
     {
         $client = 'abc';
 
@@ -159,7 +159,7 @@ final class RedisHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithClient(): void
+    public function testInvokeWithClient(): void
     {
         $clientName = 'abc';
         $client     = $this->getMockBuilder(Client::class)
@@ -216,7 +216,7 @@ final class RedisHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithClient2(): void
+    public function testInvokeWithClient2(): void
     {
         $clientName = 'abc';
         $client     = $this->getMockBuilder(Client::class)
@@ -277,7 +277,7 @@ final class RedisHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithClient3(): void
+    public function testInvokeWithClient3(): void
     {
         $client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
@@ -331,7 +331,7 @@ final class RedisHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithClient4(): void
+    public function testInvokeWithClient4(): void
     {
         $client  = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
@@ -387,7 +387,7 @@ final class RedisHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithClient5(): void
+    public function testInvokeWithClient5(): void
     {
         $clientName = 'abc';
 
@@ -413,7 +413,7 @@ final class RedisHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $client    = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
@@ -446,7 +446,7 @@ final class RedisHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $client    = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
@@ -485,7 +485,7 @@ final class RedisHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $client    = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
@@ -554,7 +554,7 @@ final class RedisHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $client     = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()

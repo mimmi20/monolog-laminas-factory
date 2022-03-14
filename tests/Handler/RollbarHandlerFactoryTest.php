@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/monolog-laminas-factory package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -43,7 +43,7 @@ final class RollbarHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         if (!class_exists(Config::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
@@ -69,7 +69,7 @@ final class RollbarHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         if (!class_exists(Config::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
@@ -95,7 +95,7 @@ final class RollbarHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithTooShortToken(): void
+    public function testInvokeWithTooShortToken(): void
     {
         if (!class_exists(Config::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
@@ -125,7 +125,7 @@ final class RollbarHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         if (!class_exists(Config::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
@@ -185,7 +185,7 @@ final class RollbarHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         if (!class_exists(Config::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
@@ -246,7 +246,7 @@ final class RollbarHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         if (!class_exists(Config::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
@@ -280,7 +280,7 @@ final class RollbarHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         if (!class_exists(Config::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
@@ -320,7 +320,7 @@ final class RollbarHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         if (!class_exists(Config::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Config::class));
@@ -394,7 +394,7 @@ final class RollbarHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         if (!class_exists(Config::class)) {
             self::markTestSkipped(sprintf('class %s is required for this test', Config::class));

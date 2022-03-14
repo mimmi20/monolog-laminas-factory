@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/monolog-laminas-factory package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -41,7 +41,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -63,7 +63,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -85,7 +85,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutHandlerConfig(): void
+    public function testInvokeWithoutHandlerConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -107,7 +107,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerConfigWithoutType(): void
+    public function testInvokeWithHandlerConfigWithoutType(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -129,7 +129,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerConfigWithDisabledType(): void
+    public function testInvokeWithHandlerConfigWithDisabledType(): void
     {
         $type = 'abc';
 
@@ -153,7 +153,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerConfigWithLoaderError(): void
+    public function testInvokeWithHandlerConfigWithLoaderError(): void
     {
         $type = 'abc';
 
@@ -179,7 +179,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerConfigWithLoaderError2(): void
+    public function testInvokeWithHandlerConfigWithLoaderError2(): void
     {
         $type = 'abc';
 
@@ -217,7 +217,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithHandlerConfig(): void
+    public function testInvokeWithHandlerConfig(): void
     {
         $type           = 'abc';
         $formatterClass = $this->getMockBuilder(LineFormatter::class)
@@ -305,7 +305,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithHandlerConfig2(): void
+    public function testInvokeWithHandlerConfig2(): void
     {
         $type           = 'abc';
         $formatterClass = $this->getMockBuilder(LineFormatter::class)
@@ -393,7 +393,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithHandlerConfig3(): void
+    public function testInvokeWithHandlerConfig3(): void
     {
         $type           = 'abc';
         $formatterClass = $this->getMockBuilder(LineFormatter::class)
@@ -481,7 +481,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithHandlerConfig4(): void
+    public function testInvokeWithHandlerConfig4(): void
     {
         $type           = 'abc';
         $strategy       = $this->getMockBuilder(ChannelLevelActivationStrategy::class)
@@ -571,7 +571,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      * @throws Exception
      * @throws ReflectionException
      */
-    public function testInvoceWithHandlerConfig5(): void
+    public function testInvokeWithHandlerConfig5(): void
     {
         $type           = 'abc';
         $strategy       = LogLevel::WARNING;
@@ -670,7 +670,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithHandlerConfig6(): void
+    public function testInvokeWithHandlerConfig6(): void
     {
         $type           = 'abc';
         $strategy       = 'xyz';
@@ -772,7 +772,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerConfig7(): void
+    public function testInvokeWithHandlerConfig7(): void
     {
         $type     = 'abc';
         $strategy = 'xyz';
@@ -833,7 +833,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerConfig8(): void
+    public function testInvokeWithHandlerConfig8(): void
     {
         $type     = 'abc';
         $strategy = 'xyz';
@@ -892,7 +892,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithHandlerConfig9(): void
+    public function testInvokeWithHandlerConfig9(): void
     {
         $type            = 'abc';
         $strategyName    = 'xyz';
@@ -993,7 +993,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerConfig10(): void
+    public function testInvokeWithHandlerConfig10(): void
     {
         $type            = 'abc';
         $strategyName    = 'xyz';
@@ -1049,7 +1049,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerConfig11(): void
+    public function testInvokeWithHandlerConfig11(): void
     {
         $type = 'abc';
 
@@ -1101,7 +1101,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerConfig12(): void
+    public function testInvokeWithHandlerConfig12(): void
     {
         $type     = 'abc';
         $strategy = 'xyz';
@@ -1156,7 +1156,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $type            = 'abc';
         $strategyName    = 'xyz';
@@ -1218,7 +1218,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter2(): void
+    public function testInvokeWithConfigAndBoolFormatter2(): void
     {
         $type            = 'abc';
         $strategyName    = 'xyz';
@@ -1275,7 +1275,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $type            = 'abc';
         $strategyName    = 'xyz';
@@ -1353,7 +1353,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $type            = 'abc';
         $strategyName    = 'xyz';
@@ -1463,7 +1463,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter3(): void
+    public function testInvokeWithConfigAndFormatter3(): void
     {
         $type            = 'abc';
         $strategyName    = 'xyz';
@@ -1532,7 +1532,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter4(): void
+    public function testInvokeWithConfigAndFormatter4(): void
     {
         $type            = 'abc';
         $strategyName    = 'xyz';
@@ -1642,7 +1642,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $type            = 'abc';
         $strategyName    = 'xyz';
@@ -1702,7 +1702,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors2(): void
+    public function testInvokeWithConfigAndBoolProcessors2(): void
     {
         $type            = 'abc';
         $strategyName    = 'xyz';

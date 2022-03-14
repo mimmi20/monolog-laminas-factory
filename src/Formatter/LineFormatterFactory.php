@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/monolog-laminas-factory package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -40,6 +40,7 @@ final class LineFormatterFactory implements FactoryInterface
         $maxNormalizeDepth          = NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH;
         $maxNormalizeItemCount      = NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT;
         $prettyPrint                = false;
+        $includeStacktraces         = false;
 
         if (is_array($options)) {
             if (array_key_exists('format', $options)) {
@@ -69,13 +70,13 @@ final class LineFormatterFactory implements FactoryInterface
             if (array_key_exists('prettyPrint', $options)) {
                 $prettyPrint = $options['prettyPrint'];
             }
+
+            if (array_key_exists('includeStacktraces', $options)) {
+                $includeStacktraces = $options['includeStacktraces'];
+            }
         }
 
-        $formatter = new LineFormatter($format, $dateFormat, $allowInlineLineBreaks, $ignoreEmptyContextAndExtra);
-
-        if (is_array($options) && array_key_exists('includeStacktraces', $options)) {
-            $formatter->includeStacktraces($options['includeStacktraces']);
-        }
+        $formatter = new LineFormatter($format, $dateFormat, $allowInlineLineBreaks, $ignoreEmptyContextAndExtra, $includeStacktraces);
 
         $formatter->setMaxNormalizeDepth($maxNormalizeDepth);
         $formatter->setMaxNormalizeItemCount($maxNormalizeItemCount);

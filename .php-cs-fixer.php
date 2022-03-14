@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/monolog-laminas-factory package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,7 +13,7 @@ declare(strict_types = 1);
 $header = <<<'EOF'
     This file is part of the mimmi20/monolog-laminas-factory package.
 
-    Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+    Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
 
     For the full copyright and license information, please view the LICENSE
     file that was distributed with this source code.
@@ -42,6 +42,10 @@ return $config
                     'location' => 'after_open',
                     'separate' => 'bottom',
                 ],
+                '@PHP74Migration' => true,
+                '@PHP74Migration:risky' => true,
+                '@PHP80Migration' => false,
+                '@PHP80Migration:risky' => false,
             ]
         )
     )

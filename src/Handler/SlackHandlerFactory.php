@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/monolog-laminas-factory package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -25,7 +25,6 @@ use Monolog\Logger;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function ini_get;
 use function is_array;
 use function sprintf;
 
@@ -74,8 +73,11 @@ final class SlackHandlerFactory implements FactoryInterface
         $useShortAttachment = false;
         $includeContext     = false;
         $excludeFields      = [];
-        $timeout            = (float) ini_get('default_socket_timeout');
-        $writeTimeout       = (float) ini_get('default_socket_timeout');
+        $timeout            = 0.0;
+        $writingTimeout     = 10.0;
+        $connectionTimeout  = null;
+        $persistent         = false;
+        $chunkSize          = null;
 
         if (array_key_exists('userName', $options)) {
             $userName = $options['userName'];
@@ -113,8 +115,22 @@ final class SlackHandlerFactory implements FactoryInterface
             $timeout = $options['timeout'];
         }
 
-        if (array_key_exists('writeTimeout', $options)) {
-            $writeTimeout = $options['writeTimeout'];
+        if (array_key_exists('writingTimeout', $options)) {
+            $writingTimeout = $options['writingTimeout'];
+        } elseif (array_key_exists('writeTimeout', $options)) {
+            $writingTimeout = $options['writeTimeout'];
+        }
+
+        if (array_key_exists('connectionTimeout', $options)) {
+            $connectionTimeout = $options['connectionTimeout'];
+        }
+
+        if (array_key_exists('persistent', $options)) {
+            $persistent = (bool) $options['persistent'];
+        }
+
+        if (array_key_exists('chunkSize', $options)) {
+            $chunkSize = $options['chunkSize'];
         }
 
         try {
@@ -128,7 +144,12 @@ final class SlackHandlerFactory implements FactoryInterface
                 $bubble,
                 $useShortAttachment,
                 $includeContext,
-                $excludeFields
+                $excludeFields,
+                $persistent,
+                $timeout,
+                $writingTimeout,
+                $connectionTimeout,
+                $chunkSize
             );
         } catch (MissingExtensionException $e) {
             throw new ServiceNotCreatedException(
@@ -136,23 +157,6 @@ final class SlackHandlerFactory implements FactoryInterface
                 0,
                 $e
             );
-        }
-
-        if (!empty($timeout)) {
-            $handler->setConnectionTimeout($timeout);
-        }
-
-        if (!empty($writeTimeout)) {
-            $handler->setTimeout($writeTimeout);
-            $handler->setWritingTimeout($writeTimeout);
-        }
-
-        if (array_key_exists('persistent', $options)) {
-            $handler->setPersistent($options['persistent']);
-        }
-
-        if (array_key_exists('chunkSize', $options)) {
-            $handler->setChunkSize($options['chunkSize']);
         }
 
         $this->addFormatter($container, $handler, $options);

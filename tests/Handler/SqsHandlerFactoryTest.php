@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/monolog-laminas-factory package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -37,7 +37,7 @@ final class SqsHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -59,7 +59,7 @@ final class SqsHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -81,7 +81,7 @@ final class SqsHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $sqsClient = true;
 
@@ -105,7 +105,7 @@ final class SqsHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         $sqsClient = 'test-client';
 
@@ -133,7 +133,7 @@ final class SqsHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig3(): void
+    public function testInvokeWithConfig3(): void
     {
         $sqsClient      = 'test-client';
         $sqsClientClass = $this->getMockBuilder(SqsClient::class)
@@ -185,7 +185,7 @@ final class SqsHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig4(): void
+    public function testInvokeWithConfig4(): void
     {
         $sqsClient      = 'test-client';
         $sqsClientClass = $this->getMockBuilder(SqsClient::class)
@@ -238,7 +238,7 @@ final class SqsHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig5(): void
+    public function testInvokeWithConfig5(): void
     {
         $sqsClientClass = $this->getMockBuilder(SqsClient::class)
             ->disableOriginalConstructor()
@@ -287,7 +287,7 @@ final class SqsHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfig6(): void
+    public function testInvokeWithConfig6(): void
     {
         $sqsClientClass = $this->getMockBuilder(SqsClient::class)
             ->disableOriginalConstructor()
@@ -335,7 +335,7 @@ final class SqsHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfig7(): void
+    public function testInvokeWithConfig7(): void
     {
         $sqsClient = 'test-client';
 
@@ -361,7 +361,7 @@ final class SqsHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $sqsClientClass = $this->getMockBuilder(SqsClient::class)
             ->disableOriginalConstructor()
@@ -391,7 +391,7 @@ final class SqsHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $sqsClientClass = $this->getMockBuilder(SqsClient::class)
             ->disableOriginalConstructor()
@@ -427,7 +427,7 @@ final class SqsHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $sqsClientClass = $this->getMockBuilder(SqsClient::class)
             ->disableOriginalConstructor()
@@ -488,7 +488,7 @@ final class SqsHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $sqsClientClass = $this->getMockBuilder(SqsClient::class)
             ->disableOriginalConstructor()

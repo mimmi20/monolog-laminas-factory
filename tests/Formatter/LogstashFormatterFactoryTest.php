@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/monolog-laminas-factory package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -29,7 +29,7 @@ final class LogstashFormatterFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -51,7 +51,7 @@ final class LogstashFormatterFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutApplicationname(): void
+    public function testInvokeWithoutApplicationname(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -75,7 +75,7 @@ final class LogstashFormatterFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithApplicationname(): void
+    public function testInvokeWithApplicationname(): void
     {
         $applicationName = 'abc';
 
@@ -119,7 +119,7 @@ final class LogstashFormatterFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvoceWithApplicationname2(): void
+    public function testInvokeWithApplicationname2(): void
     {
         $applicationName = 'abc';
         $systemName      = 'xyz';

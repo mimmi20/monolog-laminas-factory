@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/monolog-laminas-factory package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,7 +38,7 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -60,7 +60,7 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -82,7 +82,7 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithEmptyConfig2(): void
+    public function testInvokeWithEmptyConfig2(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -104,7 +104,7 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutHandlers(): void
+    public function testInvokeWithoutHandlers(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -126,7 +126,7 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithStringHandlers(): void
+    public function testInvokeWithStringHandlers(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -148,7 +148,7 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerWithoutType(): void
+    public function testInvokeWithHandlerWithoutType(): void
     {
         $handlers = [[]];
 
@@ -172,7 +172,7 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerWithType(): void
+    public function testInvokeWithHandlerWithType(): void
     {
         $handlers = [
             [
@@ -251,7 +251,7 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithHandlerWithType2(): void
+    public function testInvokeWithHandlerWithType2(): void
     {
         $handlers = [
             [
@@ -331,7 +331,7 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithHandlerWithType3(): void
+    public function testInvokeWithHandlerWithType3(): void
     {
         $handlers = [
             [
@@ -430,7 +430,7 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithHandlerWithType4(): void
+    public function testInvokeWithHandlerWithType4(): void
     {
         $handlers = [
             [
@@ -529,7 +529,7 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $formatter = true;
         $handlers  = [
@@ -629,7 +629,7 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $formatter = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
@@ -731,7 +731,7 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $formatter = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
@@ -831,7 +831,7 @@ final class WhatFailureGroupHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $processors = true;
         $handlers   = [

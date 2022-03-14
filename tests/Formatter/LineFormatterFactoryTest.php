@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/monolog-laminas-factory package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -30,7 +30,7 @@ final class LineFormatterFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -67,7 +67,7 @@ final class LineFormatterFactoryTest extends TestCase
         $st = new ReflectionProperty($formatter, 'includeStacktraces');
         $st->setAccessible(true);
 
-        self::assertNull($st->getValue($formatter));
+        self::assertFalse($st->getValue($formatter));
     }
 
     /**
@@ -75,7 +75,7 @@ final class LineFormatterFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -112,7 +112,7 @@ final class LineFormatterFactoryTest extends TestCase
         $st = new ReflectionProperty($formatter, 'includeStacktraces');
         $st->setAccessible(true);
 
-        self::assertNull($st->getValue($formatter));
+        self::assertFalse($st->getValue($formatter));
     }
 
     /**
@@ -120,7 +120,7 @@ final class LineFormatterFactoryTest extends TestCase
      * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $format                     = '[abc] [def]';
         $dateFormat                 = 'xxx__Y-m-d\TH:i:sP__xxx';

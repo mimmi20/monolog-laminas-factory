@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/monolog-laminas-factory package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2022, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -42,7 +42,7 @@ final class SyslogUdpHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithoutConfig(): void
+    public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -66,7 +66,7 @@ final class SyslogUdpHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithEmptyConfig(): void
+    public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -92,7 +92,7 @@ final class SyslogUdpHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfig(): void
+    public function testInvokeWithConfig(): void
     {
         $host = 'test-host';
 
@@ -161,7 +161,7 @@ final class SyslogUdpHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfig2(): void
+    public function testInvokeWithConfig2(): void
     {
         $host     = 'test-host';
         $port     = 4711;
@@ -232,7 +232,7 @@ final class SyslogUdpHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndBoolFormatter(): void
+    public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $host      = 'test-host';
         $port      = 4711;
@@ -265,7 +265,7 @@ final class SyslogUdpHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndFormatter(): void
+    public function testInvokeWithConfigAndFormatter(): void
     {
         $host      = 'test-host';
         $port      = 4711;
@@ -304,7 +304,7 @@ final class SyslogUdpHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndFormatter2(): void
+    public function testInvokeWithConfigAndFormatter2(): void
     {
         $host      = 'test-host';
         $port      = 4711;
@@ -388,7 +388,7 @@ final class SyslogUdpHandlerFactoryTest extends TestCase
      *
      * @requires extension sockets
      */
-    public function testInvoceWithConfigAndBoolProcessors(): void
+    public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $host       = 'test-host';
         $port       = 4711;
@@ -417,7 +417,7 @@ final class SyslogUdpHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvoceWithoutExtension(): void
+    public function testInvokeWithoutExtension(): void
     {
         if (extension_loaded('sockets')) {
             self::markTestSkipped('This test checks the exception if the sockets extension is missing');
