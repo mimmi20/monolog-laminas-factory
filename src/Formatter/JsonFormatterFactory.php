@@ -15,6 +15,7 @@ namespace Mimmi20\LoggerFactory\Formatter;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\Formatter\JsonFormatter;
+use Monolog\Formatter\NormalizerFormatter;
 
 use function array_key_exists;
 use function is_array;
@@ -39,6 +40,8 @@ final class JsonFormatterFactory implements FactoryInterface
         $maxNormalizeDepth          = NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH;
         $maxNormalizeItemCount      = NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT;
         $prettyPrint                = false;
+        $includeStacktraces         = false;
+        $dateFormat                 = NormalizerFormatter::SIMPLE_DATE;
 
         if (is_array($options)) {
             if (array_key_exists('batchMode', $options)) {
@@ -64,20 +67,19 @@ final class JsonFormatterFactory implements FactoryInterface
             if (array_key_exists('prettyPrint', $options)) {
                 $prettyPrint = $options['prettyPrint'];
             }
-        }
 
-        $formatter = new JsonFormatter($batchMode, $appendNewline, $ignoreEmptyContextAndExtra);
-
-        if (is_array($options)) {
             if (array_key_exists('includeStacktraces', $options)) {
-                $formatter->includeStacktraces($options['includeStacktraces']);
+                $includeStacktraces = $options['includeStacktraces'];
             }
 
             if (array_key_exists('dateFormat', $options)) {
-                $formatter->setDateFormat($options['dateFormat']);
+                $dateFormat = $options['dateFormat'];
             }
         }
 
+        $formatter = new JsonFormatter($batchMode, $appendNewline, $ignoreEmptyContextAndExtra, $includeStacktraces);
+
+        $formatter->setDateFormat($dateFormat);
         $formatter->setMaxNormalizeDepth($maxNormalizeDepth);
         $formatter->setMaxNormalizeItemCount($maxNormalizeItemCount);
         $formatter->setJsonPrettyPrint($prettyPrint);
