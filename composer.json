@@ -45,7 +45,7 @@
     "phpunit/phpunit": "^9.5.20",
     "predis/predis": "^1.1.10",
     "rollbar/rollbar": "^v2.1.0 || ^v3.1.1",
-    "ruflin/elastica": "^7.1.4",
+    "ruflin/elastica": "^7.1.5",
     "swiftmailer/swiftmailer": "^6.3.0"
   },
   "suggest": {
