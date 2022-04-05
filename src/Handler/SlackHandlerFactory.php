@@ -63,80 +63,24 @@ final class SlackHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No channel provided');
         }
 
-        $token              = $options['token'];
-        $channel            = $options['channel'];
-        $userName           = null;
-        $useAttachment      = true;
-        $iconEmoji          = null;
-        $level              = LogLevel::DEBUG;
-        $bubble             = true;
-        $useShortAttachment = false;
-        $includeContext     = false;
-        $excludeFields      = [];
-        $timeout            = 0.0;
-        $writingTimeout     = 10.0;
-        $connectionTimeout  = null;
-        $persistent         = false;
-        $chunkSize          = null;
-
-        if (array_key_exists('userName', $options)) {
-            $userName = $options['userName'];
-        }
-
-        if (array_key_exists('useAttachment', $options)) {
-            $useAttachment = $options['useAttachment'];
-        }
-
-        if (array_key_exists('iconEmoji', $options)) {
-            $iconEmoji = $options['iconEmoji'];
-        }
-
-        if (array_key_exists('level', $options)) {
-            $level = $options['level'];
-        }
-
-        if (array_key_exists('bubble', $options)) {
-            $bubble = $options['bubble'];
-        }
-
-        if (array_key_exists('useShortAttachment', $options)) {
-            $useShortAttachment = $options['useShortAttachment'];
-        }
-
-        if (array_key_exists('includeContextAndExtra', $options)) {
-            $includeContext = $options['includeContextAndExtra'];
-        }
-
-        if (array_key_exists('excludeFields', $options)) {
-            $excludeFields = $options['excludeFields'];
-        }
-
-        if (array_key_exists('timeout', $options)) {
-            $timeout = $options['timeout'];
-        }
-
-        if (array_key_exists('writingTimeout', $options)) {
-            $writingTimeout = $options['writingTimeout'];
-        } elseif (array_key_exists('writeTimeout', $options)) {
-            $writingTimeout = $options['writeTimeout'];
-        }
-
-        if (array_key_exists('connectionTimeout', $options)) {
-            $connectionTimeout = $options['connectionTimeout'];
-        }
-
-        if (array_key_exists('persistent', $options)) {
-            $persistent = (bool) $options['persistent'];
-        }
-
-        if (array_key_exists('chunkSize', $options)) {
-            $chunkSize = $options['chunkSize'];
-        }
+        $userName           = $options['userName'] ?? null;
+        $useAttachment      = $options['useAttachment'] ?? true;
+        $iconEmoji          = $options['iconEmoji'] ?? null;
+        $useShortAttachment = $options['useShortAttachment'] ?? false;
+        $includeContext     = $options['includeContextAndExtra'] ?? false;
+        $excludeFields      = $options['excludeFields'] ?? [];
+        $level              = $options['level'] ?? LogLevel::DEBUG;
+        $bubble             = $options['bubble'] ?? true;
+        $timeout            = $options['timeout'] ?? 0.0;
+        $writingTimeout     = $options['writingTimeout'] ?? $options['writeTimeout'] ?? 10.0;
+        $connectionTimeout  = $options['connectionTimeout'] ?? null;
+        $persistent         = $options['persistent'] ?? false;
+        $chunkSize          = $options['chunkSize'] ?? null;
 
         try {
             $handler = new SlackHandler(
-                $token,
-                $channel,
+                $options['token'],
+                $options['channel'],
                 $userName,
                 $useAttachment,
                 $iconEmoji,

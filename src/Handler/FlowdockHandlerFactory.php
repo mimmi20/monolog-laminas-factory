@@ -59,48 +59,17 @@ final class FlowdockHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No apiToken provided');
         }
 
-        $apiToken          = $options['apiToken'];
-        $level             = LogLevel::DEBUG;
-        $bubble            = true;
-        $timeout           = 0.0;
-        $writingTimeout    = 10.0;
-        $connectionTimeout = null;
-        $persistent        = false;
-        $chunkSize         = null;
-
-        if (array_key_exists('level', $options)) {
-            $level = $options['level'];
-        }
-
-        if (array_key_exists('bubble', $options)) {
-            $bubble = $options['bubble'];
-        }
-
-        if (array_key_exists('timeout', $options)) {
-            $timeout = $options['timeout'];
-        }
-
-        if (array_key_exists('writingTimeout', $options)) {
-            $writingTimeout = $options['writingTimeout'];
-        } elseif (array_key_exists('writeTimeout', $options)) {
-            $writingTimeout = $options['writeTimeout'];
-        }
-
-        if (array_key_exists('connectionTimeout', $options)) {
-            $connectionTimeout = $options['connectionTimeout'];
-        }
-
-        if (array_key_exists('persistent', $options)) {
-            $persistent = (bool) $options['persistent'];
-        }
-
-        if (array_key_exists('chunkSize', $options)) {
-            $chunkSize = $options['chunkSize'];
-        }
+        $level             = $options['level'] ?? LogLevel::DEBUG;
+        $bubble            = $options['bubble'] ?? true;
+        $timeout           = $options['timeout'] ?? 0.0;
+        $writingTimeout    = $options['writingTimeout'] ?? $options['writeTimeout'] ?? 10.0;
+        $connectionTimeout = $options['connectionTimeout'] ?? null;
+        $persistent        = $options['persistent'] ?? false;
+        $chunkSize         = $options['chunkSize'] ?? null;
 
         try {
             $handler = new FlowdockHandler(
-                $apiToken,
+                $options['apiToken'],
                 $level,
                 $bubble,
                 $persistent,

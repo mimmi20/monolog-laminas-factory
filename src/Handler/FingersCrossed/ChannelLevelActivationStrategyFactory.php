@@ -30,7 +30,7 @@ final class ChannelLevelActivationStrategyFactory implements FactoryInterface
     /**
      * @param string                                                  $requestedName
      * @param array<string, array<string,int|string>|int|string>|null $options
-     * @phpstan-param array{defaultActionLevel?: Level|LevelName|LogLevel::*, channelToActionLevel?: array<Level|LevelName|LogLevel::*>}|null $options
+     * @phpstan-param array{defaultActionLevel?: Level|LevelName|LogLevel::*, channelToActionLevel?: array<Level|LevelName|LogLevel::*>|null}|null $options
      *
      * @throws void
      *
@@ -47,7 +47,7 @@ final class ChannelLevelActivationStrategyFactory implements FactoryInterface
                 $defaultActionLevel = $options['defaultActionLevel'];
             }
 
-            if (array_key_exists('channelToActionLevel', $options)) {
+            if (array_key_exists('channelToActionLevel', $options) && is_array($options['channelToActionLevel'])) {
                 $channelToActionLevel = $options['channelToActionLevel'];
             }
         }

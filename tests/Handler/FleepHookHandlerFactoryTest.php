@@ -141,14 +141,13 @@ final class FleepHookHandlerFactoryTest extends TestCase
      */
     public function testInvokeConfig2(): void
     {
-        $token             = 'test-token';
-        $timeout           = 42.0;
-        $writeTimeout      = 120.0;
-        $connectionTimeout = 51.0;
-        $level             = LogLevel::ALERT;
-        $bubble            = false;
-        $persistent        = true;
-        $chunkSize         = 100;
+        $token        = 'test-token';
+        $timeout      = 42.0;
+        $writeTimeout = 120.0;
+        $level        = LogLevel::ALERT;
+        $bubble       = false;
+        $persistent   = true;
+        $chunkSize    = 100;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()

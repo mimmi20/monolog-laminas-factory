@@ -51,9 +51,9 @@ final class LoggerFactoryTest extends AbstractTest
 
         $configProvider = new ConfigProvider();
 
-        $sm->setFactory(
+        $sm->setService(
             'config',
-            static fn (): array => [
+            [
                 'dependencies' => $configProvider->getDependencyConfig(),
                 'monolog_handlers' => $configProvider->getMonologHandlerConfig(),
                 'monolog_processors' => $configProvider->getMonologProcessorConfig(),
@@ -110,9 +110,9 @@ final class LoggerFactoryTest extends AbstractTest
 
         $configProvider = new ConfigProvider();
 
-        $sm->setFactory(
+        $sm->setService(
             'config',
-            static fn (): array => [
+            [
                 'dependencies' => $configProvider->getDependencyConfig(),
                 'monolog_handlers' => $configProvider->getMonologHandlerConfig(),
                 'monolog_processors' => $configProvider->getMonologProcessorConfig(),

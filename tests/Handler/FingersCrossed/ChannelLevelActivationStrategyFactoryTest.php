@@ -94,6 +94,38 @@ final class ChannelLevelActivationStrategyFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
+    public function testInvokeWithWrongConfig(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new ChannelLevelActivationStrategyFactory();
+
+        $strategy = $factory($container, '', ['defaultActionLevel' => LogLevel::ALERT, 'channelToActionLevel' => null]);
+
+        self::assertInstanceOf(ChannelLevelActivationStrategy::class, $strategy);
+
+        $dal = new ReflectionProperty($strategy, 'defaultActionLevel');
+        $dal->setAccessible(true);
+
+        self::assertSame(Logger::ALERT, $dal->getValue($strategy));
+
+        $ctal = new ReflectionProperty($strategy, 'channelToActionLevel');
+        $ctal->setAccessible(true);
+
+        self::assertSame([], $ctal->getValue($strategy));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
     public function testInvokeWithConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
