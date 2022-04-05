@@ -70,80 +70,24 @@ final class PushoverHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No users provided');
         }
 
-        $token             = $options['token'];
-        $users             = $options['users'];
-        $title             = null;
-        $level             = LogLevel::DEBUG;
-        $bubble            = true;
-        $useSSL            = true;
-        $highPriorityLevel = LogLevel::CRITICAL;
-        $emergencyLevel    = LogLevel::EMERGENCY;
-        $retry             = 30;
-        $expire            = 25200;
-        $timeout           = 0.0;
-        $writingTimeout    = 10.0;
-        $connectionTimeout = null;
-        $persistent        = false;
-        $chunkSize         = null;
-
-        if (array_key_exists('title', $options)) {
-            $title = $options['title'];
-        }
-
-        if (array_key_exists('level', $options)) {
-            $level = $options['level'];
-        }
-
-        if (array_key_exists('bubble', $options)) {
-            $bubble = $options['bubble'];
-        }
-
-        if (array_key_exists('useSSL', $options)) {
-            $useSSL = $options['useSSL'];
-        }
-
-        if (array_key_exists('highPriorityLevel', $options)) {
-            $highPriorityLevel = $options['highPriorityLevel'];
-        }
-
-        if (array_key_exists('emergencyLevel', $options)) {
-            $emergencyLevel = $options['emergencyLevel'];
-        }
-
-        if (array_key_exists('retry', $options)) {
-            $retry = $options['retry'];
-        }
-
-        if (array_key_exists('expire', $options)) {
-            $expire = $options['expire'];
-        }
-
-        if (array_key_exists('timeout', $options)) {
-            $timeout = $options['timeout'];
-        }
-
-        if (array_key_exists('writingTimeout', $options)) {
-            $writingTimeout = $options['writingTimeout'];
-        } elseif (array_key_exists('writeTimeout', $options)) {
-            $writingTimeout = $options['writeTimeout'];
-        }
-
-        if (array_key_exists('connectionTimeout', $options)) {
-            $connectionTimeout = $options['connectionTimeout'];
-        }
-
-        if (array_key_exists('persistent', $options)) {
-            $persistent = (bool) $options['persistent'];
-        }
-
-        if (array_key_exists('chunkSize', $options)) {
-            $chunkSize = $options['chunkSize'];
-        }
+        $title             = $options['title'] ?? null;
+        $useSSL            = $options['useSSL'] ?? true;
+        $highPriorityLevel = $options['highPriorityLevel'] ?? LogLevel::CRITICAL;
+        $emergencyLevel    = $options['emergencyLevel'] ?? LogLevel::EMERGENCY;
+        $retry             = $options['retry'] ?? 30;
+        $expire            = $options['expire'] ?? 25200;
+        $level             = $options['level'] ?? LogLevel::DEBUG;
+        $bubble            = $options['bubble'] ?? true;
+        $timeout           = $options['timeout'] ?? 0.0;
+        $writingTimeout    = $options['writingTimeout'] ?? $options['writeTimeout'] ?? 10.0;
+        $connectionTimeout = $options['connectionTimeout'] ?? null;
+        $persistent        = $options['persistent'] ?? false;
+        $chunkSize         = $options['chunkSize'] ?? null;
 
         try {
             $handler = new PushoverHandler(
-                $token,
-                $users,
+                $options['token'],
+                $options['users'],
                 $title,
                 $level,
                 $bubble,

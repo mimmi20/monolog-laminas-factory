@@ -59,58 +59,19 @@ final class LogEntriesHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No token provided');
         }
 
-        $token             = $options['token'];
-        $useSSL            = true;
-        $level             = LogLevel::DEBUG;
-        $bubble            = true;
-        $host              = 'data.logentries.com';
-        $timeout           = 0.0;
-        $writingTimeout    = 10.0;
-        $connectionTimeout = null;
-        $persistent        = false;
-        $chunkSize         = null;
-
-        if (array_key_exists('useSSL', $options)) {
-            $useSSL = $options['useSSL'];
-        }
-
-        if (array_key_exists('level', $options)) {
-            $level = $options['level'];
-        }
-
-        if (array_key_exists('bubble', $options)) {
-            $bubble = $options['bubble'];
-        }
-
-        if (array_key_exists('host', $options)) {
-            $host = $options['host'];
-        }
-
-        if (array_key_exists('timeout', $options)) {
-            $timeout = $options['timeout'];
-        }
-
-        if (array_key_exists('writingTimeout', $options)) {
-            $writingTimeout = $options['writingTimeout'];
-        } elseif (array_key_exists('writeTimeout', $options)) {
-            $writingTimeout = $options['writeTimeout'];
-        }
-
-        if (array_key_exists('connectionTimeout', $options)) {
-            $connectionTimeout = $options['connectionTimeout'];
-        }
-
-        if (array_key_exists('persistent', $options)) {
-            $persistent = (bool) $options['persistent'];
-        }
-
-        if (array_key_exists('chunkSize', $options)) {
-            $chunkSize = $options['chunkSize'];
-        }
+        $useSSL            = $options['useSSL'] ?? true;
+        $host              = $options['host'] ?? 'data.logentries.com';
+        $level             = $options['level'] ?? LogLevel::DEBUG;
+        $bubble            = $options['bubble'] ?? true;
+        $timeout           = $options['timeout'] ?? 0.0;
+        $writingTimeout    = $options['writingTimeout'] ?? $options['writeTimeout'] ?? 10.0;
+        $connectionTimeout = $options['connectionTimeout'] ?? null;
+        $persistent        = $options['persistent'] ?? false;
+        $chunkSize         = $options['chunkSize'] ?? null;
 
         try {
             $handler = new LogEntriesHandler(
-                $token,
+                $options['token'],
                 $useSSL,
                 $level,
                 $bubble,

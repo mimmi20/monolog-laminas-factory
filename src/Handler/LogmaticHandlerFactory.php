@@ -59,63 +59,20 @@ final class LogmaticHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No token provided');
         }
 
-        $token             = $options['token'];
-        $hostname          = '';
-        $appname           = '';
-        $useSSL            = true;
-        $level             = LogLevel::DEBUG;
-        $bubble            = true;
-        $timeout           = 0.0;
-        $writingTimeout    = 10.0;
-        $connectionTimeout = null;
-        $persistent        = false;
-        $chunkSize         = null;
-
-        if (array_key_exists('hostname', $options)) {
-            $hostname = $options['hostname'];
-        }
-
-        if (array_key_exists('appname', $options)) {
-            $appname = $options['appname'];
-        }
-
-        if (array_key_exists('useSSL', $options)) {
-            $useSSL = $options['useSSL'];
-        }
-
-        if (array_key_exists('level', $options)) {
-            $level = $options['level'];
-        }
-
-        if (array_key_exists('bubble', $options)) {
-            $bubble = $options['bubble'];
-        }
-
-        if (array_key_exists('timeout', $options)) {
-            $timeout = $options['timeout'];
-        }
-
-        if (array_key_exists('writingTimeout', $options)) {
-            $writingTimeout = $options['writingTimeout'];
-        } elseif (array_key_exists('writeTimeout', $options)) {
-            $writingTimeout = $options['writeTimeout'];
-        }
-
-        if (array_key_exists('connectionTimeout', $options)) {
-            $connectionTimeout = $options['connectionTimeout'];
-        }
-
-        if (array_key_exists('persistent', $options)) {
-            $persistent = (bool) $options['persistent'];
-        }
-
-        if (array_key_exists('chunkSize', $options)) {
-            $chunkSize = $options['chunkSize'];
-        }
+        $hostname          = $options['hostname'] ?? '';
+        $appname           = $options['appname'] ?? '';
+        $useSSL            = $options['useSSL'] ?? true;
+        $level             = $options['level'] ?? LogLevel::DEBUG;
+        $bubble            = $options['bubble'] ?? true;
+        $timeout           = $options['timeout'] ?? 0.0;
+        $writingTimeout    = $options['writingTimeout'] ?? $options['writeTimeout'] ?? 10.0;
+        $connectionTimeout = $options['connectionTimeout'] ?? null;
+        $persistent        = $options['persistent'] ?? false;
+        $chunkSize         = $options['chunkSize'] ?? null;
 
         try {
             $handler = new LogmaticHandler(
-                $token,
+                $options['token'],
                 $hostname,
                 $appname,
                 $useSSL,

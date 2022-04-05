@@ -15,7 +15,6 @@ namespace Mimmi20\LoggerFactory\Formatter;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\Formatter\FlowdockFormatter;
 
@@ -29,7 +28,6 @@ final class FlowdockFormatterFactory implements FactoryInterface
      * @param array<string, string>|null $options
      * @phpstan-param array{source?: string, sourceEmail?: string}|null $options
      *
-     * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
      * @throws ContainerException         if any other error occurs
      *

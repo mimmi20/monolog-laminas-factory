@@ -15,6 +15,7 @@ namespace Mimmi20\LoggerFactory\Handler;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Monolog\Handler\HandlerInterface;
 
 use function array_key_exists;
@@ -30,6 +31,8 @@ trait GetHandlersTrait
      * @return array<int, HandlerInterface>
      *
      * @throws ContainerException
+     * @throws ServiceNotCreatedException
+     * @throws ServiceNotFoundException
      */
     private function getHandlers(ContainerInterface $container, array $options): array
     {
