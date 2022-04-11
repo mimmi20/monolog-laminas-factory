@@ -19,7 +19,7 @@
     "php": "^7.4.3 || ^8.0.0",
     "ext-mbstring": "*",
     "laminas/laminas-log": "^2.15.0",
-    "monolog/monolog": "^2.4.0"
+    "monolog/monolog": "^2.5.0"
   },
   "require-dev": {
     "actived/microsoft-teams-notifier": "^1.2.0",
