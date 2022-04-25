@@ -437,7 +437,7 @@ jobs:
           extensions: "${{ env.PHP_EXTENSIONS }}"
           ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
-          tools: "${{ env.TOOLS }}, infection"
+          tools: "${{ env.TOOLS }}, infection:0.26.6"
 
       - name: "Update dependencies with composer"
         uses: "ramsey/composer-install@v1"
@@ -504,7 +504,7 @@ jobs:
           extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, mongodb, amqp, :sockets, curl, ctype, intl"
           ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
-          tools: "${{ env.TOOLS }}, infection"
+          tools: "${{ env.TOOLS }}, infection:0.26.6"
 
       - name: "Update dependencies with composer"
         run: "composer remove --no-update --dev php-amqplib/php-amqplib"
@@ -574,7 +574,7 @@ jobs:
           extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, mongodb, amqp, sockets, :curl, ctype, intl"
           ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
-          tools: "${{ env.TOOLS }}, infection"
+          tools: "${{ env.TOOLS }}, infection:0.26.6"
 
       - name: "Update dependencies with composer"
         run: "composer remove --no-update --dev cmdisp/monolog-microsoft-teams rollbar/rollbar actived/microsoft-teams-notifier"
@@ -644,7 +644,7 @@ jobs:
           extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, :mongodb, amqp, sockets, curl, ctype, intl"
           ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
-          tools: "${{ env.TOOLS }}, infection"
+          tools: "${{ env.TOOLS }}, infection:0.26.6"
 
       - name: "Update dependencies with composer"
         uses: "ramsey/composer-install@v1"
@@ -711,7 +711,7 @@ jobs:
           extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, mongodb, :amqp, sockets, curl, ctype, intl"
           ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
-          tools: "${{ env.TOOLS }}, infection"
+          tools: "${{ env.TOOLS }}, infection:0.26.6"
 
       - name: "Update dependencies with composer"
         uses: "ramsey/composer-install@v1"
