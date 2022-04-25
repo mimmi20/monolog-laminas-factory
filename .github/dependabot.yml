@@ -17,7 +17,7 @@ updates:
       - "mimmi20"
     labels:
       - "dependencies"
-    versioning-strategy: increase
+    versioning-strategy: "increase-if-necessary"
     commit-message:
       include: "scope"
       prefix: "composer"
