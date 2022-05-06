@@ -1455,7 +1455,9 @@ return [
 Monolog Docs: [DoctrineCouchDBHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/DoctrineCouchDBHandler.php)
 
 #### ElasticaHandler
-Logs records to an Elastic Search server.
+Logs records to an Elastic Search server. Requires [Elastica](https://github.com/ruflin/Elastica).
+
+_Note: The version of the client should match the server version, but there is actually no 8.x version._
 
 ```php
 <?php
@@ -1487,7 +1489,9 @@ return [
 Monolog Docs: [ElasticaHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/ElasticaHandler.php)
 
 #### ElasticsearchHandler
-Logs records to an Elastic Search server.
+Logs records to an Elastic Search server. Requires the [Elasticsearch PHP client](https://github.com/elastic/elasticsearch-php).
+
+_Note: The version of the client should match the server version._
 
 ```php
 <?php

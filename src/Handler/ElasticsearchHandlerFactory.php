@@ -12,7 +12,8 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory\Handler;
 
-use Elasticsearch\Client;
+use Elastic\Elasticsearch\Client as V8Client;
+use Elasticsearch\Client as V7Client;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -40,9 +41,9 @@ final class ElasticsearchHandlerFactory implements FactoryInterface
     use AddProcessorTrait;
 
     /**
-     * @param string                                       $requestedName
-     * @param array<string, (string|int|bool|Client)>|null $options
-     * @phpstan-param array{client?: (bool|string|Client), index?: string, type?: string, ignoreError?: bool, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
+     * @param string                                                  $requestedName
+     * @param array<string, (string|int|bool|V7Client|V8Client)>|null $options
+     * @phpstan-param array{client?: (bool|string|V7Client|V8Client), index?: string, type?: string, ignoreError?: bool, level?: (Level|LevelName|LogLevel::*), bubble?: bool}|null $options
      *
      * @throws ServiceNotFoundException   if unable to resolve the service
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
@@ -61,7 +62,7 @@ final class ElasticsearchHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException('No Service name provided for the required service class');
         }
 
-        if ($options['client'] instanceof Client) {
+        if ($options['client'] instanceof V8Client || $options['client'] instanceof V7Client) {
             $client = $options['client'];
         } elseif (!is_string($options['client'])) {
             throw new ServiceNotCreatedException('No Service name provided for the required service class');
@@ -76,7 +77,7 @@ final class ElasticsearchHandlerFactory implements FactoryInterface
                 );
             }
 
-            if (!$client instanceof Client) {
+            if (!$client instanceof V8Client && !$client instanceof V7Client) {
                 throw new ServiceNotCreatedException(
                     sprintf('Could not create %s', ElasticsearchHandler::class)
                 );
