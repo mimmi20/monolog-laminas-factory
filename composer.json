@@ -19,11 +19,11 @@
     "php": "^7.4.3 || ^8.0.0",
     "ext-mbstring": "*",
     "laminas/laminas-log": "^2.15.1",
-    "monolog/monolog": "^2.5.0"
+    "monolog/monolog": "^2.6.0"
   },
   "require-dev": {
     "actived/microsoft-teams-notifier": "^1.2.0",
-    "aws/aws-sdk-php": "^3.222.6",
+    "aws/aws-sdk-php": "^3.222.11",
     "bartlett/monolog-callbackfilterhandler": "^2.0.0",
     "cmdisp/monolog-microsoft-teams": "^1.2.0",
     "doctrine/couchdb": "1.0.0-beta4",
@@ -36,18 +36,20 @@
     "laminas/laminas-modulemanager": "^2.11.0",
     "laminas/laminas-servicemanager": "^3.11.2",
     "mikey179/vfsstream": "^1.6.10",
-    "mimmi20/coding-standard": "^2.7.0",
+    "mimmi20/coding-standard": "^2.8.0",
     "php-amqplib/php-amqplib": "^3.2.0",
     "php-console/php-console": "^3.1.8",
     "phpstan/extension-installer": "^1.1.0",
-    "phpstan/phpstan": "^1.6.7",
+    "phpstan/phpstan": "^1.6.8",
     "phpstan/phpstan-deprecation-rules": "^1.0.0",
     "phpstan/phpstan-phpunit": "^1.1.1",
     "phpunit/phpunit": "^9.5.20",
     "predis/predis": "^1.1.10",
     "rollbar/rollbar": "^v2.1.0 || ^v3.1.2",
     "ruflin/elastica": "^7.1.5",
-    "swiftmailer/swiftmailer": "^6.3.0"
+    "swiftmailer/swiftmailer": "^6.3.0",
+    "symfony/mailer": "^v5.4.0 || ^6",
+    "symfony/mime": "^v5.4.0 || ^6"
   },
   "suggest": {
     "ext-amqp": "Allow sending log messages to an AMQP server (1.0+ required)",

@@ -30,6 +30,7 @@ This library was inspired by [psr11-monolog](https://gitlab.com/blazon/psr11-mon
     - [Send alerts and emails](#send-alerts-and-emails)
       - [NativeMailerHandler](#nativemailerhandler)
       - [SwiftMailerHandler](#swiftmailerhandler)
+      - [SymfonyMailerHandler](#symfonymailerhandler)
       - [PushoverHandler](#pushoverhandler)
       - [FlowdockHandler](#flowdockhandler)
       - [SlackWebhookHandler](#slackwebhookhandler)
@@ -478,6 +479,36 @@ return [
 ];
 ```
 Monolog Docs: [SwiftMailerHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/SwiftMailerHandler.php)
+
+#### SymfonyMailerHandler
+Sends emails using a [symfony/mailer](https://symfony.com/doc/current/mailer.html) instance.
+
+```php
+<?php
+
+return [
+    'log' => [
+        \Laminas\Log\Logger::class => [ 
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'symfonyMailer',
+                      
+                    'options' => [
+                        'mailer' => 'my-service', // The mailer to use.  Must be a valid service name in the container
+                        'email-template' => 'my-template', // An email template, the subject/body will be replaced
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
+                ],
+            ],
+        ],
+    ],
+];
+```
+Monolog Docs: [SymfonyMailerHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/SymfonyMailerHandler.php)
 
 #### PushoverHandler
 Sends mobile notifications via the [Pushover](https://www.pushover.net/) API. Requires the sockets Extension.

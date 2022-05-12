@@ -86,6 +86,7 @@ use Mimmi20\LoggerFactory\Handler\SocketHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\SqsHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\StreamHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\SwiftMailerHandlerFactory;
+use Mimmi20\LoggerFactory\Handler\SymfonyMailerHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\SyslogHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\SyslogUdpHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\TeamsLogHandlerFactory;
@@ -169,6 +170,7 @@ use Monolog\Handler\SocketHandler;
 use Monolog\Handler\SqsHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SwiftMailerHandler;
+use Monolog\Handler\SymfonyMailerHandler;
 use Monolog\Handler\SyslogHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Handler\TelegramBotHandler;
@@ -290,6 +292,7 @@ final class ConfigProvider
                 'sqs' => SqsHandler::class,
                 'stream' => StreamHandler::class,
                 'swiftMailer' => SwiftMailerHandler::class,
+                'symfonyMailer' => SymfonyMailerHandler::class,
                 'syslog' => SyslogHandler::class,
                 'syslogudp' => SyslogUdpHandler::class,
                 'teams' => TeamsLogHandler::class,
@@ -349,6 +352,7 @@ final class ConfigProvider
                 SqsHandler::class => SqsHandlerFactory::class,
                 StreamHandler::class => StreamHandlerFactory::class,
                 SwiftMailerHandler::class => SwiftMailerHandlerFactory::class,
+                SymfonyMailerHandler::class => SymfonyMailerHandlerFactory::class,
                 SyslogHandler::class => SyslogHandlerFactory::class,
                 SyslogUdpHandler::class => SyslogUdpHandlerFactory::class,
                 TeamsLogHandler::class => TeamsLogHandlerFactory::class,
