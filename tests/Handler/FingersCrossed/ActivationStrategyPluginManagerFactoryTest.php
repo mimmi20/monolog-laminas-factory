@@ -12,11 +12,11 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Handler\FingersCrossed;
 
-use Interop\Container\ContainerInterface;
 use Mimmi20\LoggerFactory\Handler\FingersCrossed\ActivationStrategyPluginManager;
 use Mimmi20\LoggerFactory\Handler\FingersCrossed\ActivationStrategyPluginManagerFactory;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 final class ActivationStrategyPluginManagerFactoryTest extends TestCase

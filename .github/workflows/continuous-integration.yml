@@ -9,7 +9,7 @@ name: "Continuous Integration"
 env:
   PHP_EXTENSIONS: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, mongodb, amqp, sockets, curl, ctype, intl"
   PHP_INI_VALUES: "opcache.enable=1, opcache.fast_shutdown=0, zend.assertions=1, assert.exception=On, intl.default_locale=de, intl.use_exceptions=1, zend.exception_ignore_args=0"
-  COMPOSER_OPTIONS: "--optimize-autoloader --prefer-dist --prefer-stable -v"
+  COMPOSER_OPTIONS: "--ansi --optimize-autoloader --prefer-dist --prefer-stable -v"
   TOOLS: "composer:v2"
 
 jobs:
@@ -438,6 +438,79 @@ jobs:
           ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "${{ env.TOOLS }}, infection:0.26.6"
+
+      - name: "Update dependencies with composer"
+        uses: "ramsey/composer-install@v1"
+        with:
+          dependency-versions: "${{ matrix.dependencies }}"
+          composer-options: "${{ env.COMPOSER_OPTIONS }}"
+
+      - name: "Create cache directory for phpunit/phpunit"
+        run: "mkdir -p .build/coverage"
+
+      - name: "Collect code coverage with Xdebug and phpunit/phpunit"
+        run: "vendor/bin/phpunit -c phpunit.xml --verbose --coverage-clover=.build/coverage/clover.xml --coverage-text --coverage-xml=.build/coverage/coverage-xml --log-junit=.build/coverage/phpunit.junit.xml"
+
+      - name: "Upload coverage to Codecov"
+        uses: "codecov/codecov-action@v3.1.0"
+        with:
+          file: ".build/coverage/clover.xml"
+          flags: "phpunit,php-${{ matrix.php-version }},${{ matrix.coverage-drivers }},${{ matrix.php-version }},${{ matrix.operating-system }},with-all-extensions"
+          verbose: false
+
+      - name: "Run mutation tests with infection/infection"
+        run: "infection -s --min-covered-msi=90 --min-msi=87 --coverage=.build/coverage --only-covered --logger-github"
+
+  code-coverage-with-all-extensions-for-elaticsearch8:
+    name: "Code Coverage with PHPUnit with all Extensions for Elasticsearch 8"
+
+    needs: "tests"
+
+    runs-on: "${{ matrix.operating-system }}"
+
+    continue-on-error: false
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        operating-system:
+          - "ubuntu-18.04"
+          - "ubuntu-20.04"
+
+        php-version:
+          - "7.4"
+          - "8.0"
+          - "8.1"
+
+        dependencies:
+          - "highest"
+          - "lowest"
+
+        coverage-drivers:
+          - "xdebug"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@2.18.1"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "${{ env.PHP_EXTENSIONS }}"
+          ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
+          coverage: "${{ matrix.coverage-drivers }}"
+          tools: "${{ env.TOOLS }}, infection:0.26.6"
+
+      - name: "remove ruflin/elastica"
+        run: "composer remove --no-update --dev ruflin/elastica"
+
+      - name: "Require elasticsearch/elasticsearch:v8"
+        run: "composer require --no-update --no-interaction --prefer-dist --prefer-stable --dev \"elasticsearch/elasticsearch:8\""
 
       - name: "Update dependencies with composer"
         uses: "ramsey/composer-install@v1"

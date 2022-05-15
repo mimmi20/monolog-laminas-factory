@@ -12,8 +12,8 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory\Handler\FingersCrossed;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 final class ActivationStrategyPluginManagerFactory implements FactoryInterface
 {

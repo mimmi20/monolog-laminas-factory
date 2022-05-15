@@ -13,7 +13,6 @@ declare(strict_types = 1);
 namespace Mimmi20\LoggerFactory;
 
 use DateTimeZone;
-use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\Log\Exception\InvalidArgumentException;
 use Laminas\Log\Logger;
@@ -25,6 +24,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 
 use function array_key_exists;
 use function assert;

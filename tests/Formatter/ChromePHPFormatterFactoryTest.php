@@ -12,11 +12,11 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Formatter;
 
-use Interop\Container\ContainerInterface;
 use Mimmi20\LoggerFactory\Formatter\ChromePHPFormatterFactory;
 use Monolog\Formatter\ChromePHPFormatter;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 final class ChromePHPFormatterFactoryTest extends TestCase

@@ -12,8 +12,9 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Handler;
 
-use Elasticsearch\Client;
-use Interop\Container\ContainerInterface;
+use Elastic\Elasticsearch\Client as V8Client;
+use Elastic\Elasticsearch\ClientBuilder;
+use Elasticsearch\Client as V7Client;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -25,11 +26,13 @@ use Monolog\Handler\ElasticsearchHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+use function class_exists;
 use function sprintf;
 
 final class ElasticsearchHandlerFactoryTest extends TestCase
@@ -157,9 +160,13 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvokeWithConfigWithClientClass(): void
+    public function testInvokeWithConfigWithV7ClientClass(): void
     {
-        $client = $this->getMockBuilder(Client::class)
+        if (!class_exists(V7Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V7');
+        }
+
+        $client = $this->getMockBuilder(V7Client::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -193,7 +200,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         self::assertIsArray($optionsArray);
 
         self::assertSame('monolog', $optionsArray['index']);
-        self::assertSame('record', $optionsArray['type']);
+        self::assertSame('_doc', $optionsArray['type']);
         self::assertFalse($optionsArray['ignore_error']);
 
         self::assertInstanceOf(ElasticsearchFormatter::class, $handler->getFormatter());
@@ -212,10 +219,14 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvokeWithConfigWithClassString(): void
+    public function testInvokeWithConfigWithV7ClassString(): void
     {
+        if (!class_exists(V7Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V7');
+        }
+
         $client      = 'xyz';
-        $clientClass = $this->getMockBuilder(Client::class)
+        $clientClass = $this->getMockBuilder(V7Client::class)
             ->disableOriginalConstructor()
             ->getMock();
         $index       = 'test-index';
@@ -253,7 +264,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         self::assertIsArray($optionsArray);
 
         self::assertSame($index, $optionsArray['index']);
-        self::assertSame($type, $optionsArray['type']);
+        self::assertSame('_doc', $optionsArray['type']);
         self::assertTrue($optionsArray['ignore_error']);
 
         self::assertInstanceOf(ElasticsearchFormatter::class, $handler->getFormatter());
@@ -270,10 +281,14 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvokeWithConfigAndBoolFormatter(): void
+    public function testInvokeWithV7ClientAndConfigAndBoolFormatter(): void
     {
+        if (!class_exists(V7Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V7');
+        }
+
         $client      = 'xyz';
-        $clientClass = $this->getMockBuilder(Client::class)
+        $clientClass = $this->getMockBuilder(V7Client::class)
             ->disableOriginalConstructor()
             ->getMock();
         $index       = 'test-index';
@@ -304,10 +319,14 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvokeWithConfigAndFormatter(): void
+    public function testInvokeV7ClientAndWithConfigAndFormatter(): void
     {
+        if (!class_exists(V7Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V7');
+        }
+
         $client      = 'xyz';
-        $clientClass = $this->getMockBuilder(Client::class)
+        $clientClass = $this->getMockBuilder(V7Client::class)
             ->disableOriginalConstructor()
             ->getMock();
         $index       = 'test-index';
@@ -325,7 +344,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
             ->method('get')
             ->withConsecutive([$client], [MonologFormatterPluginManager::class])
             ->willReturnCallback(
-                static function (string $var) use ($client, $clientClass): Client {
+                static function (string $var) use ($client, $clientClass): V7Client {
                     if ($var === $client) {
                         return $clientClass;
                     }
@@ -350,10 +369,14 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function testInvokeWithConfigAndFormatter2(): void
+    public function testInvokeWithV7ClientAndConfigAndFormatter2(): void
     {
+        if (!class_exists(V7Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V7');
+        }
+
         $client      = 'xyz';
-        $clientClass = $this->getMockBuilder(Client::class)
+        $clientClass = $this->getMockBuilder(V7Client::class)
             ->disableOriginalConstructor()
             ->getMock();
         $index       = 'test-index';
@@ -402,7 +425,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         self::assertIsArray($optionsArray);
 
         self::assertSame($index, $optionsArray['index']);
-        self::assertSame($type, $optionsArray['type']);
+        self::assertSame('_doc', $optionsArray['type']);
         self::assertTrue($optionsArray['ignore_error']);
 
         self::assertSame($formatter, $handler->getFormatter());
@@ -419,15 +442,333 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testInvokeWithConfigAndBoolProcessors(): void
+    public function testInvokeWithV7ClientAndConfigAndBoolProcessors(): void
     {
+        if (!class_exists(V7Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V7');
+        }
+
         $client      = 'xyz';
-        $clientClass = $this->getMockBuilder(Client::class)
+        $clientClass = $this->getMockBuilder(V7Client::class)
             ->disableOriginalConstructor()
             ->getMock();
         $index       = 'test-index';
         $type        = 'test-type';
         $processors  = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($client)
+            ->willReturn($clientClass);
+
+        $factory = new ElasticsearchHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Processors must be an Array');
+
+        $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'processors' => $processors]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvokeWithConfigWithV8ClientClass(): void
+    {
+        if (!class_exists(V8Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V8');
+        }
+
+        $clientBuilder = new ClientBuilder();
+        $client        = $clientBuilder->build();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new ElasticsearchHandlerFactory();
+
+        $handler = $factory($container, '', ['client' => $client]);
+
+        self::assertInstanceOf(ElasticsearchHandler::class, $handler);
+
+        self::assertSame(Logger::DEBUG, $handler->getLevel());
+        self::assertTrue($handler->getBubble());
+
+        $clientP = new ReflectionProperty($handler, 'client');
+        $clientP->setAccessible(true);
+
+        self::assertSame($client, $clientP->getValue($handler));
+
+        $optionsP = new ReflectionProperty($handler, 'options');
+        $optionsP->setAccessible(true);
+
+        $optionsArray = $optionsP->getValue($handler);
+
+        self::assertIsArray($optionsArray);
+
+        self::assertSame('monolog', $optionsArray['index']);
+        self::assertSame('_doc', $optionsArray['type']);
+        self::assertFalse($optionsArray['ignore_error']);
+
+        self::assertInstanceOf(ElasticsearchFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvokeWithConfigWithV8ClassString(): void
+    {
+        if (!class_exists(V8Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V8');
+        }
+
+        $client        = 'xyz';
+        $clientBuilder = new ClientBuilder();
+        $clientClass   = $clientBuilder->build();
+        $index         = 'test-index';
+        $type          = 'test-type';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($client)
+            ->willReturn($clientClass);
+
+        $factory = new ElasticsearchHandlerFactory();
+
+        $handler = $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false]);
+
+        self::assertInstanceOf(ElasticsearchHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $clientP = new ReflectionProperty($handler, 'client');
+        $clientP->setAccessible(true);
+
+        self::assertSame($clientClass, $clientP->getValue($handler));
+
+        $optionsP = new ReflectionProperty($handler, 'options');
+        $optionsP->setAccessible(true);
+
+        $optionsArray = $optionsP->getValue($handler);
+
+        self::assertIsArray($optionsArray);
+
+        self::assertSame($index, $optionsArray['index']);
+        self::assertSame('_doc', $optionsArray['type']);
+        self::assertTrue($optionsArray['ignore_error']);
+
+        self::assertInstanceOf(ElasticsearchFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvokeWithV8ClientAndConfigAndBoolFormatter(): void
+    {
+        if (!class_exists(V8Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V8');
+        }
+
+        $client        = 'xyz';
+        $clientBuilder = new ClientBuilder();
+        $clientClass   = $clientBuilder->build();
+        $index         = 'test-index';
+        $type          = 'test-type';
+        $formatter     = true;
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($client)
+            ->willReturn($clientClass);
+
+        $factory = new ElasticsearchHandlerFactory();
+
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+        );
+
+        $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvokeV8ClientAndWithConfigAndFormatter(): void
+    {
+        if (!class_exists(V8Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V8');
+        }
+
+        $client        = 'xyz';
+        $clientBuilder = new ClientBuilder();
+        $clientClass   = $clientBuilder->build();
+        $index         = 'test-index';
+        $type          = 'test-type';
+        $formatter     = $this->getMockBuilder(ElasticsearchFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([$client], [MonologFormatterPluginManager::class])
+            ->willReturnCallback(
+                static function (string $var) use ($client, $clientClass): V8Client {
+                    if ($var === $client) {
+                        return $clientClass;
+                    }
+
+                    throw new ServiceNotFoundException();
+                }
+            );
+
+        $factory = new ElasticsearchHandlerFactory();
+
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage(
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+        );
+
+        $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvokeWithV8ClientAndConfigAndFormatter2(): void
+    {
+        if (!class_exists(V8Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V8');
+        }
+
+        $client        = 'xyz';
+        $clientBuilder = new ClientBuilder();
+        $clientClass   = $clientBuilder->build();
+        $index         = 'test-index';
+        $type          = 'test-type';
+        $formatter     = $this->getMockBuilder(ElasticsearchFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([$client], [MonologFormatterPluginManager::class])
+            ->willReturnOnConsecutiveCalls($clientClass, $monologFormatterPluginManager);
+
+        $factory = new ElasticsearchHandlerFactory();
+
+        $handler = $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+
+        self::assertInstanceOf(ElasticsearchHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $clientP = new ReflectionProperty($handler, 'client');
+        $clientP->setAccessible(true);
+
+        self::assertSame($clientClass, $clientP->getValue($handler));
+
+        $optionsP = new ReflectionProperty($handler, 'options');
+        $optionsP->setAccessible(true);
+
+        $optionsArray = $optionsP->getValue($handler);
+
+        self::assertIsArray($optionsArray);
+
+        self::assertSame($index, $optionsArray['index']);
+        self::assertSame('_doc', $optionsArray['type']);
+        self::assertTrue($optionsArray['ignore_error']);
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvokeWithV8ClientAndConfigAndBoolProcessors(): void
+    {
+        if (!class_exists(V8Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V8');
+        }
+
+        $client        = 'xyz';
+        $clientBuilder = new ClientBuilder();
+        $clientClass   = $clientBuilder->build();
+        $index         = 'test-index';
+        $type          = 'test-type';
+        $processors    = true;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()

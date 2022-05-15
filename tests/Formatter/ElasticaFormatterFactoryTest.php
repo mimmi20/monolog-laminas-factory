@@ -12,13 +12,13 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Formatter;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Formatter\ElasticaFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\NormalizerFormatterFactory;
 use Monolog\Formatter\ElasticaFormatter;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 final class ElasticaFormatterFactoryTest extends TestCase

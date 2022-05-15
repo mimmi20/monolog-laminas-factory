@@ -12,11 +12,11 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Handler;
 
-use Interop\Container\ContainerInterface;
 use Mimmi20\LoggerFactory\Handler\NoopHandlerFactory;
 use Monolog\Handler\NoopHandler;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 final class NoopHandlerFactoryTest extends TestCase

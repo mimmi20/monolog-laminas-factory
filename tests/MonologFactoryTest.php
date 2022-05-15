@@ -13,7 +13,6 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory;
 
 use DateTimeZone;
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -25,6 +24,7 @@ use Monolog\Logger;
 use Monolog\Processor\ProcessorInterface;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function sprintf;

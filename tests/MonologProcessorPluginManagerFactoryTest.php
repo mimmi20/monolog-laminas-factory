@@ -12,13 +12,13 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory;
 
-use Interop\Container\ContainerInterface;
 use Laminas\Log\Processor\PsrPlaceholder;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\MonologProcessorPluginManager;
 use Mimmi20\LoggerFactory\MonologProcessorPluginManagerFactory;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function sprintf;

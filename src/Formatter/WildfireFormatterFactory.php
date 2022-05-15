@@ -12,9 +12,9 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory\Formatter;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\Formatter\WildfireFormatter;
+use Psr\Container\ContainerInterface;
 
 use function array_key_exists;
 use function is_array;

@@ -13,13 +13,13 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Processor;
 
 use ArrayObject;
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Processor\WebProcessorFactory;
 use Monolog\Processor\WebProcessor;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;

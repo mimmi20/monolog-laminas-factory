@@ -12,15 +12,15 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Handler;
 
-use Aws\Sqs\SqsClient;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Mimmi20\LoggerFactory\Handler\SqsHandlerFactory;
+use Mimmi20\LoggerFactory\Handler\SymfonyMailerHandlerFactory;
 use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
 use Monolog\Formatter\FormatterInterface;
+use Monolog\Formatter\HtmlFormatter;
 use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\SqsHandler;
+use Monolog\Handler\SymfonyMailerHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
@@ -29,10 +29,12 @@ use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 use function sprintf;
 
-final class SqsHandlerFactoryTest extends TestCase
+final class SymfonyMailerHandlerFactoryTest extends TestCase
 {
     /**
      * @throws Exception
@@ -47,7 +49,7 @@ final class SqsHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new SqsHandlerFactory();
+        $factory = new SymfonyMailerHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
@@ -69,11 +71,11 @@ final class SqsHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new SqsHandlerFactory();
+        $factory = new SymfonyMailerHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('No Service name provided for the required sqsClient class');
+        $this->expectExceptionMessage('No Service name provided for the required mailer class');
 
         $factory($container, '', []);
     }
@@ -83,7 +85,7 @@ final class SqsHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfig(): void
     {
-        $sqsClient = true;
+        $mailer = true;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -93,13 +95,13 @@ final class SqsHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new SqsHandlerFactory();
+        $factory = new SymfonyMailerHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('No Service name provided for the required sqsClient class');
+        $this->expectExceptionMessage('No Service name provided for the required mailer class');
 
-        $factory($container, '', ['sqsClient' => $sqsClient]);
+        $factory($container, '', ['mailer' => $mailer]);
     }
 
     /**
@@ -107,7 +109,7 @@ final class SqsHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfig2(): void
     {
-        $sqsClient = 'test-client';
+        $mailer = 'test-mailer';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -116,27 +118,25 @@ final class SqsHandlerFactoryTest extends TestCase
             ->method('has');
         $container->expects(self::once())
             ->method('get')
-            ->with($sqsClient)
+            ->with($mailer)
             ->willThrowException(new ServiceNotFoundException());
 
-        $factory = new SqsHandlerFactory();
+        $factory = new SymfonyMailerHandlerFactory();
 
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Could not load sqsClient class');
+        $this->expectExceptionMessage('Could not load mailer class');
 
-        $factory($container, '', ['sqsClient' => $sqsClient]);
+        $factory($container, '', ['mailer' => $mailer]);
     }
 
     /**
      * @throws Exception
-     * @throws ReflectionException
-     * @throws InvalidArgumentException
      */
     public function testInvokeWithConfig3(): void
     {
-        $sqsClient      = 'test-client';
-        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+        $mailerName = 'test-mailer';
+        $mailer     = $this->getMockBuilder(MailerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -147,51 +147,28 @@ final class SqsHandlerFactoryTest extends TestCase
             ->method('has');
         $container->expects(self::once())
             ->method('get')
-            ->with($sqsClient)
-            ->willReturn($sqsClientClass);
+            ->with($mailerName)
+            ->willReturn($mailer);
 
-        $factory = new SqsHandlerFactory();
+        $factory = new SymfonyMailerHandlerFactory();
 
-        $handler = $factory($container, '', ['sqsClient' => $sqsClient]);
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No Email template provided');
 
-        self::assertInstanceOf(SqsHandler::class, $handler);
-
-        self::assertSame(Logger::DEBUG, $handler->getLevel());
-        self::assertTrue($handler->getBubble());
-
-        $clientP = new ReflectionProperty($handler, 'client');
-        $clientP->setAccessible(true);
-
-        self::assertSame($sqsClientClass, $clientP->getValue($handler));
-
-        $qu = new ReflectionProperty($handler, 'queueUrl');
-        $qu->setAccessible(true);
-
-        self::assertSame('', $qu->getValue($handler));
-
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
-
-        $proc = new ReflectionProperty($handler, 'processors');
-        $proc->setAccessible(true);
-
-        $processors = $proc->getValue($handler);
-
-        self::assertIsArray($processors);
-        self::assertCount(0, $processors);
+        $factory($container, '', ['mailer' => $mailerName]);
     }
 
     /**
      * @throws Exception
-     * @throws ReflectionException
-     * @throws InvalidArgumentException
      */
     public function testInvokeWithConfig4(): void
     {
-        $sqsClient      = 'test-client';
-        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+        $mailerName = 'test-mailer';
+        $mailer     = $this->getMockBuilder(MailerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $queueUrl       = 'test-uri';
+        $message    = 'test-message';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -200,37 +177,16 @@ final class SqsHandlerFactoryTest extends TestCase
             ->method('has');
         $container->expects(self::once())
             ->method('get')
-            ->with($sqsClient)
-            ->willReturn($sqsClientClass);
+            ->with($mailerName)
+            ->willReturn($mailer);
 
-        $factory = new SqsHandlerFactory();
+        $factory = new SymfonyMailerHandlerFactory();
 
-        $handler = $factory($container, '', ['sqsClient' => $sqsClient, 'queueUrl' => $queueUrl, 'level' => LogLevel::ALERT, 'bubble' => false]);
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('No Email template provided');
 
-        self::assertInstanceOf(SqsHandler::class, $handler);
-
-        self::assertSame(Logger::ALERT, $handler->getLevel());
-        self::assertFalse($handler->getBubble());
-
-        $clientP = new ReflectionProperty($handler, 'client');
-        $clientP->setAccessible(true);
-
-        self::assertSame($sqsClientClass, $clientP->getValue($handler));
-
-        $qu = new ReflectionProperty($handler, 'queueUrl');
-        $qu->setAccessible(true);
-
-        self::assertSame($queueUrl, $qu->getValue($handler));
-
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
-
-        $proc = new ReflectionProperty($handler, 'processors');
-        $proc->setAccessible(true);
-
-        $processors = $proc->getValue($handler);
-
-        self::assertIsArray($processors);
-        self::assertCount(0, $processors);
+        $factory($container, '', ['mailer' => $mailerName, 'email-template' => $message]);
     }
 
     /**
@@ -240,104 +196,13 @@ final class SqsHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfig5(): void
     {
-        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+        $mailerName    = 'test-mailer';
+        $mailer        = $this->getMockBuilder(MailerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        $container = $this->getMockBuilder(ContainerInterface::class)
+        $emailTemplate = $this->getMockBuilder(Email::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $container->expects(self::never())
-            ->method('has');
-        $container->expects(self::never())
-            ->method('get');
-
-        $factory = new SqsHandlerFactory();
-
-        $handler = $factory($container, '', ['sqsClient' => $sqsClientClass]);
-
-        self::assertInstanceOf(SqsHandler::class, $handler);
-
-        self::assertSame(Logger::DEBUG, $handler->getLevel());
-        self::assertTrue($handler->getBubble());
-
-        $clientP = new ReflectionProperty($handler, 'client');
-        $clientP->setAccessible(true);
-
-        self::assertSame($sqsClientClass, $clientP->getValue($handler));
-
-        $qu = new ReflectionProperty($handler, 'queueUrl');
-        $qu->setAccessible(true);
-
-        self::assertSame('', $qu->getValue($handler));
-
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
-
-        $proc = new ReflectionProperty($handler, 'processors');
-        $proc->setAccessible(true);
-
-        $processors = $proc->getValue($handler);
-
-        self::assertIsArray($processors);
-        self::assertCount(0, $processors);
-    }
-
-    /**
-     * @throws Exception
-     * @throws ReflectionException
-     * @throws InvalidArgumentException
-     */
-    public function testInvokeWithConfig6(): void
-    {
-        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $queueUrl       = 'test-uri';
-
-        $container = $this->getMockBuilder(ContainerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects(self::never())
-            ->method('has');
-        $container->expects(self::never())
-            ->method('get');
-
-        $factory = new SqsHandlerFactory();
-
-        $handler = $factory($container, '', ['sqsClient' => $sqsClientClass, 'queueUrl' => $queueUrl, 'level' => LogLevel::ALERT, 'bubble' => false]);
-
-        self::assertInstanceOf(SqsHandler::class, $handler);
-
-        self::assertSame(Logger::ALERT, $handler->getLevel());
-        self::assertFalse($handler->getBubble());
-
-        $clientP = new ReflectionProperty($handler, 'client');
-        $clientP->setAccessible(true);
-
-        self::assertSame($sqsClientClass, $clientP->getValue($handler));
-
-        $qu = new ReflectionProperty($handler, 'queueUrl');
-        $qu->setAccessible(true);
-
-        self::assertSame($queueUrl, $qu->getValue($handler));
-
-        self::assertInstanceOf(LineFormatter::class, $handler->getFormatter());
-
-        $proc = new ReflectionProperty($handler, 'processors');
-        $proc->setAccessible(true);
-
-        $processors = $proc->getValue($handler);
-
-        self::assertIsArray($processors);
-        self::assertCount(0, $processors);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testInvokeWithConfig7(): void
-    {
-        $sqsClient = 'test-client';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -346,16 +211,58 @@ final class SqsHandlerFactoryTest extends TestCase
             ->method('has');
         $container->expects(self::once())
             ->method('get')
-            ->with($sqsClient)
+            ->with($mailerName)
+            ->willReturn($mailer);
+
+        $factory = new SymfonyMailerHandlerFactory();
+
+        $handler = $factory($container, '', ['mailer' => $mailerName, 'email-template' => $emailTemplate, 'level' => LogLevel::ALERT, 'bubble' => false]);
+
+        self::assertInstanceOf(SymfonyMailerHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $mailerP = new ReflectionProperty($handler, 'mailer');
+        $mailerP->setAccessible(true);
+
+        self::assertSame($mailer, $mailerP->getValue($handler));
+
+        self::assertInstanceOf(HtmlFormatter::class, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvokeWithConfig6(): void
+    {
+        $mailer = 'test-mailer';
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::once())
+            ->method('get')
+            ->with($mailer)
             ->willReturn(true);
 
-        $factory = new SqsHandlerFactory();
+        $factory = new SymfonyMailerHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage(sprintf('Could not create %s', SqsHandler::class));
+        $this->expectExceptionMessage(sprintf('Could not create %s', SymfonyMailerHandler::class));
 
-        $factory($container, '', ['sqsClient' => $sqsClient]);
+        $factory($container, '', ['mailer' => $mailer]);
     }
 
     /**
@@ -363,11 +270,13 @@ final class SqsHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfigAndBoolFormatter(): void
     {
-        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+        $mailer        = $this->getMockBuilder(MailerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $queueUrl       = 'test-uri';
-        $formatter      = true;
+        $formatter     = true;
+        $emailTemplate = $this->getMockBuilder(Email::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -377,7 +286,7 @@ final class SqsHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new SqsHandlerFactory();
+        $factory = new SymfonyMailerHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
@@ -385,7 +294,7 @@ final class SqsHandlerFactoryTest extends TestCase
             sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
         );
 
-        $factory($container, '', ['sqsClient' => $sqsClientClass, 'queueUrl' => $queueUrl, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+        $factory($container, '', ['mailer' => $mailer, 'email-template' => $emailTemplate, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
     }
 
     /**
@@ -393,11 +302,13 @@ final class SqsHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfigAndFormatter(): void
     {
-        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+        $mailer        = $this->getMockBuilder(MailerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $queueUrl       = 'test-uri';
-        $formatter      = $this->getMockBuilder(LineFormatter::class)
+        $emailTemplate = $this->getMockBuilder(Email::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $formatter     = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -411,7 +322,7 @@ final class SqsHandlerFactoryTest extends TestCase
             ->with(MonologFormatterPluginManager::class)
             ->willThrowException(new ServiceNotFoundException());
 
-        $factory = new SqsHandlerFactory();
+        $factory = new SymfonyMailerHandlerFactory();
 
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
@@ -419,7 +330,7 @@ final class SqsHandlerFactoryTest extends TestCase
             sprintf('Could not find service %s', MonologFormatterPluginManager::class)
         );
 
-        $factory($container, '', ['sqsClient' => $sqsClientClass, 'queueUrl' => $queueUrl, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+        $factory($container, '', ['mailer' => $mailer, 'email-template' => $emailTemplate, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
     }
 
     /**
@@ -429,11 +340,13 @@ final class SqsHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfigAndFormatter2(): void
     {
-        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+        $mailer        = $this->getMockBuilder(MailerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $queueUrl       = 'test-uri';
-        $formatter      = $this->getMockBuilder(LineFormatter::class)
+        $emailTemplate = $this->getMockBuilder(Email::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $formatter     = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -455,24 +368,24 @@ final class SqsHandlerFactoryTest extends TestCase
             ->with(MonologFormatterPluginManager::class)
             ->willReturn($monologFormatterPluginManager);
 
-        $factory = new SqsHandlerFactory();
+        $factory = new SymfonyMailerHandlerFactory();
 
-        $handler = $factory($container, '', ['sqsClient' => $sqsClientClass, 'queueUrl' => $queueUrl, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
+        $handler = $factory($container, '', ['mailer' => $mailer, 'email-template' => $emailTemplate, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
 
-        self::assertInstanceOf(SqsHandler::class, $handler);
+        self::assertInstanceOf(SymfonyMailerHandler::class, $handler);
 
         self::assertSame(Logger::ALERT, $handler->getLevel());
         self::assertFalse($handler->getBubble());
 
-        $clientP = new ReflectionProperty($handler, 'client');
-        $clientP->setAccessible(true);
+        $mailerP = new ReflectionProperty($handler, 'mailer');
+        $mailerP->setAccessible(true);
 
-        self::assertSame($sqsClientClass, $clientP->getValue($handler));
+        self::assertSame($mailer, $mailerP->getValue($handler));
 
-        $qu = new ReflectionProperty($handler, 'queueUrl');
-        $qu->setAccessible(true);
+        $mt = new ReflectionProperty($handler, 'emailTemplate');
+        $mt->setAccessible(true);
 
-        self::assertSame($queueUrl, $qu->getValue($handler));
+        self::assertSame($emailTemplate, $mt->getValue($handler));
 
         self::assertSame($formatter, $handler->getFormatter());
 
@@ -490,11 +403,13 @@ final class SqsHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfigAndBoolProcessors(): void
     {
-        $sqsClientClass = $this->getMockBuilder(SqsClient::class)
+        $mailer        = $this->getMockBuilder(MailerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $queueUrl       = 'test-uri';
-        $processors     = true;
+        $emailTemplate = $this->getMockBuilder(Email::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $processors    = true;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -504,12 +419,12 @@ final class SqsHandlerFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new SqsHandlerFactory();
+        $factory = new SymfonyMailerHandlerFactory();
 
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage('Processors must be an Array');
 
-        $factory($container, '', ['sqsClient' => $sqsClientClass, 'queueUrl' => $queueUrl, 'level' => LogLevel::ALERT, 'bubble' => false, 'processors' => $processors]);
+        $factory($container, '', ['mailer' => $mailer, 'email-template' => $emailTemplate, 'level' => LogLevel::ALERT, 'bubble' => false, 'processors' => $processors]);
     }
 }

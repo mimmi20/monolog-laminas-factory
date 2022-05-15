@@ -12,7 +12,6 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ModuleManager\Listener\ServiceListenerInterface;
 use Laminas\ModuleManager\ModuleEvent;
 use Laminas\ModuleManager\ModuleManager;
@@ -27,6 +26,7 @@ use Mimmi20\LoggerFactory\MonologProcessorProviderInterface;
 use Mimmi20\LoggerFactory\MonologProviderInterface;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 final class ModuleTest extends TestCase

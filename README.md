@@ -30,6 +30,7 @@ This library was inspired by [psr11-monolog](https://gitlab.com/blazon/psr11-mon
     - [Send alerts and emails](#send-alerts-and-emails)
       - [NativeMailerHandler](#nativemailerhandler)
       - [SwiftMailerHandler](#swiftmailerhandler)
+      - [SymfonyMailerHandler](#symfonymailerhandler)
       - [PushoverHandler](#pushoverhandler)
       - [FlowdockHandler](#flowdockhandler)
       - [SlackWebhookHandler](#slackwebhookhandler)
@@ -100,7 +101,9 @@ This library was inspired by [psr11-monolog](https://gitlab.com/blazon/psr11-mon
     - [LogglyFormatter](#logglyformatter)
     - [FlowdockFormatter](#flowdockformatter)
     - [MongoDBFormatter](#mongodbformatter)
-    - [LogmaticFormatter](#logmaticFormatter)
+    - [LogmaticFormatter](#logmaticformatter)
+    - [FluentdFormatter](#fluentdformatter)
+    - [StreamFormatter](#streamformatter)
   - [Processors](#processors)
     - [PsrLogMessageProcessor](#psrlogmessageprocessor)
     - [IntrospectionProcessor](#introspectionprocessor)
@@ -478,6 +481,36 @@ return [
 ];
 ```
 Monolog Docs: [SwiftMailerHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/SwiftMailerHandler.php)
+
+#### SymfonyMailerHandler
+Sends emails using a [symfony/mailer](https://symfony.com/doc/current/mailer.html) instance.
+
+```php
+<?php
+
+return [
+    'log' => [
+        \Laminas\Log\Logger::class => [ 
+            'handlers' => [
+                'myHandlerName' => [
+                    'type' => 'symfonyMailer',
+                      
+                    'options' => [
+                        'mailer' => 'my-service', // The mailer to use.  Must be a valid service name in the container
+                        'email-template' => 'my-template', // An email template, the subject/body will be replaced
+                        'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
+                        'bubble' => true, // Optional: Whether the messages that are handled can bubble up the stack or not
+                        
+                        'formatter' => [], // Optional: Formatter for the handler.
+                        'processors' => [], // Optional: Processors for the handler.
+                    ],
+                ],
+            ],
+        ],
+    ],
+];
+```
+Monolog Docs: [SymfonyMailerHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/SymfonyMailerHandler.php)
 
 #### PushoverHandler
 Sends mobile notifications via the [Pushover](https://www.pushover.net/) API. Requires the sockets Extension.
@@ -1455,7 +1488,9 @@ return [
 Monolog Docs: [DoctrineCouchDBHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/DoctrineCouchDBHandler.php)
 
 #### ElasticaHandler
-Logs records to an Elastic Search server.
+Logs records to an Elastic Search server. Requires [Elastica](https://github.com/ruflin/Elastica).
+
+_Note: The version of the client should match the server version, but there is actually no 8.x version._
 
 ```php
 <?php
@@ -1487,7 +1522,9 @@ return [
 Monolog Docs: [ElasticaHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/ElasticaHandler.php)
 
 #### ElasticsearchHandler
-Logs records to an Elastic Search server.
+Logs records to an Elastic Search server. Requires the [Elasticsearch PHP client](https://github.com/elastic/elasticsearch-php).
+
+_Note: The version of the client should match the server version._
 
 ```php
 <?php
@@ -2467,6 +2504,35 @@ return [
 ];
 ```
 Monolog Docs: [FluentdFormatter](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Formatter/FluentdFormatter.php)
+
+### StreamFormatter
+Formats the message using a symfony table. Requires [StreamFormatter](https://github.com/mimmi20/monolog-streamformatter).
+
+```php
+<?php
+
+return [
+    'log' => [
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'stream',
+                    'options' => [
+                        'format' => "%message%", // Optional
+                        'tableStyle' => 'box', // Optional
+                        'dateFormat' => "c", // Optional : The format of the timestamp: one supported by DateTime::format
+                        'allowInlineLineBreaks' => false, // Optional : Whether to allow inline line breaks in log entries
+                        'includeStacktraces' => false, // Optional
+                        'maxNormalizeDepth' => 9, // Optional
+                        'maxNormalizeItemCount' => 1000, // Optional
+                        'prettyPrint' => false, // Optional
+                    ],
+                ],
+            ],
+        ],
+    ],
+];
+```
 
 ## Processors
 

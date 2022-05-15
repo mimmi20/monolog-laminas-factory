@@ -33,6 +33,7 @@ use Mimmi20\LoggerFactory\Formatter\LogstashFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\MongoDBFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\NormalizerFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\ScalarFormatterFactory;
+use Mimmi20\LoggerFactory\Formatter\StreamFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\WildfireFormatterFactory;
 use Mimmi20\LoggerFactory\Handler\AmqpHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\BrowserConsoleHandlerFactory;
@@ -86,6 +87,7 @@ use Mimmi20\LoggerFactory\Handler\SocketHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\SqsHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\StreamHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\SwiftMailerHandlerFactory;
+use Mimmi20\LoggerFactory\Handler\SymfonyMailerHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\SyslogHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\SyslogUdpHandlerFactory;
 use Mimmi20\LoggerFactory\Handler\TeamsLogHandlerFactory;
@@ -105,6 +107,7 @@ use Mimmi20\LoggerFactory\Processor\RequestHeaderProcessorFactory;
 use Mimmi20\LoggerFactory\Processor\TagProcessorFactory;
 use Mimmi20\LoggerFactory\Processor\UidProcessorFactory;
 use Mimmi20\LoggerFactory\Processor\WebProcessorFactory;
+use Mimmi20\Monolog\Formatter\StreamFormatter;
 use Monolog\Formatter\ChromePHPFormatter;
 use Monolog\Formatter\ElasticaFormatter;
 use Monolog\Formatter\ElasticsearchFormatter;
@@ -169,6 +172,7 @@ use Monolog\Handler\SocketHandler;
 use Monolog\Handler\SqsHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SwiftMailerHandler;
+use Monolog\Handler\SymfonyMailerHandler;
 use Monolog\Handler\SyslogHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Handler\TelegramBotHandler;
@@ -290,6 +294,7 @@ final class ConfigProvider
                 'sqs' => SqsHandler::class,
                 'stream' => StreamHandler::class,
                 'swiftMailer' => SwiftMailerHandler::class,
+                'symfonyMailer' => SymfonyMailerHandler::class,
                 'syslog' => SyslogHandler::class,
                 'syslogudp' => SyslogUdpHandler::class,
                 'teams' => TeamsLogHandler::class,
@@ -349,6 +354,7 @@ final class ConfigProvider
                 SqsHandler::class => SqsHandlerFactory::class,
                 StreamHandler::class => StreamHandlerFactory::class,
                 SwiftMailerHandler::class => SwiftMailerHandlerFactory::class,
+                SymfonyMailerHandler::class => SymfonyMailerHandlerFactory::class,
                 SyslogHandler::class => SyslogHandlerFactory::class,
                 SyslogUdpHandler::class => SyslogUdpHandlerFactory::class,
                 TeamsLogHandler::class => TeamsLogHandlerFactory::class,
@@ -422,6 +428,7 @@ final class ConfigProvider
                 'normalizer' => NormalizerFormatter::class,
                 'scalar' => ScalarFormatter::class,
                 'wildfire' => WildfireFormatter::class,
+                'stream' => StreamFormatter::class,
             ],
             'factories' => [
                 ChromePHPFormatter::class => ChromePHPFormatterFactory::class,
@@ -440,6 +447,7 @@ final class ConfigProvider
                 NormalizerFormatter::class => NormalizerFormatterFactory::class,
                 ScalarFormatter::class => ScalarFormatterFactory::class,
                 WildfireFormatter::class => WildfireFormatterFactory::class,
+                StreamFormatter::class => StreamFormatterFactory::class,
             ],
         ];
     }

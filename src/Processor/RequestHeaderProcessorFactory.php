@@ -12,9 +12,9 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory\Processor;
 
-use Interop\Container\ContainerInterface;
 use JK\Monolog\Processor\RequestHeaderProcessor;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
