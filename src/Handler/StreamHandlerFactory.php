@@ -12,7 +12,6 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory\Handler;
 
-use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use InvalidArgumentException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -23,6 +22,7 @@ use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;

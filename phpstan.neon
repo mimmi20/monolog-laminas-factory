@@ -31,3 +31,4 @@ parameters:
     - '~Parameter #2 \$channelToActionLevel of class Monolog\\Handler\\FingersCrossed\\ChannelLevelActivationStrategy constructor expects~'
     - '~overridden property~'
     - '~Elastic\\Elasticsearch\\Client(Builder)?~'
+    - '~deprecated class Monolog\\Handler\\SwiftMailerHandler~'

@@ -13,7 +13,6 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory;
 
 use DateTimeZone;
-use Interop\Container\ContainerInterface;
 use Laminas\Log\Logger;
 use Laminas\Log\Processor\RequestId;
 use Laminas\Log\ProcessorPluginManager;
@@ -30,6 +29,7 @@ use Mimmi20\LoggerFactory\MonologPluginManager;
 use Monolog\Handler\HandlerInterface;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;

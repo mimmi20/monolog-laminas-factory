@@ -12,11 +12,11 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory\Formatter;
 
-use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\Formatter\FlowdockFormatter;
+use Psr\Container\ContainerInterface;
 
 use function array_key_exists;
 use function is_array;

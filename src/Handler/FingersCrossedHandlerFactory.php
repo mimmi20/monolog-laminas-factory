@@ -12,7 +12,6 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory\Handler;
 
-use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
@@ -27,6 +26,7 @@ use Monolog\Handler\FingersCrossedHandler;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Log\InvalidArgumentException;
 use Psr\Log\LogLevel;
 

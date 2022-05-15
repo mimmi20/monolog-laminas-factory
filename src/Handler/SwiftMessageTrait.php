@@ -12,10 +12,10 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory\Handler;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use Swift_Message;
 
 use function is_callable;

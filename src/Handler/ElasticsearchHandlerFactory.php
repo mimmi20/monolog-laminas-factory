@@ -14,7 +14,6 @@ namespace Mimmi20\LoggerFactory\Handler;
 
 use Elastic\Elasticsearch\Client as V8Client;
 use Elasticsearch\Client as V7Client;
-use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -24,6 +23,7 @@ use Mimmi20\LoggerFactory\AddProcessorTrait;
 use Monolog\Handler\ElasticsearchHandler;
 use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;

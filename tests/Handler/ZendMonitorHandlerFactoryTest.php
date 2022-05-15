@@ -12,12 +12,12 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Handler;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Mimmi20\LoggerFactory\Handler\ZendMonitorHandlerFactory;
 use Monolog\Handler\ZendMonitorHandler;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 
 use function sprintf;
 

@@ -12,7 +12,6 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory\Handler;
 
-use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use InvalidArgumentException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -24,6 +23,7 @@ use Monolog\Handler\RedisPubSubHandler;
 use Monolog\Logger;
 use Predis\Client;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 use Redis;
 

@@ -12,10 +12,10 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory\Processor;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\Logger;
 use Monolog\Processor\GitProcessor;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;

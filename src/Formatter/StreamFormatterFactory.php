@@ -13,49 +13,50 @@ declare(strict_types = 1);
 namespace Mimmi20\LoggerFactory\Formatter;
 
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Monolog\Formatter\GelfMessageFormatter;
+use Mimmi20\Monolog\Formatter\StreamFormatter;
 use Psr\Container\ContainerInterface;
 
 use function array_key_exists;
 use function is_array;
 
-final class GelfMessageFormatterFactory implements FactoryInterface
+final class StreamFormatterFactory implements FactoryInterface
 {
     /**
      * @param string                                $requestedName
      * @param array<string, (string|int|bool)>|null $options
-     * @phpstan-param array{systemName?: string, extraPrefix?: string, contextPrefix?: string, maxLength?: int, maxNormalizeDepth?: int, maxNormalizeItemCount?: int, prettyPrint?: bool}|null $options
+     * @phpstan-param array{format?: string, tableStyle?: string, dateFormat?: string, allowInlineLineBreaks?: bool, includeStacktraces?: bool, maxNormalizeDepth?: int, maxNormalizeItemCount?: int, prettyPrint?: bool}|null $options
      *
      * @throws void
      *
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      */
-    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): GelfMessageFormatter
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): StreamFormatter
     {
-        $systemName            = null;
-        $extraPrefix           = null;
-        $contextPrefix         = 'ctxt_';
-        $maxLength             = null;
+        $format                = null;
+        $tableStyle            = StreamFormatter::BOX_STYLE;
+        $dateFormat            = null;
+        $allowInlineLineBreaks = false;
         $maxNormalizeDepth     = NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH;
         $maxNormalizeItemCount = NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT;
         $prettyPrint           = false;
+        $includeStacktraces    = false;
 
         if (is_array($options)) {
-            if (array_key_exists('systemName', $options)) {
-                $systemName = $options['systemName'];
+            if (array_key_exists('format', $options)) {
+                $format = $options['format'];
             }
 
-            if (array_key_exists('extraPrefix', $options)) {
-                $extraPrefix = $options['extraPrefix'];
+            if (array_key_exists('tableStyle', $options)) {
+                $tableStyle = $options['tableStyle'];
             }
 
-            if (array_key_exists('contextPrefix', $options)) {
-                $contextPrefix = $options['contextPrefix'];
+            if (array_key_exists('dateFormat', $options)) {
+                $dateFormat = $options['dateFormat'];
             }
 
-            if (array_key_exists('maxLength', $options)) {
-                $maxLength = $options['maxLength'];
+            if (array_key_exists('allowInlineLineBreaks', $options)) {
+                $allowInlineLineBreaks = $options['allowInlineLineBreaks'];
             }
 
             if (array_key_exists('maxNormalizeDepth', $options)) {
@@ -69,9 +70,13 @@ final class GelfMessageFormatterFactory implements FactoryInterface
             if (array_key_exists('prettyPrint', $options)) {
                 $prettyPrint = $options['prettyPrint'];
             }
+
+            if (array_key_exists('includeStacktraces', $options)) {
+                $includeStacktraces = $options['includeStacktraces'];
+            }
         }
 
-        $formatter = new GelfMessageFormatter($systemName, $extraPrefix, $contextPrefix, $maxLength);
+        $formatter = new StreamFormatter($format, $tableStyle, $dateFormat, $allowInlineLineBreaks, $includeStacktraces);
 
         $formatter->setMaxNormalizeDepth($maxNormalizeDepth);
         $formatter->setMaxNormalizeItemCount($maxNormalizeItemCount);

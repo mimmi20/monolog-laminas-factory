@@ -12,7 +12,6 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory\Handler;
 
-use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -24,6 +23,7 @@ use MongoDB\Driver\Manager;
 use Monolog\Handler\MongoDBHandler;
 use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;

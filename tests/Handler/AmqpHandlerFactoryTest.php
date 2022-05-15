@@ -13,7 +13,6 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Handler;
 
 use AMQPExchange;
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Mimmi20\LoggerFactory\Handler\AmqpHandlerFactory;
@@ -23,6 +22,7 @@ use Monolog\Logger;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;

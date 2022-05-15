@@ -13,7 +13,6 @@ declare(strict_types = 1);
 namespace Mimmi20Test\LoggerFactory\Handler;
 
 use CMDISP\MonologMicrosoftTeams\TeamsLogHandler;
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -24,6 +23,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;

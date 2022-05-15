@@ -14,7 +14,6 @@ namespace Mimmi20Test\LoggerFactory\Handler;
 
 use Actived\MicrosoftTeamsNotifier\Handler\MicrosoftTeamsHandler;
 use Actived\MicrosoftTeamsNotifier\Handler\MicrosoftTeamsRecord;
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -25,6 +24,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;

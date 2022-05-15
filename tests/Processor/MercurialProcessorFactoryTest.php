@@ -12,12 +12,12 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Processor;
 
-use Interop\Container\ContainerInterface;
 use Mimmi20\LoggerFactory\Processor\MercurialProcessorFactory;
 use Monolog\Logger;
 use Monolog\Processor\MercurialProcessor;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;

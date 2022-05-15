@@ -12,9 +12,9 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory\Formatter;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\Formatter\ChromePHPFormatter;
+use Psr\Container\ContainerInterface;
 
 final class ChromePHPFormatterFactory implements FactoryInterface
 {

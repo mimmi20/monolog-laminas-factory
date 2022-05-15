@@ -101,7 +101,9 @@ This library was inspired by [psr11-monolog](https://gitlab.com/blazon/psr11-mon
     - [LogglyFormatter](#logglyformatter)
     - [FlowdockFormatter](#flowdockformatter)
     - [MongoDBFormatter](#mongodbformatter)
-    - [LogmaticFormatter](#logmaticFormatter)
+    - [LogmaticFormatter](#logmaticformatter)
+    - [FluentdFormatter](#fluentdformatter)
+    - [StreamFormatter](#streamformatter)
   - [Processors](#processors)
     - [PsrLogMessageProcessor](#psrlogmessageprocessor)
     - [IntrospectionProcessor](#introspectionprocessor)
@@ -2502,6 +2504,35 @@ return [
 ];
 ```
 Monolog Docs: [FluentdFormatter](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Formatter/FluentdFormatter.php)
+
+### StreamFormatter
+Formats the message using a symfony table. Requires [StreamFormatter](https://github.com/mimmi20/monolog-streamformatter).
+
+```php
+<?php
+
+return [
+    'log' => [
+        \Laminas\Log\Logger::class => [
+            'formatters' => [
+                'myFormatterName' => [
+                    'type' => 'stream',
+                    'options' => [
+                        'format' => "%message%", // Optional
+                        'tableStyle' => 'box', // Optional
+                        'dateFormat' => "c", // Optional : The format of the timestamp: one supported by DateTime::format
+                        'allowInlineLineBreaks' => false, // Optional : Whether to allow inline line breaks in log entries
+                        'includeStacktraces' => false, // Optional
+                        'maxNormalizeDepth' => 9, // Optional
+                        'maxNormalizeItemCount' => 1000, // Optional
+                        'prettyPrint' => false, // Optional
+                    ],
+                ],
+            ],
+        ],
+    ],
+];
+```
 
 ## Processors
 

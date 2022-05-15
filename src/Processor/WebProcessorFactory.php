@@ -13,13 +13,13 @@ declare(strict_types = 1);
 namespace Mimmi20\LoggerFactory\Processor;
 
 use ArrayAccess;
-use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\Processor\WebProcessor;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 
 use function array_key_exists;
 use function is_array;

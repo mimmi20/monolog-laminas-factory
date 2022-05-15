@@ -12,9 +12,9 @@ declare(strict_types = 1);
 
 namespace Mimmi20\LoggerFactory\Processor;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\Processor\HostnameProcessor;
+use Psr\Container\ContainerInterface;
 
 final class HostnameProcessorFactory implements FactoryInterface
 {

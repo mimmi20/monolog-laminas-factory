@@ -12,11 +12,11 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Formatter;
 
-use Interop\Container\ContainerInterface;
 use Mimmi20\LoggerFactory\Formatter\MongoDBFormatterFactory;
 use Monolog\Formatter\MongoDBFormatter;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;

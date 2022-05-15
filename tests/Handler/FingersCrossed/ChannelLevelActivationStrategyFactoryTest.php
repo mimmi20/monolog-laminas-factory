@@ -12,12 +12,12 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Handler\FingersCrossed;
 
-use Interop\Container\ContainerInterface;
 use Mimmi20\LoggerFactory\Handler\FingersCrossed\ChannelLevelActivationStrategyFactory;
 use Monolog\Handler\FingersCrossed\ChannelLevelActivationStrategy;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;

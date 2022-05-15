@@ -13,7 +13,6 @@ declare(strict_types = 1);
 namespace Mimmi20\LoggerFactory;
 
 use DateTimeZone;
-use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
@@ -23,6 +22,7 @@ use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\NullHandler;
 use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use Throwable;
 
 use function array_key_exists;

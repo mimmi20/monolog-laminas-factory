@@ -12,11 +12,11 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Processor;
 
-use Interop\Container\ContainerInterface;
 use Mimmi20\LoggerFactory\Processor\MemoryPeakUsageProcessorFactory;
 use Monolog\Processor\MemoryPeakUsageProcessor;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;

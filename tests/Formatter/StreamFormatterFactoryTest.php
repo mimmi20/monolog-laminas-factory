@@ -12,9 +12,9 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Formatter;
 
-use Mimmi20\LoggerFactory\Formatter\JsonFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\NormalizerFormatterFactory;
-use Monolog\Formatter\JsonFormatter;
+use Mimmi20\LoggerFactory\Formatter\StreamFormatterFactory;
+use Mimmi20\Monolog\Formatter\StreamFormatter;
 use Monolog\Formatter\NormalizerFormatter;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
@@ -23,7 +23,7 @@ use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
-final class JsonFormatterFactoryTest extends TestCase
+final class StreamFormatterFactoryTest extends TestCase
 {
     /**
      * @throws Exception
@@ -40,26 +40,34 @@ final class JsonFormatterFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new JsonFormatterFactory();
+        $factory = new StreamFormatterFactory();
 
         $formatter = $factory($container, '');
 
-        self::assertInstanceOf(JsonFormatter::class, $formatter);
+        self::assertInstanceOf(StreamFormatter::class, $formatter);
         self::assertSame(NormalizerFormatter::SIMPLE_DATE, $formatter->getDateFormat());
         self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH, $formatter->getMaxNormalizeDepth());
         self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT, $formatter->getMaxNormalizeItemCount());
-        self::assertSame(JsonFormatter::BATCH_MODE_JSON, $formatter->getBatchMode());
-        self::assertTrue($formatter->isAppendingNewlines());
 
-        $ig = new ReflectionProperty($formatter, 'ignoreEmptyContextAndExtra');
-        $ig->setAccessible(true);
+        $ailb = new ReflectionProperty($formatter, 'allowInlineLineBreaks');
+        $ailb->setAccessible(true);
 
-        self::assertFalse($ig->getValue($formatter));
+        self::assertFalse($ailb->getValue($formatter));
+
+        $format = new ReflectionProperty($formatter, 'format');
+        $format->setAccessible(true);
+
+        self::assertSame(StreamFormatter::SIMPLE_FORMAT, $format->getValue($formatter));
 
         $st = new ReflectionProperty($formatter, 'includeStacktraces');
         $st->setAccessible(true);
 
         self::assertFalse($st->getValue($formatter));
+
+        $ts = new ReflectionProperty($formatter, 'tableStyle');
+        $ts->setAccessible(true);
+
+        self::assertSame(StreamFormatter::BOX_STYLE, $ts->getValue($formatter));
     }
 
     /**
@@ -77,26 +85,34 @@ final class JsonFormatterFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new JsonFormatterFactory();
+        $factory = new StreamFormatterFactory();
 
         $formatter = $factory($container, '', []);
 
-        self::assertInstanceOf(JsonFormatter::class, $formatter);
+        self::assertInstanceOf(StreamFormatter::class, $formatter);
         self::assertSame(NormalizerFormatter::SIMPLE_DATE, $formatter->getDateFormat());
         self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_DEPTH, $formatter->getMaxNormalizeDepth());
         self::assertSame(NormalizerFormatterFactory::DEFAULT_NORMALIZER_ITEM_COUNT, $formatter->getMaxNormalizeItemCount());
-        self::assertSame(JsonFormatter::BATCH_MODE_JSON, $formatter->getBatchMode());
-        self::assertTrue($formatter->isAppendingNewlines());
 
-        $ig = new ReflectionProperty($formatter, 'ignoreEmptyContextAndExtra');
-        $ig->setAccessible(true);
+        $ailb = new ReflectionProperty($formatter, 'allowInlineLineBreaks');
+        $ailb->setAccessible(true);
 
-        self::assertFalse($ig->getValue($formatter));
+        self::assertFalse($ailb->getValue($formatter));
+
+        $format = new ReflectionProperty($formatter, 'format');
+        $format->setAccessible(true);
+
+        self::assertSame(StreamFormatter::SIMPLE_FORMAT, $format->getValue($formatter));
 
         $st = new ReflectionProperty($formatter, 'includeStacktraces');
         $st->setAccessible(true);
 
         self::assertFalse($st->getValue($formatter));
+
+        $ts = new ReflectionProperty($formatter, 'tableStyle');
+        $ts->setAccessible(true);
+
+        self::assertSame(StreamFormatter::BOX_STYLE, $ts->getValue($formatter));
     }
 
     /**
@@ -106,13 +122,13 @@ final class JsonFormatterFactoryTest extends TestCase
      */
     public function testInvokeWithConfig(): void
     {
-        $batchMode                  = JsonFormatter::BATCH_MODE_NEWLINES;
-        $appendNewline              = false;
-        $ignoreEmptyContextAndExtra = true;
-        $include                    = true;
-        $dateFormat                 = 'xxx__Y-m-d\TH:i:sP__xxx';
-        $maxNormalizeDepth          = 42;
-        $maxNormalizeItemCount      = 4711;
+        $format                = '[abc] [def]';
+        $dateFormat            = 'xxx__Y-m-d\TH:i:sP__xxx';
+        $maxNormalizeDepth     = 42;
+        $maxNormalizeItemCount = 4711;
+        $allowInlineLineBreaks = true;
+        $include               = true;
+        $tableStyle            = 'borderless';
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
@@ -122,25 +138,33 @@ final class JsonFormatterFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('get');
 
-        $factory = new JsonFormatterFactory();
+        $factory = new StreamFormatterFactory();
 
-        $formatter = $factory($container, '', ['batchMode' => $batchMode, 'appendNewline' => $appendNewline, 'ignoreEmptyContextAndExtra' => $ignoreEmptyContextAndExtra, 'includeStacktraces' => $include, 'dateFormat' => $dateFormat, 'maxNormalizeDepth' => $maxNormalizeDepth, 'maxNormalizeItemCount' => $maxNormalizeItemCount, 'prettyPrint' => true]);
+        $formatter = $factory($container, '', ['format' => $format, 'tableStyle' => $tableStyle, 'dateFormat' => $dateFormat, 'allowInlineLineBreaks' => $allowInlineLineBreaks, 'includeStacktraces' => $include, 'maxNormalizeDepth' => $maxNormalizeDepth, 'maxNormalizeItemCount' => $maxNormalizeItemCount, 'prettyPrint' => true]);
 
-        self::assertInstanceOf(JsonFormatter::class, $formatter);
+        self::assertInstanceOf(StreamFormatter::class, $formatter);
         self::assertSame($dateFormat, $formatter->getDateFormat());
         self::assertSame($maxNormalizeDepth, $formatter->getMaxNormalizeDepth());
         self::assertSame($maxNormalizeItemCount, $formatter->getMaxNormalizeItemCount());
-        self::assertSame($batchMode, $formatter->getBatchMode());
-        self::assertFalse($formatter->isAppendingNewlines());
 
-        $ig = new ReflectionProperty($formatter, 'ignoreEmptyContextAndExtra');
-        $ig->setAccessible(true);
+        $ailb = new ReflectionProperty($formatter, 'allowInlineLineBreaks');
+        $ailb->setAccessible(true);
 
-        self::assertTrue($ig->getValue($formatter));
+        self::assertTrue($ailb->getValue($formatter));
+
+        $formatP = new ReflectionProperty($formatter, 'format');
+        $formatP->setAccessible(true);
+
+        self::assertSame($format, $formatP->getValue($formatter));
 
         $st = new ReflectionProperty($formatter, 'includeStacktraces');
         $st->setAccessible(true);
 
         self::assertTrue($st->getValue($formatter));
+
+        $ts = new ReflectionProperty($formatter, 'tableStyle');
+        $ts->setAccessible(true);
+
+        self::assertSame($tableStyle, $ts->getValue($formatter));
     }
 }

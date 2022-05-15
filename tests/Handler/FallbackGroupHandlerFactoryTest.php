@@ -12,7 +12,6 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Handler;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -27,6 +26,7 @@ use Monolog\Handler\GelfHandler;
 use Monolog\Handler\HandlerInterface;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;

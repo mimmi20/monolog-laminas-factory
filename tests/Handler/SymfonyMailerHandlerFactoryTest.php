@@ -12,7 +12,6 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory\Handler;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -21,19 +20,18 @@ use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\HtmlFormatter;
 use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\SwiftMailerHandler;
 use Monolog\Handler\SymfonyMailerHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 use ReflectionException;
 use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
-use Swift_Message;
-
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+
 use function sprintf;
 
 final class SymfonyMailerHandlerFactoryTest extends TestCase
@@ -198,8 +196,8 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfig5(): void
     {
-        $mailerName  = 'test-mailer';
-        $mailer      = $this->getMockBuilder(MailerInterface::class)
+        $mailerName    = 'test-mailer';
+        $mailer        = $this->getMockBuilder(MailerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
         $emailTemplate = $this->getMockBuilder(Email::class)
@@ -272,10 +270,10 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfigAndBoolFormatter(): void
     {
-        $mailer    = $this->getMockBuilder(MailerInterface::class)
+        $mailer        = $this->getMockBuilder(MailerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $formatter = true;
+        $formatter     = true;
         $emailTemplate = $this->getMockBuilder(Email::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -304,13 +302,13 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfigAndFormatter(): void
     {
-        $mailer    = $this->getMockBuilder(MailerInterface::class)
+        $mailer        = $this->getMockBuilder(MailerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
         $emailTemplate = $this->getMockBuilder(Email::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $formatter = $this->getMockBuilder(LineFormatter::class)
+        $formatter     = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -342,13 +340,13 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfigAndFormatter2(): void
     {
-        $mailer    = $this->getMockBuilder(MailerInterface::class)
+        $mailer        = $this->getMockBuilder(MailerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
         $emailTemplate = $this->getMockBuilder(Email::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $formatter = $this->getMockBuilder(LineFormatter::class)
+        $formatter     = $this->getMockBuilder(LineFormatter::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -405,13 +403,13 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
      */
     public function testInvokeWithConfigAndBoolProcessors(): void
     {
-        $mailer     = $this->getMockBuilder(MailerInterface::class)
+        $mailer        = $this->getMockBuilder(MailerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
         $emailTemplate = $this->getMockBuilder(Email::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $processors = true;
+        $processors    = true;
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
