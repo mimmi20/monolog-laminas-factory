@@ -519,7 +519,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         self::assertIsArray($optionsArray);
 
         self::assertSame('monolog', $optionsArray['index']);
-        self::assertSame('record', $optionsArray['type']);
+        self::assertSame('_doc', $optionsArray['type']);
         self::assertFalse($optionsArray['ignore_error']);
 
         self::assertInstanceOf(ElasticsearchFormatter::class, $handler->getFormatter());
@@ -582,7 +582,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         self::assertIsArray($optionsArray);
 
         self::assertSame($index, $optionsArray['index']);
-        self::assertSame($type, $optionsArray['type']);
+        self::assertSame('_doc', $optionsArray['type']);
         self::assertTrue($optionsArray['ignore_error']);
 
         self::assertInstanceOf(ElasticsearchFormatter::class, $handler->getFormatter());
@@ -740,7 +740,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         self::assertIsArray($optionsArray);
 
         self::assertSame($index, $optionsArray['index']);
-        self::assertSame($type, $optionsArray['type']);
+        self::assertSame('_doc', $optionsArray['type']);
         self::assertTrue($optionsArray['ignore_error']);
 
         self::assertSame($formatter, $handler->getFormatter());
