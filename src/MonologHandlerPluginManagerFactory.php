@@ -58,12 +58,12 @@ final class MonologHandlerPluginManagerFactory implements FactoryInterface
 
         assert(is_array($config));
 
-        // If we do not have log_processors configuration, nothing more to do
+        // If we do not have handler configuration, nothing more to do
         if (!isset($config['monolog_handlers']) || !is_array($config['monolog_handlers'])) {
             return $pluginManager;
         }
 
-        // Wire service configuration for log_processors
+        // Wire service configuration for handler
         (new Config($config['monolog_handlers']))->configureServiceManager($pluginManager);
 
         return $pluginManager;

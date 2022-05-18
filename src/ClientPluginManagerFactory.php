@@ -23,7 +23,7 @@ use function assert;
 use function is_array;
 use function sprintf;
 
-final class MonologProcessorPluginManagerFactory implements FactoryInterface
+final class ClientPluginManagerFactory implements FactoryInterface
 {
     /**
      * @param string            $requestedName
@@ -35,9 +35,9 @@ final class MonologProcessorPluginManagerFactory implements FactoryInterface
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      */
-    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): MonologProcessorPluginManager
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): ClientPluginManager
     {
-        $pluginManager = new MonologProcessorPluginManager($container, $options ?: []);
+        $pluginManager = new ClientPluginManager($container, $options ?: []);
 
         // If this is in a laminas-mvc application, the ServiceListener will inject
         // merged configuration during bootstrap.
@@ -58,13 +58,13 @@ final class MonologProcessorPluginManagerFactory implements FactoryInterface
 
         assert(is_array($config));
 
-        // If we do not have processors configuration, nothing more to do
-        if (!isset($config['monolog_processors']) || !is_array($config['monolog_processors'])) {
+        // If we do not have client configuration, nothing more to do
+        if (!isset($config['monolog_service_clients']) || !is_array($config['monolog_service_clients'])) {
             return $pluginManager;
         }
 
-        // Wire service configuration for processors
-        (new Config($config['monolog_processors']))->configureServiceManager($pluginManager);
+        // Wire service configuration for client
+        (new Config($config['monolog_service_clients']))->configureServiceManager($pluginManager);
 
         return $pluginManager;
     }

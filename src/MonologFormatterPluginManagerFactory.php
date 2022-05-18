@@ -58,12 +58,12 @@ final class MonologFormatterPluginManagerFactory implements FactoryInterface
 
         assert(is_array($config));
 
-        // If we do not have log_processors configuration, nothing more to do
+        // If we do not have formatter configuration, nothing more to do
         if (!isset($config['monolog_formatters']) || !is_array($config['monolog_formatters'])) {
             return $pluginManager;
         }
 
-        // Wire service configuration for log_processors
+        // Wire service configuration for formatter
         (new Config($config['monolog_formatters']))->configureServiceManager($pluginManager);
 
         return $pluginManager;

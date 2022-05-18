@@ -12,6 +12,8 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\LoggerFactory;
 
+use Elastic\Elasticsearch\Client as V8Client;
+use Elasticsearch\Client as V7Client;
 use Laminas\Log\LoggerInterface;
 use Mimmi20\LoggerFactory\ConfigProvider;
 use Mimmi20\LoggerFactory\Handler\FingersCrossed\ActivationStrategyPluginManager;
@@ -168,7 +170,6 @@ final class ConfigProviderTest extends TestCase
         self::assertCount(1, $monologConfig);
 
         self::assertArrayNotHasKey('abstract_factories', $monologConfig);
-        self::assertArrayNotHasKey('aliases', $monologConfig);
         self::assertArrayNotHasKey('delegators', $monologConfig);
         self::assertArrayNotHasKey('initializers', $monologConfig);
         self::assertArrayNotHasKey('invokables', $monologConfig);
@@ -182,7 +183,38 @@ final class ConfigProviderTest extends TestCase
         self::assertArrayHasKey(Logger::class, $factories);
 
         self::assertArrayNotHasKey('aliases', $monologConfig);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testGetMonologClientConfig(): void
+    {
+        $monologConfig = $this->provider->getMonologClientConfig();
+        self::assertIsArray($monologConfig);
+        self::assertCount(2, $monologConfig);
+
         self::assertArrayNotHasKey('abstract_factories', $monologConfig);
+        self::assertArrayNotHasKey('delegators', $monologConfig);
+        self::assertArrayNotHasKey('initializers', $monologConfig);
+        self::assertArrayNotHasKey('invokables', $monologConfig);
+        self::assertArrayNotHasKey('services', $monologConfig);
+        self::assertArrayNotHasKey('shared', $monologConfig);
+
+        self::assertArrayHasKey('factories', $monologConfig);
+        $factories = $monologConfig['factories'];
+        self::assertIsArray($factories);
+        self::assertCount(2, $factories);
+        self::assertArrayHasKey(V7Client::class, $factories);
+        self::assertArrayHasKey(V8Client::class, $factories);
+
+        self::assertArrayHasKey('aliases', $monologConfig);
+        $aliases = $monologConfig['aliases'];
+        self::assertIsArray($aliases);
+        self::assertCount(2, $aliases);
+        self::assertArrayHasKey('v7', $aliases);
+        self::assertArrayHasKey('v8', $aliases);
     }
 
     /**
@@ -194,11 +226,12 @@ final class ConfigProviderTest extends TestCase
         $config = ($this->provider)();
 
         self::assertIsArray($config);
-        self::assertCount(5, $config);
+        self::assertCount(6, $config);
         self::assertArrayHasKey('dependencies', $config);
         self::assertArrayHasKey('monolog_handlers', $config);
         self::assertArrayHasKey('monolog_processors', $config);
         self::assertArrayHasKey('monolog_formatters', $config);
         self::assertArrayHasKey('monolog', $config);
+        self::assertArrayHasKey('monolog_service_clients', $config);
     }
 }
