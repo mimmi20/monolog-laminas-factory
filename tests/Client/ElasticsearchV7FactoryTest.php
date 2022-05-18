@@ -28,10 +28,6 @@ final class ElasticsearchV7FactoryTest extends TestCase
      */
     public function testInvokeWithoutConfig(): void
     {
-        if (!class_exists(V7Client::class)) {
-            self::markTestSkipped('requires elasticsearch/elasticsearch V7');
-        }
-
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -54,10 +50,6 @@ final class ElasticsearchV7FactoryTest extends TestCase
      */
     public function testInvokeWithEmptyConfig(): void
     {
-        if (!class_exists(V7Client::class)) {
-            self::markTestSkipped('requires elasticsearch/elasticsearch V7');
-        }
-
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -77,6 +69,8 @@ final class ElasticsearchV7FactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvokeWithConfigWithWrongHostConfig(): void
     {
@@ -103,6 +97,8 @@ final class ElasticsearchV7FactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvokeWithConfigWithConfig(): void
     {
@@ -127,6 +123,8 @@ final class ElasticsearchV7FactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvokeWithConfigWithConfig2(): void
     {

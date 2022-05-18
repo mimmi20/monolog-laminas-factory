@@ -73,6 +73,8 @@ final class ElasticsearchV8FactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvokeWithConfigWithWrongClient(): void
     {
@@ -99,6 +101,8 @@ final class ElasticsearchV8FactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvokeWithConfigWithConfig(): void
     {
@@ -123,6 +127,8 @@ final class ElasticsearchV8FactoryTest extends TestCase
 
     /**
      * @throws Exception
+     *
+     * @requires extension curl
      */
     public function testInvokeWithConfigWithConfig2(): void
     {
