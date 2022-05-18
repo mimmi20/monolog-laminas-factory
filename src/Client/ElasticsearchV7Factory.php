@@ -40,6 +40,7 @@ final class ElasticsearchV7Factory implements FactoryInterface
      *
      * @throws ServiceNotCreatedException if an exception is raised when creating a service
      * @throws ContainerException         if any other error occurs
+     * @throws AuthenticationConfigException
      *
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
@@ -85,20 +86,12 @@ final class ElasticsearchV7Factory implements FactoryInterface
             assert(is_string($options['api-id']));
             assert(is_string($options['api-key']));
 
-            try {
-                $builder->setApiKey($options['api-id'], $options['api-key']);
-            } catch (AuthenticationConfigException $e) {
-                throw new ServiceNotCreatedException('An error occured while setting the api key', 0, $e);
-            }
+            $builder->setApiKey($options['api-id'], $options['api-key']);
         } elseif (array_key_exists('username', $options) && array_key_exists('password', $options)) {
             assert(is_string($options['username']));
             assert(is_string($options['password']));
 
-            try {
-                $builder->setBasicAuthentication($options['username'], $options['password']);
-            } catch (AuthenticationConfigException $e) {
-                throw new ServiceNotCreatedException('An error occured while setting the username', 0, $e);
-            }
+            $builder->setBasicAuthentication($options['username'], $options['password']);
         }
 
         if (array_key_exists('metadata', $options)) {

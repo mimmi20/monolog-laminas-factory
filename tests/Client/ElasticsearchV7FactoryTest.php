@@ -116,7 +116,7 @@ final class ElasticsearchV7FactoryTest extends TestCase
 
         $factory = new ElasticsearchV7Factory();
 
-        $client = $factory($container, '', ['hosts' => ['localhost', ['host' => 42], ['host' => 'localhost.test']], 'api-key' => 'api-key']);
+        $client = $factory($container, '', ['hosts' => ['localhost', ['host' => 42], ['host' => 'localhost.test']], 'api-id' => 'test-id', 'api-key' => 'api-key']);
 
         self::assertInstanceOf(V7Client::class, $client);
     }
@@ -143,6 +143,32 @@ final class ElasticsearchV7FactoryTest extends TestCase
         $factory = new ElasticsearchV7Factory();
 
         $client = $factory($container, '', ['hosts' => ['localhost', ['host' => 42], ['port' => '4711'], ['host' => 'localhost.test']], 'retries' => 2, 'username' => 'user', 'password' => 'pass', 'metadata' => false]);
+
+        self::assertInstanceOf(V7Client::class, $client);
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @requires extension curl
+     */
+    public function testInvokeWithConfigWithConfig3(): void
+    {
+        if (!class_exists(V7Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V7');
+        }
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new ElasticsearchV7Factory();
+
+        $client = $factory($container, '', ['hosts' => ['localhost', ['host' => 42], ['port' => '4711'], ['host' => 'localhost.test']], 'retries' => 2, 'api-id' => 'test-id', 'api-key' => 'api-key', 'metadata' => false]);
 
         self::assertInstanceOf(V7Client::class, $client);
     }

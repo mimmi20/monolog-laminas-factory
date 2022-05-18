@@ -120,7 +120,7 @@ final class ElasticsearchV8FactoryTest extends TestCase
 
         $factory = new ElasticsearchV8Factory();
 
-        $client = $factory($container, '', ['hosts' => ['localhost', 'localhost.test'], 'api-key' => 'api-key']);
+        $client = $factory($container, '', ['hosts' => ['localhost', 'localhost.test'], 'api-id' => 'test-id', 'api-key' => 'api-key']);
 
         self::assertInstanceOf(V8Client::class, $client);
     }
@@ -147,6 +147,32 @@ final class ElasticsearchV8FactoryTest extends TestCase
         $factory = new ElasticsearchV8Factory();
 
         $client = $factory($container, '', ['hosts' => ['localhost', 'localhost.test'], 'retries' => 2, 'username' => 'user', 'password' => 'pass', 'metadata' => false]);
+
+        self::assertInstanceOf(V8Client::class, $client);
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @requires extension curl
+     */
+    public function testInvokeWithConfigWithConfig3(): void
+    {
+        if (!class_exists(V8Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V8');
+        }
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::never())
+            ->method('get');
+
+        $factory = new ElasticsearchV8Factory();
+
+        $client = $factory($container, '', ['hosts' => ['localhost', 'localhost.test'], 'retries' => 2, 'api-id' => 'test-id', 'api-key' => 'api-key', 'metadata' => false]);
 
         self::assertInstanceOf(V8Client::class, $client);
     }
