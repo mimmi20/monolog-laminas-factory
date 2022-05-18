@@ -15,6 +15,8 @@ namespace Mimmi20Test\LoggerFactory;
 use Laminas\ModuleManager\Listener\ServiceListenerInterface;
 use Laminas\ModuleManager\ModuleEvent;
 use Laminas\ModuleManager\ModuleManager;
+use Mimmi20\LoggerFactory\ClientPluginManager;
+use Mimmi20\LoggerFactory\ClientProviderInterface;
 use Mimmi20\LoggerFactory\Module;
 use Mimmi20\LoggerFactory\MonologFormatterPluginManager;
 use Mimmi20\LoggerFactory\MonologFormatterProviderInterface;
@@ -42,12 +44,13 @@ final class ModuleTest extends TestCase
         $config = $module->getConfig();
 
         self::assertIsArray($config);
-        self::assertCount(5, $config);
+        self::assertCount(6, $config);
         self::assertArrayHasKey('service_manager', $config);
         self::assertArrayHasKey('monolog_handlers', $config);
         self::assertArrayHasKey('monolog_processors', $config);
         self::assertArrayHasKey('monolog_formatters', $config);
         self::assertArrayHasKey('monolog', $config);
+        self::assertArrayHasKey('monolog_service_clients', $config);
     }
 
     /**
@@ -58,7 +61,7 @@ final class ModuleTest extends TestCase
         $serviceListener = $this->getMockBuilder(ServiceListenerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $serviceListener->expects(self::exactly(4))
+        $serviceListener->expects(self::exactly(5))
             ->method('addServiceManager')
             ->withConsecutive(
                 [
@@ -84,6 +87,12 @@ final class ModuleTest extends TestCase
                     'monolog_formatters',
                     MonologFormatterProviderInterface::class,
                     'getMonologFormatterConfig',
+                ],
+                [
+                    ClientPluginManager::class,
+                    'monolog_service_clients',
+                    ClientProviderInterface::class,
+                    'getMonologClientConfig',
                 ]
             );
 

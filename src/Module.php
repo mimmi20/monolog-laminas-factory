@@ -26,7 +26,7 @@ final class Module implements ConfigProviderInterface, DependencyIndicatorInterf
      * Return default configuration for laminas-mvc applications.
      *
      * @return array<string, array<string, array<int|string, string>>>
-     * @phpstan-return array{service_manager: array{aliases: array<string|class-string, class-string>, abstract_factories: array<int, class-string>, factories: array<class-string, class-string>}, monolog_handlers: array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}, monolog_processors: array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}, monolog_formatters: array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}, monolog: array{factories: array<class-string, class-string>}}
+     * @phpstan-return array{service_manager: array{aliases: array<string|class-string, class-string>, abstract_factories: array<int, class-string>, factories: array<class-string, class-string>}, monolog_handlers: array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}, monolog_processors: array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}, monolog_formatters: array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}, monolog: array{factories: array<class-string, class-string>}, monolog_service_clients:array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}}
      */
     public function getConfig(): array
     {
@@ -38,6 +38,7 @@ final class Module implements ConfigProviderInterface, DependencyIndicatorInterf
             'monolog_handlers' => $provider->getMonologHandlerConfig(),
             'monolog_processors' => $provider->getMonologProcessorConfig(),
             'monolog_formatters' => $provider->getMonologFormatterConfig(),
+            'monolog_service_clients' => $provider->getMonologClientConfig(),
         ];
     }
 
@@ -78,6 +79,13 @@ final class Module implements ConfigProviderInterface, DependencyIndicatorInterf
             'monolog_formatters',
             MonologFormatterProviderInterface::class,
             'getMonologFormatterConfig'
+        );
+
+        $serviceListener->addServiceManager(
+            ClientPluginManager::class,
+            'monolog_service_clients',
+            ClientProviderInterface::class,
+            'getMonologClientConfig'
         );
     }
 

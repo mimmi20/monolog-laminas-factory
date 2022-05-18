@@ -15,9 +15,13 @@ namespace Mimmi20\LoggerFactory;
 use Actived\MicrosoftTeamsNotifier\Handler\MicrosoftTeamsHandler;
 use Bartlett\Monolog\Handler\CallbackFilterHandler;
 use CMDISP\MonologMicrosoftTeams\TeamsLogHandler;
+use Elastic\Elasticsearch\Client as V8Client;
+use Elasticsearch\Client as V7Client;
 use JK\Monolog\Processor\RequestHeaderProcessor;
 use Laminas\Log\Logger;
 use Laminas\Log\LoggerInterface;
+use Mimmi20\LoggerFactory\Client\ElasticsearchV7Factory;
+use Mimmi20\LoggerFactory\Client\ElasticsearchV8Factory;
 use Mimmi20\LoggerFactory\Formatter\ChromePHPFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\ElasticaFormatterFactory;
 use Mimmi20\LoggerFactory\Formatter\ElasticsearchFormatterFactory;
@@ -197,7 +201,7 @@ final class ConfigProvider
      * Return general-purpose laminas-navigation configuration.
      *
      * @return array<string, array<string, array<int|string, string>>>
-     * @phpstan-return array{dependencies: array{aliases: array<string|class-string, class-string>, abstract_factories: array<int, class-string>, factories: array<class-string, class-string>}, monolog_handlers: array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}, monolog_processors: array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}, monolog_formatters: array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}, monolog: array{factories: array<class-string, class-string>}}
+     * @phpstan-return array{dependencies: array{aliases: array<string|class-string, class-string>, abstract_factories: array<int, class-string>, factories: array<class-string, class-string>}, monolog_handlers: array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}, monolog_processors: array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}, monolog_formatters: array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}, monolog: array{factories: array<class-string, class-string>}, monolog_service_clients:array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}}
      */
     public function __invoke(): array
     {
@@ -207,6 +211,7 @@ final class ConfigProvider
             'monolog_processors' => $this->getMonologProcessorConfig(),
             'monolog_formatters' => $this->getMonologFormatterConfig(),
             'monolog' => $this->getMonologConfig(),
+            'monolog_service_clients' => $this->getMonologClientConfig(),
         ];
     }
 
@@ -448,6 +453,24 @@ final class ConfigProvider
                 ScalarFormatter::class => ScalarFormatterFactory::class,
                 WildfireFormatter::class => WildfireFormatterFactory::class,
                 StreamFormatter::class => StreamFormatterFactory::class,
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, array<int|string, string>>
+     * @phpstan-return array{aliases: array<string|class-string, class-string>, factories: array<class-string, class-string>}
+     */
+    public function getMonologClientConfig(): array
+    {
+        return [
+            'aliases' => [
+                'v7' => V7Client::class,
+                'v8' => V8Client::class,
+            ],
+            'factories' => [
+                V7Client::class => ElasticsearchV7Factory::class,
+                V8Client::class => ElasticsearchV8Factory::class,
             ],
         ];
     }

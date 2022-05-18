@@ -15,11 +15,13 @@ namespace Mimmi20\LoggerFactory\Handler;
 use Elastic\Elasticsearch\Client as V8Client;
 use Elasticsearch\Client as V7Client;
 use Interop\Container\Exception\ContainerException;
+use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mimmi20\LoggerFactory\AddFormatterTrait;
 use Mimmi20\LoggerFactory\AddProcessorTrait;
+use Mimmi20\LoggerFactory\ClientPluginManager;
 use Monolog\Handler\ElasticsearchHandler;
 use Monolog\Logger;
 use Psr\Container\ContainerExceptionInterface;
@@ -27,7 +29,12 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 
 use function array_key_exists;
+use function assert;
+use function class_exists;
+use function get_class;
+use function gettype;
 use function is_array;
+use function is_object;
 use function is_string;
 use function sprintf;
 
@@ -64,6 +71,47 @@ final class ElasticsearchHandlerFactory implements FactoryInterface
 
         if ($options['client'] instanceof V8Client || $options['client'] instanceof V7Client) {
             $client = $options['client'];
+        } elseif (is_array($options['client'])) {
+            if (class_exists(V8Client::class)) {
+                $clientType = V8Client::class;
+            } else {
+                $clientType = V7Client::class;
+            }
+
+            try {
+                $monologClientPluginManager = $container->get(ClientPluginManager::class);
+            } catch (ContainerExceptionInterface $e) {
+                throw new ServiceNotFoundException(
+                    sprintf('Could not find service %s', ClientPluginManager::class),
+                    0,
+                    $e
+                );
+            }
+
+            assert(
+                $monologClientPluginManager instanceof ClientPluginManager || $monologClientPluginManager instanceof AbstractPluginManager,
+                sprintf(
+                    '$monologConfigPluginManager should be an Instance of %s, but was %s',
+                    AbstractPluginManager::class,
+                    is_object($monologClientPluginManager) ? get_class($monologClientPluginManager) : gettype($monologClientPluginManager)
+                )
+            );
+
+            try {
+                $client = $monologClientPluginManager->get($clientType, $options['client']);
+            } catch (ContainerExceptionInterface $e) {
+                throw new ServiceNotFoundException(
+                    sprintf('Could not find service %s', $clientType),
+                    0,
+                    $e
+                );
+            }
+
+            if (!$client instanceof V8Client && !$client instanceof V7Client) {
+                throw new ServiceNotCreatedException(
+                    sprintf('Could not create %s', $clientType)
+                );
+            }
         } elseif (!is_string($options['client'])) {
             throw new ServiceNotCreatedException('No Service name provided for the required service class');
         } else {
