@@ -26,7 +26,7 @@ jobs:
       matrix:
         operating-system:
           - "ubuntu-20.04"
-          - "ubuntu-22.04"
+          # - "ubuntu-22.04"
 
         php-version:
           - "7.4"
@@ -65,7 +65,7 @@ jobs:
       matrix:
         operating-system:
           - "ubuntu-20.04"
-          - "ubuntu-22.04"
+          # - "ubuntu-22.04"
 
         php-version:
           - "7.4"
@@ -112,7 +112,7 @@ jobs:
         operating-system:
           - "ubuntu-18.04"
           - "ubuntu-20.04"
-          - "ubuntu-22.04"
+          # - "ubuntu-22.04"
 
         php-version:
           - "7.4"
@@ -183,7 +183,7 @@ jobs:
       matrix:
         operating-system:
           - "ubuntu-20.04"
-          - "ubuntu-22.04"
+          # - "ubuntu-22.04"
 
         php-version:
           - "7.4"
@@ -231,7 +231,7 @@ jobs:
       matrix:
         operating-system:
           - "ubuntu-20.04"
-          - "ubuntu-22.04"
+          # - "ubuntu-22.04"
 
         php-version:
           - "7.4"
@@ -277,7 +277,7 @@ jobs:
       matrix:
         operating-system:
           - "ubuntu-20.04"
-          - "ubuntu-22.04"
+          # - "ubuntu-22.04"
 
         php-version:
           - "7.4"
@@ -326,7 +326,7 @@ jobs:
         operating-system:
           - "ubuntu-18.04"
           - "ubuntu-20.04"
-          - "ubuntu-22.04"
+          # - "ubuntu-22.04"
 
         php-version:
           - "7.4"
@@ -378,7 +378,7 @@ jobs:
         operating-system:
           - "ubuntu-18.04"
           - "ubuntu-20.04"
-          - "ubuntu-22.04"
+          # - "ubuntu-22.04"
 
         php-version:
           - "7.4"
@@ -431,7 +431,7 @@ jobs:
         run: "infection -s --min-covered-msi=90 --min-msi=87 --coverage=.build/coverage --only-covered --logger-github"
 
   code-coverage-with-all-extensions-for-elaticsearch8:
-    name: "Code Coverage with PHPUnit with all Extensions for Elasticsearch 8"
+    name: "Code Coverage with PHPUnit for Elasticsearch 8"
 
     needs: "tests"
 
@@ -446,7 +446,7 @@ jobs:
         operating-system:
           - "ubuntu-18.04"
           - "ubuntu-20.04"
-          - "ubuntu-22.04"
+          # - "ubuntu-22.04"
 
         php-version:
           - "7.4"
@@ -471,7 +471,7 @@ jobs:
         uses: "shivammathur/setup-php@2.19.0"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "${{ env.PHP_EXTENSIONS }}"
+          extensions: "none, phar, json, opcache, mbstring, openssl, sockets, curl, ctype, intl"
           ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "${{ env.TOOLS }}, infection:0.26.6"
@@ -498,7 +498,7 @@ jobs:
         uses: "codecov/codecov-action@v3.1.0"
         with:
           file: ".build/coverage/clover.xml"
-          flags: "phpunit,php-${{ matrix.php-version }},${{ matrix.coverage-drivers }},${{ matrix.php-version }},${{ matrix.operating-system }},with-all-extensions"
+          flags: "phpunit,php-${{ matrix.php-version }},${{ matrix.coverage-drivers }},${{ matrix.php-version }},${{ matrix.operating-system }},elasticsearch-8"
           verbose: false
 
       - name: "Run mutation tests with infection/infection"
@@ -520,7 +520,7 @@ jobs:
         operating-system:
           - "ubuntu-18.04"
           - "ubuntu-20.04"
-          - "ubuntu-22.04"
+          # - "ubuntu-22.04"
 
         php-version:
           - "7.4"
@@ -591,7 +591,7 @@ jobs:
         operating-system:
           - "ubuntu-18.04"
           - "ubuntu-20.04"
-          - "ubuntu-22.04"
+          # - "ubuntu-22.04"
 
         php-version:
           - "7.4"
@@ -662,7 +662,7 @@ jobs:
         operating-system:
           - "ubuntu-18.04"
           - "ubuntu-20.04"
-          - "ubuntu-22.04"
+          # - "ubuntu-22.04"
 
         php-version:
           - "7.4"
@@ -730,7 +730,7 @@ jobs:
         operating-system:
           - "ubuntu-18.04"
           - "ubuntu-20.04"
-          - "ubuntu-22.04"
+          # - "ubuntu-22.04"
 
         php-version:
           - "7.4"
