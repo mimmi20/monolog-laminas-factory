@@ -471,7 +471,7 @@ jobs:
         uses: "shivammathur/setup-php@2.19.0"
         with:
           php-version: "${{ matrix.php-version }}"
-          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, tokenizer, openssl, sockets, curl, ctype, intl"
+          extensions: "none, phar, json, opcache, mbstring, dom, simplexml, xml, tokenizer, xmlwriter, openssl, sockets, curl, ctype, intl"
           ini-values: "${{ env.PHP_INI_VALUES }}, xdebug.mode=coverage"
           coverage: "${{ matrix.coverage-drivers }}"
           tools: "${{ env.TOOLS }}, infection:0.26.6"
