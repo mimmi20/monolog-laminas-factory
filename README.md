@@ -1539,6 +1539,8 @@ return [
                     'options' => [
                         'client' => 'my-service', //  Elastica Client object.  Must be a valid container service
                         'index' => 'log', // Optional: Elastic index name
+                        'dateFormat' => \Mimmi20\LoggerFactory\Handler\ElasticsearchHandlerFactory::INDEX_PER_DAY, // Optional: possible Values are \Mimmi20\LoggerFactory\Handler\ElasticsearchHandlerFactory::INDEX_PER_DAY, \Mimmi20\LoggerFactory\Handler\ElasticsearchHandlerFactory::INDEX_PER_MONTH and \Mimmi20\LoggerFactory\Handler\ElasticsearchHandlerFactory::INDEX_PER_YEAR
+                        'indexNameFormat' => '{indexname}', // Optional: a string which must contain the string '{indexname}' (which is a placeholder for the `index`) and may contain the string '{date}' (which is a placeholder for the actual date formatted by `dateFormat`)
                         'type' => 'record', // Optional: Elastic document type
                         'ignoreError' => false, // Optional: Suppress Elastica exceptions
                         'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered

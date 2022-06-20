@@ -31,12 +31,15 @@ use Psr\Log\LogLevel;
 use function array_key_exists;
 use function assert;
 use function class_exists;
+use function date;
 use function get_class;
 use function gettype;
+use function in_array;
 use function is_array;
 use function is_object;
 use function is_string;
 use function sprintf;
+use function str_replace;
 
 /**
  * @phpstan-import-type Level from Logger
@@ -46,6 +49,10 @@ final class ElasticsearchHandlerFactory implements FactoryInterface
 {
     use AddFormatterTrait;
     use AddProcessorTrait;
+
+    public const INDEX_PER_DAY   = 'Y-m-d';
+    public const INDEX_PER_MONTH = 'Y-m';
+    public const INDEX_PER_YEAR  = 'Y';
 
     /**
      * @param string                                                  $requestedName
@@ -132,14 +139,30 @@ final class ElasticsearchHandlerFactory implements FactoryInterface
             }
         }
 
-        $index       = 'monolog';
-        $type        = 'record';
-        $ignoreError = false;
-        $level       = LogLevel::DEBUG;
-        $bubble      = true;
+        $index           = 'monolog';
+        $dateFormat      = self::INDEX_PER_DAY;
+        $indexNameFormat = '{indexname}';
+        $type            = 'record';
+        $ignoreError     = false;
+        $level           = LogLevel::DEBUG;
+        $bubble          = true;
 
         if (array_key_exists('index', $options)) {
             $index = $options['index'];
+        }
+
+        if (
+            array_key_exists('dateFormat', $options)
+            && in_array($options['dateFormat'], [self::INDEX_PER_DAY, self::INDEX_PER_MONTH, self::INDEX_PER_YEAR], true)
+        ) {
+            $dateFormat = $options['dateFormat'];
+        }
+
+        if (
+            array_key_exists('indexNameFormat', $options)
+            && false !== mb_strpos($options['indexNameFormat'], '{indexname}')
+        ) {
+            $indexNameFormat = $options['indexNameFormat'];
         }
 
         if (array_key_exists('type', $options)) {
@@ -161,7 +184,7 @@ final class ElasticsearchHandlerFactory implements FactoryInterface
         $handler = new ElasticsearchHandler(
             $client,
             [
-                'index' => $index,
+                'index' => str_replace(['{indexname}', '{date}'], [$index, date($dateFormat)], $indexNameFormat),
                 'type' => $type,
                 'ignore_error' => $ignoreError,
             ],

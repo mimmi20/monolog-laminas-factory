@@ -34,6 +34,7 @@ use ReflectionProperty;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 use function class_exists;
+use function date;
 use function sprintf;
 
 final class ElasticsearchHandlerFactoryTest extends TestCase
@@ -426,6 +427,310 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         self::assertIsArray($optionsArray);
 
         self::assertSame($index, $optionsArray['index']);
+        self::assertSame('_doc', $optionsArray['type']);
+        self::assertTrue($optionsArray['ignore_error']);
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvokeWithV7ClientAndConfigAndFormatter3(): void
+    {
+        if (!class_exists(V7Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V7');
+        }
+
+        $client      = 'xyz';
+        $clientClass = $this->getMockBuilder(V7Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $index       = 'test-index';
+        $type        = 'test-type';
+        $dateFormat  = ElasticsearchHandlerFactory::INDEX_PER_MONTH;
+        $formatter   = $this->getMockBuilder(ElasticsearchFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([$client], [MonologFormatterPluginManager::class])
+            ->willReturnOnConsecutiveCalls($clientClass, $monologFormatterPluginManager);
+
+        $factory = new ElasticsearchHandlerFactory();
+
+        $handler = $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter, 'dateFormat' => $dateFormat, 'indexNameFormat' => 'abc']);
+
+        self::assertInstanceOf(ElasticsearchHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $clientP = new ReflectionProperty($handler, 'client');
+        $clientP->setAccessible(true);
+
+        self::assertSame($clientClass, $clientP->getValue($handler));
+
+        $optionsP = new ReflectionProperty($handler, 'options');
+        $optionsP->setAccessible(true);
+
+        $optionsArray = $optionsP->getValue($handler);
+
+        self::assertIsArray($optionsArray);
+
+        self::assertSame($index, $optionsArray['index']);
+        self::assertSame('_doc', $optionsArray['type']);
+        self::assertTrue($optionsArray['ignore_error']);
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvokeWithV7ClientAndConfigAndFormatter4(): void
+    {
+        if (!class_exists(V7Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V7');
+        }
+
+        $client      = 'xyz';
+        $clientClass = $this->getMockBuilder(V7Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $index       = 'test-index';
+        $type        = 'test-type';
+        $dateFormat  = ElasticsearchHandlerFactory::INDEX_PER_MONTH;
+        $formatter   = $this->getMockBuilder(ElasticsearchFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([$client], [MonologFormatterPluginManager::class])
+            ->willReturnOnConsecutiveCalls($clientClass, $monologFormatterPluginManager);
+
+        $factory = new ElasticsearchHandlerFactory();
+
+        $handler = $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter, 'dateFormat' => $dateFormat, 'indexNameFormat' => '{indexname}-{date}']);
+
+        self::assertInstanceOf(ElasticsearchHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $clientP = new ReflectionProperty($handler, 'client');
+        $clientP->setAccessible(true);
+
+        self::assertSame($clientClass, $clientP->getValue($handler));
+
+        $optionsP = new ReflectionProperty($handler, 'options');
+        $optionsP->setAccessible(true);
+
+        $optionsArray = $optionsP->getValue($handler);
+
+        self::assertIsArray($optionsArray);
+
+        self::assertSame($index . '-' . date($dateFormat), $optionsArray['index']);
+        self::assertSame('_doc', $optionsArray['type']);
+        self::assertTrue($optionsArray['ignore_error']);
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvokeWithV7ClientAndConfigAndFormatter5(): void
+    {
+        if (!class_exists(V7Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V7');
+        }
+
+        $client      = 'xyz';
+        $clientClass = $this->getMockBuilder(V7Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $index       = 'test-index';
+        $type        = 'test-type';
+        $dateFormat  = ElasticsearchHandlerFactory::INDEX_PER_YEAR;
+        $formatter   = $this->getMockBuilder(ElasticsearchFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([$client], [MonologFormatterPluginManager::class])
+            ->willReturnOnConsecutiveCalls($clientClass, $monologFormatterPluginManager);
+
+        $factory = new ElasticsearchHandlerFactory();
+
+        $handler = $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter, 'dateFormat' => $dateFormat, 'indexNameFormat' => '{indexname}-{date}']);
+
+        self::assertInstanceOf(ElasticsearchHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $clientP = new ReflectionProperty($handler, 'client');
+        $clientP->setAccessible(true);
+
+        self::assertSame($clientClass, $clientP->getValue($handler));
+
+        $optionsP = new ReflectionProperty($handler, 'options');
+        $optionsP->setAccessible(true);
+
+        $optionsArray = $optionsP->getValue($handler);
+
+        self::assertIsArray($optionsArray);
+
+        self::assertSame($index . '-' . date($dateFormat), $optionsArray['index']);
+        self::assertSame('_doc', $optionsArray['type']);
+        self::assertTrue($optionsArray['ignore_error']);
+
+        self::assertSame($formatter, $handler->getFormatter());
+
+        $proc = new ReflectionProperty($handler, 'processors');
+        $proc->setAccessible(true);
+
+        $processors = $proc->getValue($handler);
+
+        self::assertIsArray($processors);
+        self::assertCount(0, $processors);
+    }
+
+    /**
+     * @throws Exception
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
+    public function testInvokeWithV7ClientAndConfigAndFormatter6(): void
+    {
+        if (!class_exists(V7Client::class)) {
+            self::markTestSkipped('requires elasticsearch/elasticsearch V7');
+        }
+
+        $client      = 'xyz';
+        $clientClass = $this->getMockBuilder(V7Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $index       = 'test-index';
+        $type        = 'test-type';
+        $dateFormat  = ElasticsearchHandlerFactory::INDEX_PER_DAY;
+        $formatter   = $this->getMockBuilder(ElasticsearchFormatter::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $monologFormatterPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('has');
+        $monologFormatterPluginManager->expects(self::never())
+            ->method('get');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::never())
+            ->method('has');
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([$client], [MonologFormatterPluginManager::class])
+            ->willReturnOnConsecutiveCalls($clientClass, $monologFormatterPluginManager);
+
+        $factory = new ElasticsearchHandlerFactory();
+
+        $handler = $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter, 'dateFormat' => $dateFormat, 'indexNameFormat' => '{indexname}-{date}']);
+
+        self::assertInstanceOf(ElasticsearchHandler::class, $handler);
+
+        self::assertSame(Logger::ALERT, $handler->getLevel());
+        self::assertFalse($handler->getBubble());
+
+        $clientP = new ReflectionProperty($handler, 'client');
+        $clientP->setAccessible(true);
+
+        self::assertSame($clientClass, $clientP->getValue($handler));
+
+        $optionsP = new ReflectionProperty($handler, 'options');
+        $optionsP->setAccessible(true);
+
+        $optionsArray = $optionsP->getValue($handler);
+
+        self::assertIsArray($optionsArray);
+
+        self::assertSame($index . '-' . date($dateFormat), $optionsArray['index']);
         self::assertSame('_doc', $optionsArray['type']);
         self::assertTrue($optionsArray['ignore_error']);
 
