@@ -22,6 +22,12 @@ updates:
       - dependency-name: "rollbar/rollbar"
         versions:
           - ">= 3"
+      - dependency-name: "predis/predis"
+        versions:
+          - ">= 2"
+      - dependency-name: "elasticsearch/elasticsearch"
+        versions:
+          - ">= 8"
 #      - dependency-name: phpunit/phpunit
 #        versions:
 #          - ">= 0"
