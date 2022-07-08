@@ -74,6 +74,8 @@
     "ruflin/elastica": "Allow sending log messages to an Elastic Search server",
     "swiftmailer/swiftmailer": "Allow sending log messages to Email clients"
   },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
   "autoload": {
     "psr-4": {
       "Mimmi20\\LoggerFactory\\": "src/"
