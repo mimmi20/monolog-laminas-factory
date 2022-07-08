@@ -181,7 +181,7 @@ jobs:
   php-lint:
     name: "Linting with overtrue/phplint"
 
-    needs: "validate"
+    needs: "install"
 
     runs-on: "${{ matrix.operating-system }}"
 
