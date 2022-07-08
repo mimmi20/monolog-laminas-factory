@@ -591,7 +591,7 @@ return [
             'handlers' => [
                 'myHandlerName' => [
                     'type' => 'flowdock',
-                     
+                    
                     'options' => [
                         'apiToken' => 'sometokenhere', // HipChat API Token
                         'level' => \Psr\Log\LogLevel::DEBUG, // Optional: The minimum logging level at which this handler will be triggered
