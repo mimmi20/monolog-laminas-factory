@@ -15,7 +15,7 @@ and [monolog-factory](https://github.com/nikolaposa/monolog-factory).
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/mimmi20/monolog-laminas-factory.svg)](http://isitmaintained.com/project/mimmi20/monolog-laminas-factory "Average time to resolve an issue")
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/mimmi20/monolog-laminas-factory.svg)](http://isitmaintained.com/project/mimmi20/monolog-laminas-factory "Percentage of issues still open")
 
-#### Table of Contents
+## Table of Contents
 
 - [Installation](#installation)
 - [Usage with Laminas and Mezzio](#usage-with-laminas-and-mezzio)
@@ -123,8 +123,8 @@ and [monolog-factory](https://github.com/nikolaposa/monolog-factory).
 
 Run
 
-```
-$ composer require mimmi20/monolog-laminas-factory
+```shell
+composer require mimmi20/monolog-laminas-factory
 ```
 
 ## Usage with Laminas and Mezzio
@@ -179,7 +179,7 @@ A minimal configuration would consist of at least one default handler and one na
 Please note that if you don't specify a default handler a [NullHandler](#nullhandler) will be used
 when you wire up the default logger.
 
-### Minimal Example (using Mezzio for the example):
+### Minimal Example (using Mezzio for the example)
 
 ```php
 <?php
@@ -1098,7 +1098,7 @@ return [
 
 Monolog Docs: [LogglyHandler](https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/LogglyHandler.php)
 
-#### RollbarHandler:
+#### RollbarHandler
 
 Logs records to a [Rollbar](https://rollbar.com/) account.
 
@@ -1290,7 +1290,7 @@ Monolog Docs: [SqsHandler](https://github.com/Seldaek/monolog/blob/master/src/Mo
 
 ### Logging in Development
 
-##### FirePHPHandler
+#### FirePHPHandler
 
 Handler for [FirePHP](http://www.firephp.org/), providing inline console messages
 within [FireBug](http://getfirebug.com/).
