@@ -25,7 +25,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\Stdlib\SplPriorityQueue;
 use Mimmi20\LoggerFactory\LoggerAbstractFactory;
-use Mimmi20\LoggerFactory\MonologPluginManager;
+use Mimmi20\MonologFactory\MonologPluginManager;
 use Monolog\Handler\HandlerInterface;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
