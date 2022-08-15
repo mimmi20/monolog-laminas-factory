@@ -33,7 +33,7 @@
     "guzzlehttp/psr7": "^2.4.0",
     "jk/monolog-request-header-processor": "^1.0.0",
     "laminas/laminas-config": "^3.7.0",
-    "laminas/laminas-dependency-plugin": "^2.3.0",
+    "laminas/laminas-dependency-plugin": "^2.2.0",
     "laminas/laminas-modulemanager": "^2.11.0",
     "laminas/laminas-servicemanager": "^3.16.0",
     "mikey179/vfsstream": "^v1.6.11",
