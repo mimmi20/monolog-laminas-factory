@@ -80,7 +80,7 @@ return [
 ## Minimal Configuration
 
 A minimal configuration would consist of at least one default handler and one named service.
-Please note that if you don't specify a default handler a [NullHandler](#nullhandler) will be used
+Please note that if you don't specify a default handler a NullHandler will be used
 when you wire up the default logger.
 
 ### Minimal Example (using Mezzio for the example)
