@@ -38,4 +38,5 @@ categories:
   #    - 'new useragents'
 
 commitish: 2.0.x
+target_commitish: 2.0.x
 filter-by-commitish: true
