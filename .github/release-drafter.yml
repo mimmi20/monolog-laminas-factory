@@ -36,3 +36,7 @@ categories:
   #- title: '**📦 new Useragents:**'
   #  labels:
   #    - 'new useragents'
+
+commitish: 1.1.x
+target_commitish: 1.1.x
+filter-by-commitish: true
