@@ -37,9 +37,7 @@ use function sprintf;
 
 final class StreamHandlerFactoryTest extends TestCase
 {
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -59,9 +57,7 @@ final class StreamHandlerFactoryTest extends TestCase
         $factory($container, '');
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -129,9 +125,7 @@ final class StreamHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigWithInt(): void
     {
         $stream = 42;
@@ -256,9 +250,7 @@ final class StreamHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigWithString3(): void
     {
         $streamName = 'xyz';
@@ -341,9 +333,7 @@ final class StreamHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $streamName     = 'xyz';
@@ -371,15 +361,13 @@ final class StreamHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class),
         );
 
         $factory($container, '', ['stream' => $streamName, 'level' => $level, 'bubble' => $bubble, 'filePermission' => $filePermission, 'useLocking' => $useLocking, 'formatter' => $formatter]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndFormatter(): void
     {
         $streamName     = 'xyz';
@@ -409,7 +397,7 @@ final class StreamHandlerFactoryTest extends TestCase
                     }
 
                     throw new ServiceNotFoundException();
-                }
+                },
             );
 
         $factory = new StreamHandlerFactory();
@@ -417,7 +405,7 @@ final class StreamHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class),
         );
 
         $factory($container, '', ['stream' => $streamName, 'level' => $level, 'bubble' => $bubble, 'filePermission' => $filePermission, 'useLocking' => $useLocking, 'formatter' => $formatter]);
@@ -531,7 +519,7 @@ final class StreamHandlerFactoryTest extends TestCase
                     }
 
                     return $monologFormatterPluginManager;
-                }
+                },
             );
 
         $factory = new StreamHandlerFactory();
@@ -565,9 +553,7 @@ final class StreamHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndFormatter4(): void
     {
         $streamName     = 'xyz';
@@ -603,7 +589,7 @@ final class StreamHandlerFactoryTest extends TestCase
                     }
 
                     return $monologFormatterPluginManager;
-                }
+                },
             );
 
         $factory = new StreamHandlerFactory();
@@ -661,7 +647,7 @@ final class StreamHandlerFactoryTest extends TestCase
                     }
 
                     return $monologFormatterPluginManager;
-                }
+                },
             );
 
         $factory = new StreamHandlerFactory();
@@ -742,7 +728,7 @@ final class StreamHandlerFactoryTest extends TestCase
                     }
 
                     return $monologFormatterPluginManager;
-                }
+                },
             );
 
         $factory = new StreamHandlerFactory();
@@ -776,9 +762,7 @@ final class StreamHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndFormatter7(): void
     {
         $streamName     = 'xyz';
@@ -818,7 +802,7 @@ final class StreamHandlerFactoryTest extends TestCase
                     }
 
                     return $monologFormatterPluginManager;
-                }
+                },
             );
 
         $factory = new StreamHandlerFactory();
@@ -830,9 +814,7 @@ final class StreamHandlerFactoryTest extends TestCase
         $factory($container, '', ['stream' => $streamName, 'level' => $level, 'bubble' => $bubble, 'filePermission' => $filePermission, 'useLocking' => $useLocking, 'formatter' => $formatter]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $streamName     = 'xyz';
@@ -864,59 +846,7 @@ final class StreamHandlerFactoryTest extends TestCase
         $factory($container, '', ['stream' => $streamName, 'level' => $level, 'bubble' => $bubble, 'filePermission' => $filePermission, 'useLocking' => $useLocking, 'processors' => $processors]);
     }
 
-    /**
-     * @throws Exception
-     */
-    public function testInvokeWithConfigAndProcessors(): void
-    {
-        $streamName     = 'xyz';
-        $stream         = 'http://test.test';
-        $level          = LogLevel::ALERT;
-        $bubble         = false;
-        $filePermission = 0755;
-        $useLocking     = false;
-        $processors     = ['abc'];
-
-        $monologProcessorPluginManager = $this->getMockBuilder(AbstractPluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $monologProcessorPluginManager->expects(self::never())
-            ->method('has');
-        $monologProcessorPluginManager->expects(self::never())
-            ->method('get');
-
-        $container = $this->getMockBuilder(ContainerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects(self::once())
-            ->method('has')
-            ->with($streamName)
-            ->willReturn(true);
-        $container->expects(self::exactly(2))
-            ->method('get')
-            ->withConsecutive([$streamName], [MonologProcessorPluginManager::class])
-            ->willReturnCallback(
-                static function (string $var) use ($streamName, $stream, $monologProcessorPluginManager) {
-                    if ($var === $streamName) {
-                        return $stream;
-                    }
-
-                    return $monologProcessorPluginManager;
-                }
-            );
-
-        $factory = new StreamHandlerFactory();
-
-        $this->expectException(ServiceNotCreatedException::class);
-        $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('ProcessorConfig must be an Array');
-
-        $factory($container, '', ['stream' => $streamName, 'level' => $level, 'bubble' => $bubble, 'filePermission' => $filePermission, 'useLocking' => $useLocking, 'processors' => $processors]);
-    }
-
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndProcessors2(): void
     {
         $streamName     = 'xyz';
@@ -966,7 +896,7 @@ final class StreamHandlerFactoryTest extends TestCase
                     }
 
                     return $monologProcessorPluginManager;
-                }
+                },
             );
 
         $factory = new StreamHandlerFactory();
@@ -1041,7 +971,7 @@ final class StreamHandlerFactoryTest extends TestCase
                     }
 
                     return $monologProcessorPluginManager;
-                }
+                },
             );
 
         $factory = new StreamHandlerFactory();
@@ -1078,9 +1008,7 @@ final class StreamHandlerFactoryTest extends TestCase
         self::assertSame($processor3, $processors[2]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndProcessors4(): void
     {
         $streamName     = 'xyz';
@@ -1129,7 +1057,7 @@ final class StreamHandlerFactoryTest extends TestCase
                     }
 
                     throw new ServiceNotFoundException();
-                }
+                },
             );
 
         $factory = new StreamHandlerFactory();
@@ -1137,7 +1065,7 @@ final class StreamHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Could not find service %s', MonologProcessorPluginManager::class)
+            sprintf('Could not find service %s', MonologProcessorPluginManager::class),
         );
 
         $factory($container, '', ['stream' => $streamName, 'level' => $level, 'bubble' => $bubble, 'filePermission' => $filePermission, 'useLocking' => $useLocking, 'processors' => $processors]);

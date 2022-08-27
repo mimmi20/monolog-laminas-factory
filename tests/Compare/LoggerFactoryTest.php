@@ -80,7 +80,7 @@ final class LoggerFactoryTest extends AbstractTest
                         ],
                     ],
                 ],
-            ]
+            ],
         );
 
         $sm->setAllowOverride(false);
@@ -141,7 +141,7 @@ final class LoggerFactoryTest extends AbstractTest
                         ],
                     ],
                 ],
-            ]
+            ],
         );
 
         $sm->setAllowOverride(false);

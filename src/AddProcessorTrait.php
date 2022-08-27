@@ -23,7 +23,6 @@ use Psr\Container\ContainerInterface;
 use function array_key_exists;
 use function array_reverse;
 use function assert;
-use function get_class;
 use function gettype;
 use function is_array;
 use function is_object;
@@ -41,7 +40,7 @@ trait AddProcessorTrait
      * @throws ServiceNotCreatedException
      * @throws ServiceNotFoundException
      */
-    private function addProcessor(ContainerInterface $container, HandlerInterface $handler, ?array $options = null): void
+    private function addProcessor(ContainerInterface $container, HandlerInterface $handler, array | null $options = null): void
     {
         if (
             !$handler instanceof ProcessableHandlerInterface
@@ -66,8 +65,8 @@ trait AddProcessorTrait
             sprintf(
                 '$monologProcessorPluginManager should be an Instance of %s, but was %s',
                 AbstractPluginManager::class,
-                is_object($monologProcessorPluginManager) ? get_class($monologProcessorPluginManager) : gettype($monologProcessorPluginManager)
-            )
+                is_object($monologProcessorPluginManager) ? $monologProcessorPluginManager::class : gettype($monologProcessorPluginManager),
+            ),
         );
 
         foreach (array_reverse($options['processors']) as $processorConfig) {

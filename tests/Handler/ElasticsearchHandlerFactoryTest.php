@@ -39,9 +39,7 @@ use function sprintf;
 
 final class ElasticsearchHandlerFactoryTest extends TestCase
 {
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -61,9 +59,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         $factory($container, '');
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -83,9 +79,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         $factory($container, '', []);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigWithWrongClient(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -105,9 +99,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         $factory($container, '', ['client' => true]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigWithWrongClientString(): void
     {
         $client = 'xyz';
@@ -131,9 +123,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         $factory($container, '', ['client' => $client]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigError(): void
     {
         $client = 'xyz';
@@ -280,9 +270,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithV7ClientAndConfigAndBoolFormatter(): void
     {
         if (!class_exists(V7Client::class)) {
@@ -312,15 +300,13 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class),
         );
 
         $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeV7ClientAndWithConfigAndFormatter(): void
     {
         if (!class_exists(V7Client::class)) {
@@ -352,7 +338,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
                     }
 
                     throw new ServiceNotFoundException();
-                }
+                },
             );
 
         $factory = new ElasticsearchHandlerFactory();
@@ -360,7 +346,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class),
         );
 
         $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
@@ -745,9 +731,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithV7ClientAndConfigAndBoolProcessors(): void
     {
         if (!class_exists(V7Client::class)) {
@@ -781,9 +765,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'processors' => $processors]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigWithArrayConfigForV7ClientButLoaderError(): void
     {
         if (!class_exists(V7Client::class)) {
@@ -811,9 +793,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         $factory($container, '', ['client' => $client]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigWithArrayConfigForV7ClientButLoaderError2(): void
     {
         if (!class_exists(V7Client::class)) {
@@ -1118,9 +1098,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithV8ClientAndConfigAndBoolFormatter(): void
     {
         if (!class_exists(V8Client::class)) {
@@ -1149,15 +1127,13 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class),
         );
 
         $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeV8ClientAndWithConfigAndFormatter(): void
     {
         if (!class_exists(V8Client::class)) {
@@ -1188,7 +1164,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
                     }
 
                     throw new ServiceNotFoundException();
-                }
+                },
             );
 
         $factory = new ElasticsearchHandlerFactory();
@@ -1196,7 +1172,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class),
         );
 
         $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
@@ -1276,9 +1252,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithV8ClientAndConfigAndBoolProcessors(): void
     {
         if (!class_exists(V8Client::class)) {
@@ -1311,9 +1285,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         $factory($container, '', ['client' => $client, 'index' => $index, 'type' => $type, 'ignoreError' => true, 'level' => LogLevel::ALERT, 'bubble' => false, 'processors' => $processors]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigWithArrayConfigForV8ClientButLoaderError(): void
     {
         if (!class_exists(V8Client::class)) {
@@ -1341,9 +1313,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         $factory($container, '', ['client' => $client]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigWithArrayConfigForV8ClientButLoaderError2(): void
     {
         if (!class_exists(V8Client::class)) {
@@ -1381,9 +1351,7 @@ final class ElasticsearchHandlerFactoryTest extends TestCase
         $factory($container, '', ['client' => $clientConfig]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigWithArrayConfigForV8ClientButLoaderError3(): void
     {
         if (!class_exists(V8Client::class)) {
