@@ -6,6 +6,8 @@ on:
   push:
     # branches to consider in the event; optional, defaults to all
     branches:
+      - master
+      - 2.0.x
       - 1.1.x
     tags:
       - '*'
