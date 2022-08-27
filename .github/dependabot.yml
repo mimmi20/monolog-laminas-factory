@@ -38,6 +38,12 @@ updates:
       - dependency-name: "mimmi20/monolog-streamformatter"
         versions:
           - ">= 2"
+      - dependency-name: "symfony/mailer"
+        versions:
+          - ">= 6"
+      - dependency-name: "symfony/mime"
+        versions:
+          - ">= 6"
 
   - package-ecosystem: "github-actions"
     directory: "/"
