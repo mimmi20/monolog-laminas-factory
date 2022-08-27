@@ -38,9 +38,7 @@ use function sprintf;
 
 final class FingersCrossedHandlerFactoryTest extends TestCase
 {
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -60,9 +58,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $factory($container, '');
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -82,9 +78,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $factory($container, '', []);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithoutHandlerConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -104,9 +98,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => true]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfigWithoutType(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -126,9 +118,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => []]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfigWithDisabledType(): void
     {
         $type = 'abc';
@@ -150,9 +140,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => false]]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfigWithLoaderError(): void
     {
         $type = 'abc';
@@ -176,9 +164,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true]]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfigWithLoaderError2(): void
     {
         $type = 'abc';
@@ -769,9 +755,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfig7(): void
     {
         $type     = 'abc';
@@ -818,7 +802,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
                     }
 
                     throw new ServiceNotFoundException();
-                }
+                },
             );
 
         $factory = new FingersCrossedHandlerFactory();
@@ -830,9 +814,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => $strategy, 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfig8(): void
     {
         $type     = 'abc';
@@ -990,9 +972,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfig10(): void
     {
         $type            = 'abc';
@@ -1046,9 +1026,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => ['type' => $strategyName, 'options' => $strategyOptions], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfig11(): void
     {
         $type = 'abc';
@@ -1098,9 +1076,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => [], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfig12(): void
     {
         $type     = 'abc';
@@ -1153,9 +1129,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => $strategy, 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $type            = 'abc';
@@ -1209,15 +1183,13 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class),
         );
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => ['type' => $strategyName, 'options' => $strategyOptions], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING, 'formatter' => $formatter]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndBoolFormatter2(): void
     {
         $type            = 'abc';
@@ -1266,15 +1238,13 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class),
         );
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true, 'options' => ['formatter' => $formatter]], 'activationStrategy' => ['type' => $strategyName, 'options' => $strategyOptions], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndFormatter(): void
     {
         $type            = 'abc';
@@ -1334,7 +1304,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
                     }
 
                     throw new ServiceNotFoundException();
-                }
+                },
             );
 
         $factory = new FingersCrossedHandlerFactory();
@@ -1342,7 +1312,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class),
         );
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => ['type' => $strategyName, 'options' => $strategyOptions], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING, 'formatter' => $formatter]);
@@ -1460,9 +1430,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndFormatter3(): void
     {
         $type            = 'abc';
@@ -1513,7 +1481,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
                     }
 
                     throw new ServiceNotFoundException();
-                }
+                },
             );
 
         $factory = new FingersCrossedHandlerFactory();
@@ -1521,7 +1489,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class),
         );
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true, 'options' => ['formatter' => $formatter]], 'activationStrategy' => ['type' => $strategyName, 'options' => $strategyOptions], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING]);
@@ -1639,9 +1607,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $type            = 'abc';
@@ -1699,9 +1665,7 @@ final class FingersCrossedHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'activationStrategy' => ['type' => $strategyName, 'options' => $strategyOptions], 'bufferSize' => 42, 'bubble' => false, 'stopBuffering' => false, 'passthruLevel' => LogLevel::WARNING, 'processors' => $processors]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndBoolProcessors2(): void
     {
         $type            = 'abc';
