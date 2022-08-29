@@ -31,9 +31,7 @@ use function sprintf;
 
 final class MonologFactoryTest extends TestCase
 {
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithoutName(): void
     {
         $requestedName = Logger::class;
@@ -55,9 +53,7 @@ final class MonologFactoryTest extends TestCase
         $factory($container, $requestedName, null);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithoutName2(): void
     {
         $requestedName = Logger::class;
@@ -80,9 +76,7 @@ final class MonologFactoryTest extends TestCase
         $factory($container, $requestedName, $options);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithTimezone(): void
     {
         $requestedName = Logger::class;
@@ -105,9 +99,7 @@ final class MonologFactoryTest extends TestCase
         $factory($container, $requestedName, $options);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithTimezone2(): void
     {
         $requestedName = Logger::class;
@@ -181,9 +173,7 @@ final class MonologFactoryTest extends TestCase
         self::assertSame($timezone, $logger->getTimezone());
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlers(): void
     {
         $requestedName = Logger::class;
@@ -207,9 +197,7 @@ final class MonologFactoryTest extends TestCase
         $factory($container, $requestedName, $options);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlers2(): void
     {
         $requestedName = Logger::class;
@@ -235,9 +223,7 @@ final class MonologFactoryTest extends TestCase
         $factory($container, $requestedName, $options);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlers3(): void
     {
         $requestedName = Logger::class;
@@ -271,9 +257,7 @@ final class MonologFactoryTest extends TestCase
         $factory($container, $requestedName, $options);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlers4(): void
     {
         $requestedName = Logger::class;
@@ -431,9 +415,7 @@ final class MonologFactoryTest extends TestCase
         self::assertCount(3, $logger->getHandlers());
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithProcessors(): void
     {
         $requestedName = Logger::class;
@@ -457,9 +439,7 @@ final class MonologFactoryTest extends TestCase
         $factory($container, $requestedName, $options);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithProcessors2(): void
     {
         $requestedName = Logger::class;
@@ -485,9 +465,7 @@ final class MonologFactoryTest extends TestCase
         $factory($container, $requestedName, $options);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithProcessors3(): void
     {
         $requestedName = Logger::class;
@@ -521,9 +499,7 @@ final class MonologFactoryTest extends TestCase
         $factory($container, $requestedName, $options);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithProcessors4(): void
     {
         $requestedName = Logger::class;
@@ -625,9 +601,7 @@ final class MonologFactoryTest extends TestCase
         self::assertCount(3, $logger->getProcessors());
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithProcessors6(): void
     {
         $requestedName = Logger::class;

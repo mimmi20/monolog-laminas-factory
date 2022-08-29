@@ -74,7 +74,7 @@ final class GelfHandlerFactory implements FactoryInterface
 
             if (!$publisher instanceof PublisherInterface) {
                 throw new ServiceNotCreatedException(
-                    sprintf('Could not create %s', GelfHandler::class)
+                    sprintf('Could not create %s', GelfHandler::class),
                 );
             }
         }
@@ -93,7 +93,7 @@ final class GelfHandlerFactory implements FactoryInterface
         $handler = new GelfHandler(
             $publisher,
             $level,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

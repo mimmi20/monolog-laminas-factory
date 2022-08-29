@@ -99,13 +99,13 @@ final class SendGridHandlerFactory implements FactoryInterface
                 $to,
                 $subject,
                 $level,
-                $bubble
+                $bubble,
             );
         } catch (MissingExtensionException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', SendGridHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

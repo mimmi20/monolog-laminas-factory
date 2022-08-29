@@ -76,7 +76,7 @@ final class PHPConsoleHandlerFactory implements FactoryInterface
 
             if (!$connector instanceof Connector) {
                 throw new ServiceNotCreatedException(
-                    sprintf('Could not create %s', PHPConsoleHandler::class)
+                    sprintf('Could not create %s', PHPConsoleHandler::class),
                 );
             }
         }
@@ -102,13 +102,13 @@ final class PHPConsoleHandlerFactory implements FactoryInterface
                 $consoleOptions,
                 $connector,
                 $level,
-                $bubble
+                $bubble,
             );
         } catch (RuntimeException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', PHPConsoleHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

@@ -57,7 +57,7 @@ final class WhatFailureGroupHandlerFactory
 
         $handler = new WhatFailureGroupHandler(
             $handlers,
-            $bubble
+            $bubble,
         );
 
         $this->addProcessor($container, $handler, $options);

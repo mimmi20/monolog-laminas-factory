@@ -90,7 +90,7 @@ final class StreamHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', StreamHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

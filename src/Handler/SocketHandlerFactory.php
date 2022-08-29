@@ -76,13 +76,13 @@ final class SocketHandlerFactory implements FactoryInterface
                 $timeout,
                 $writingTimeout,
                 $connectionTimeout,
-                $chunkSize
+                $chunkSize,
             );
         } catch (InvalidArgumentException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', SocketHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

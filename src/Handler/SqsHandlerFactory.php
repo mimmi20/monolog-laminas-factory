@@ -74,7 +74,7 @@ final class SqsHandlerFactory implements FactoryInterface
 
             if (!$sqsClient instanceof SqsClient) {
                 throw new ServiceNotCreatedException(
-                    sprintf('Could not create %s', SqsHandler::class)
+                    sprintf('Could not create %s', SqsHandler::class),
                 );
             }
         }

@@ -36,9 +36,7 @@ use function sprintf;
 
 final class SymfonyMailerHandlerFactoryTest extends TestCase
 {
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -58,9 +56,7 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
         $factory($container, '');
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -80,9 +76,7 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
         $factory($container, '', []);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfig(): void
     {
         $mailer = true;
@@ -104,9 +98,7 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
         $factory($container, '', ['mailer' => $mailer]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfig2(): void
     {
         $mailer = 'test-mailer';
@@ -130,9 +122,7 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
         $factory($container, '', ['mailer' => $mailer]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfig3(): void
     {
         $mailerName = 'test-mailer';
@@ -159,9 +149,7 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
         $factory($container, '', ['mailer' => $mailerName]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfig4(): void
     {
         $mailerName = 'test-mailer';
@@ -239,9 +227,7 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfig6(): void
     {
         $mailer = 'test-mailer';
@@ -265,9 +251,7 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
         $factory($container, '', ['mailer' => $mailer]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $mailer        = $this->getMockBuilder(MailerInterface::class)
@@ -291,15 +275,13 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class),
         );
 
         $factory($container, '', ['mailer' => $mailer, 'email-template' => $emailTemplate, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndFormatter(): void
     {
         $mailer        = $this->getMockBuilder(MailerInterface::class)
@@ -327,7 +309,7 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class),
         );
 
         $factory($container, '', ['mailer' => $mailer, 'email-template' => $emailTemplate, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
@@ -398,9 +380,7 @@ final class SymfonyMailerHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $mailer        = $this->getMockBuilder(MailerInterface::class)

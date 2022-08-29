@@ -183,7 +183,7 @@ final class LoggerAbstractFactory implements AbstractFactoryInterface
             try {
                 $monolog = $container->get(MonologPluginManager::class)->get(
                     \Monolog\Logger::class,
-                    $monologConfig
+                    $monologConfig,
                 );
             } catch (ContainerExceptionInterface $e) {
                 throw new ServiceNotCreatedException(sprintf('Could not find service %s', MonologPluginManager::class), 0, $e);

@@ -82,13 +82,13 @@ final class LogmaticHandlerFactory implements FactoryInterface
                 $timeout,
                 $writingTimeout,
                 $connectionTimeout,
-                $chunkSize
+                $chunkSize,
             );
         } catch (MissingExtensionException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', LogmaticHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

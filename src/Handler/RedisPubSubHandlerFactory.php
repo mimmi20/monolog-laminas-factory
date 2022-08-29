@@ -74,13 +74,13 @@ final class RedisPubSubHandlerFactory implements FactoryInterface
                 throw new ServiceNotFoundException(
                     sprintf('Could not load client class for %s class', RedisPubSubHandler::class),
                     0,
-                    $e
+                    $e,
                 );
             }
 
             if (!$client instanceof Client && !$client instanceof Redis) {
                 throw new ServiceNotCreatedException(
-                    sprintf('Could not create %s', RedisPubSubHandler::class)
+                    sprintf('Could not create %s', RedisPubSubHandler::class),
                 );
             }
         }
@@ -106,13 +106,13 @@ final class RedisPubSubHandlerFactory implements FactoryInterface
                 $client,
                 $key,
                 $level,
-                $bubble
+                $bubble,
             );
         } catch (InvalidArgumentException $e) {
             throw new ServiceNotFoundException(
                 sprintf('Could not load class %s', RedisPubSubHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

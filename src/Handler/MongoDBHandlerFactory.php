@@ -81,13 +81,13 @@ final class MongoDBHandlerFactory implements FactoryInterface
                 throw new ServiceNotFoundException(
                     sprintf('Could not load client class for %s class', MongoDBHandler::class),
                     0,
-                    $e
+                    $e,
                 );
             }
 
             if (!$client instanceof Client && !$client instanceof Manager) {
                 throw new ServiceNotCreatedException(
-                    sprintf('Could not create %s', MongoDBHandler::class)
+                    sprintf('Could not create %s', MongoDBHandler::class),
                 );
             }
         }
@@ -110,7 +110,7 @@ final class MongoDBHandlerFactory implements FactoryInterface
             $database,
             $collection,
             $level,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

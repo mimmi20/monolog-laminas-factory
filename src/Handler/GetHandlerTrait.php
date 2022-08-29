@@ -54,7 +54,7 @@ trait GetHandlerTrait
             throw new ServiceNotFoundException(
                 sprintf('Could not load handler class %s', $options['type']),
                 0,
-                $e
+                $e,
             );
         }
 

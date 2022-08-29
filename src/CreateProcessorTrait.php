@@ -53,13 +53,13 @@ trait CreateProcessorTrait
         try {
             $processor = $monologProcessorPluginManager->get(
                 $processorConfig['type'],
-                $processorConfig['options'] ?? []
+                $processorConfig['options'] ?? [],
             );
         } catch (ContainerExceptionInterface $e) {
             throw new ServiceNotFoundException(
                 sprintf('Could not find service %s', $processorConfig['type']),
                 0,
-                $e
+                $e,
             );
         }
 

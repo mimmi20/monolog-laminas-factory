@@ -79,7 +79,7 @@ final class SymfonyMailerHandlerFactory implements FactoryInterface
 
             if (!$mailer instanceof MailerInterface && !$mailer instanceof TransportInterface) {
                 throw new ServiceNotCreatedException(
-                    sprintf('Could not create %s', SymfonyMailerHandler::class)
+                    sprintf('Could not create %s', SymfonyMailerHandler::class),
                 );
             }
         }

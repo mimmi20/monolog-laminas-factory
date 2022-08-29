@@ -93,13 +93,13 @@ final class SlackHandlerFactory implements FactoryInterface
                 $timeout,
                 $writingTimeout,
                 $connectionTimeout,
-                $chunkSize
+                $chunkSize,
             );
         } catch (MissingExtensionException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', SlackHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

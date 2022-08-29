@@ -95,7 +95,7 @@ final class DeduplicationHandlerFactory implements FactoryInterface
             $deduplicationStore,
             $deduplicationLevel,
             $time,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

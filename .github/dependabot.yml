@@ -40,10 +40,10 @@ updates:
           - ">= 2"
       - dependency-name: "symfony/mailer"
         versions:
-          - ">= 6"
+          - ">= 0"
       - dependency-name: "symfony/mime"
         versions:
-          - ">= 6"
+          - ">= 0"
 
   - package-ecosystem: "github-actions"
     directory: "/"

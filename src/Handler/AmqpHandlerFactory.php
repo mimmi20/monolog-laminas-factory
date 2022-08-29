@@ -75,7 +75,7 @@ final class AmqpHandlerFactory implements FactoryInterface
 
             if (!$exchange instanceof AMQPExchange && !$exchange instanceof AMQPChannel) {
                 throw new ServiceNotCreatedException(
-                    sprintf('Could not create %s', AmqpHandler::class)
+                    sprintf('Could not create %s', AmqpHandler::class),
                 );
             }
         }
@@ -104,7 +104,7 @@ final class AmqpHandlerFactory implements FactoryInterface
             $exchange,
             $exchangeName,
             $level,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

@@ -38,7 +38,7 @@ trait GetHandlersTrait
     {
         if (!array_key_exists('handlers', $options) || !is_array($options['handlers'])) {
             throw new ServiceNotCreatedException(
-                'No Service names provided for the required handler classes'
+                'No Service names provided for the required handler classes',
             );
         }
 
@@ -59,9 +59,7 @@ trait GetHandlersTrait
         }
 
         if ([] === $return) {
-            throw new ServiceNotCreatedException(
-                'No active handlers specified'
-            );
+            throw new ServiceNotCreatedException('No active handlers specified');
         }
 
         return $return;

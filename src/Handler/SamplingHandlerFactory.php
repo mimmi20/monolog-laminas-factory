@@ -71,13 +71,13 @@ final class SamplingHandlerFactory implements FactoryInterface
 
         if (null === $factor || 1 > $factor) {
             throw new ServiceNotCreatedException(
-                'Factor is missing or is less then 1'
+                'Factor is missing or is less then 1',
             );
         }
 
         $handler = new SamplingHandler(
             $handler,
-            $factor
+            $factor,
         );
 
         $this->addFormatter($container, $handler, $options);

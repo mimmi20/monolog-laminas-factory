@@ -35,9 +35,7 @@ use function sprintf;
 
 final class DynamoDbHandlerFactoryTest extends TestCase
 {
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -57,9 +55,7 @@ final class DynamoDbHandlerFactoryTest extends TestCase
         $factory($container, '');
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -79,9 +75,7 @@ final class DynamoDbHandlerFactoryTest extends TestCase
         $factory($container, '', []);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfig(): void
     {
         $clientName = true;
@@ -103,9 +97,7 @@ final class DynamoDbHandlerFactoryTest extends TestCase
         $factory($container, '', ['client' => $clientName]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfig2(): void
     {
         $clientName = 'test-client';
@@ -333,9 +325,7 @@ final class DynamoDbHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfig7(): void
     {
         $clientName = 'test-client';
@@ -359,9 +349,7 @@ final class DynamoDbHandlerFactoryTest extends TestCase
         $factory($container, '', ['client' => $clientName]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $client    = $this->getMockBuilder(DynamoDbClient::class)
@@ -383,15 +371,13 @@ final class DynamoDbHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class),
         );
 
         $factory($container, '', ['client' => $client, 'table' => $table, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndFormatter(): void
     {
         $client    = $this->getMockBuilder(DynamoDbClient::class)
@@ -417,7 +403,7 @@ final class DynamoDbHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class),
         );
 
         $factory($container, '', ['client' => $client, 'table' => $table, 'level' => LogLevel::ALERT, 'bubble' => false, 'formatter' => $formatter]);
@@ -486,9 +472,7 @@ final class DynamoDbHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $client     = $this->getMockBuilder(DynamoDbClient::class)

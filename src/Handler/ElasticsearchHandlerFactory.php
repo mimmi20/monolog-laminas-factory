@@ -92,7 +92,7 @@ final class ElasticsearchHandlerFactory implements FactoryInterface
                 throw new ServiceNotFoundException(
                     sprintf('Could not find service %s', ClientPluginManager::class),
                     0,
-                    $e
+                    $e,
                 );
             }
 
@@ -101,8 +101,8 @@ final class ElasticsearchHandlerFactory implements FactoryInterface
                 sprintf(
                     '$monologConfigPluginManager should be an Instance of %s, but was %s',
                     AbstractPluginManager::class,
-                    is_object($monologClientPluginManager) ? get_class($monologClientPluginManager) : gettype($monologClientPluginManager)
-                )
+                    is_object($monologClientPluginManager) ? get_class($monologClientPluginManager) : gettype($monologClientPluginManager),
+                ),
             );
 
             try {
@@ -111,13 +111,13 @@ final class ElasticsearchHandlerFactory implements FactoryInterface
                 throw new ServiceNotFoundException(
                     sprintf('Could not find service %s', $clientType),
                     0,
-                    $e
+                    $e,
                 );
             }
 
             if (!$client instanceof V8Client && !$client instanceof V7Client) {
                 throw new ServiceNotCreatedException(
-                    sprintf('Could not create %s', $clientType)
+                    sprintf('Could not create %s', $clientType),
                 );
             }
         } elseif (!is_string($options['client'])) {
@@ -129,13 +129,13 @@ final class ElasticsearchHandlerFactory implements FactoryInterface
                 throw new ServiceNotFoundException(
                     sprintf('Could not load client class for %s class', ElasticsearchHandler::class),
                     0,
-                    $e
+                    $e,
                 );
             }
 
             if (!$client instanceof V8Client && !$client instanceof V7Client) {
                 throw new ServiceNotCreatedException(
-                    sprintf('Could not create %s', ElasticsearchHandler::class)
+                    sprintf('Could not create %s', ElasticsearchHandler::class),
                 );
             }
         }
@@ -190,7 +190,7 @@ final class ElasticsearchHandlerFactory implements FactoryInterface
                 'ignore_error' => $ignoreError,
             ],
             $level,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

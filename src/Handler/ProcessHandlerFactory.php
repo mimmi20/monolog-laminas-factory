@@ -81,13 +81,13 @@ final class ProcessHandlerFactory implements FactoryInterface
                 $command,
                 $level,
                 $bubble,
-                $cwd
+                $cwd,
             );
         } catch (InvalidArgumentException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', ProcessHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

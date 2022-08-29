@@ -63,11 +63,9 @@ final class ElasticsearchV8Factory implements FactoryInterface
         $builder->setHosts(
             array_filter(
                 $options['hosts'],
-                /**
-                 * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
-                 */
-                static fn (string $host): bool => true
-            )
+                /** @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter */
+                static fn (string $host): bool => true,
+            ),
         );
 
         if (array_key_exists('retries', $options)) {

@@ -107,20 +107,20 @@ final class RollbarHandlerFactory implements FactoryInterface
                     'log_payload' => $logPayload,
                     'verbose' => $verbose,
                     'environment' => $environment,
-                ]
+                ],
             );
         } catch (InvalidArgumentException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create service %s', RollbarLogger::class),
                 0,
-                $e
+                $e,
             );
         }
 
         $handler = new RollbarHandler(
             $rollbarLogger,
             $level,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

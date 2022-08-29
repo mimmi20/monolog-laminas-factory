@@ -54,7 +54,7 @@ final class PushoverHandlerFactory implements FactoryInterface
     {
         if (!extension_loaded('sockets')) {
             throw new ServiceNotCreatedException(
-                sprintf('The sockets extension is needed to use the %s', PushoverHandler::class)
+                sprintf('The sockets extension is needed to use the %s', PushoverHandler::class),
             );
         }
 
@@ -100,13 +100,13 @@ final class PushoverHandlerFactory implements FactoryInterface
                 $timeout,
                 $writingTimeout,
                 $connectionTimeout,
-                $chunkSize
+                $chunkSize,
             );
         } catch (InvalidArgumentException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', PushoverHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

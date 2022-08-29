@@ -94,7 +94,7 @@ final class RotatingFileHandlerFactory implements FactoryInterface
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', RotatingFileHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

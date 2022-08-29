@@ -66,8 +66,8 @@ trait AddProcessorTrait
             sprintf(
                 '$monologProcessorPluginManager should be an Instance of %s, but was %s',
                 AbstractPluginManager::class,
-                is_object($monologProcessorPluginManager) ? get_class($monologProcessorPluginManager) : gettype($monologProcessorPluginManager)
-            )
+                is_object($monologProcessorPluginManager) ? get_class($monologProcessorPluginManager) : gettype($monologProcessorPluginManager),
+            ),
         );
 
         foreach (array_reverse($options['processors']) as $processorConfig) {

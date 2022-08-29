@@ -115,7 +115,7 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
             $bufferSize,
             $bubble,
             $stopBuffering,
-            $passthruLevel
+            $passthruLevel,
         );
 
         $this->addFormatter($container, $handler, $options);
@@ -151,7 +151,7 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
             throw new ServiceNotFoundException(
                 sprintf('Could not load service %s', ActivationStrategyPluginManager::class),
                 0,
-                $e
+                $e,
             );
         }
 
@@ -160,8 +160,8 @@ final class FingersCrossedHandlerFactory implements FactoryInterface
             sprintf(
                 '$monologHandlerPluginManager should be an Instance of %s, but was %s',
                 AbstractPluginManager::class,
-                is_object($activationStrategyPluginManager) ? get_class($activationStrategyPluginManager) : gettype($activationStrategyPluginManager)
-            )
+                is_object($activationStrategyPluginManager) ? get_class($activationStrategyPluginManager) : gettype($activationStrategyPluginManager),
+            ),
         );
 
         if (is_array($activationStrategy)) {

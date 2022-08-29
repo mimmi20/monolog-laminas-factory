@@ -117,13 +117,13 @@ final class SlackWebhookHandlerFactory implements FactoryInterface
                 $includeContext,
                 $level,
                 $bubble,
-                $excludeFields
+                $excludeFields,
             );
         } catch (MissingExtensionException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', SlackWebhookHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

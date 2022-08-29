@@ -33,9 +33,7 @@ use function sprintf;
 
 final class SamplingHandlerFactoryTest extends TestCase
 {
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithoutConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -55,9 +53,7 @@ final class SamplingHandlerFactoryTest extends TestCase
         $factory($container, '');
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithEmptyConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -77,9 +73,7 @@ final class SamplingHandlerFactoryTest extends TestCase
         $factory($container, '', []);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithoutHandlerConfig(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -99,9 +93,7 @@ final class SamplingHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => true]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfigWithoutType(): void
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
@@ -121,9 +113,7 @@ final class SamplingHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => []]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfigWithDisabledType(): void
     {
         $type = 'abc';
@@ -145,9 +135,7 @@ final class SamplingHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => false]]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfigWithLoaderError(): void
     {
         $type = 'abc';
@@ -171,9 +159,7 @@ final class SamplingHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true]]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfigWithLoaderError2(): void
     {
         $type = 'abc';
@@ -207,9 +193,7 @@ final class SamplingHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true]]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfigWithoutFactor(): void
     {
         $type = 'abc';
@@ -251,9 +235,7 @@ final class SamplingHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true]]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithHandlerConfigWithLowFactor(): void
     {
         $type = 'abc';
@@ -411,9 +393,7 @@ final class SamplingHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndBoolFormatter(): void
     {
         $type      = 'abc';
@@ -452,15 +432,13 @@ final class SamplingHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class),
         );
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'factor' => 42, 'formatter' => $formatter]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndBoolFormatter2(): void
     {
         $type      = 'abc';
@@ -499,15 +477,13 @@ final class SamplingHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotCreatedException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class)
+            sprintf('Formatter must be an Array or an Instance of %s', FormatterInterface::class),
         );
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true, 'options' => ['formatter' => $formatter]], 'factor' => 42]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndFormatter(): void
     {
         $type      = 'abc';
@@ -548,7 +524,7 @@ final class SamplingHandlerFactoryTest extends TestCase
                     }
 
                     throw new ServiceNotFoundException();
-                }
+                },
             );
 
         $factory = new SamplingHandlerFactory();
@@ -556,7 +532,7 @@ final class SamplingHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class),
         );
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'factor' => 42, 'formatter' => $formatter]);
@@ -696,9 +672,7 @@ final class SamplingHandlerFactoryTest extends TestCase
         self::assertCount(0, $processors);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndFormatter4(): void
     {
         $type      = 'abc';
@@ -739,7 +713,7 @@ final class SamplingHandlerFactoryTest extends TestCase
                     }
 
                     throw new ServiceNotFoundException();
-                }
+                },
             );
 
         $factory = new SamplingHandlerFactory();
@@ -747,15 +721,13 @@ final class SamplingHandlerFactoryTest extends TestCase
         $this->expectException(ServiceNotFoundException::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage(
-            sprintf('Could not find service %s', MonologFormatterPluginManager::class)
+            sprintf('Could not find service %s', MonologFormatterPluginManager::class),
         );
 
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true, 'options' => ['formatter' => $formatter]], 'factor' => 42]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndBoolProcessors(): void
     {
         $type       = 'abc';
@@ -798,9 +770,7 @@ final class SamplingHandlerFactoryTest extends TestCase
         $factory($container, '', ['handler' => ['type' => $type, 'enabled' => true], 'factor' => 42, 'processors' => $processors]);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigAndBoolProcessors2(): void
     {
         $type       = 'abc';

@@ -99,13 +99,13 @@ final class TelegramBotHandlerFactory implements FactoryInterface
                 $bubble,
                 $parseMode,
                 $disableWebPagePreview,
-                $disableNotification
+                $disableNotification,
             );
         } catch (MissingExtensionException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', TelegramBotHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

@@ -80,13 +80,13 @@ final class InsightOpsHandlerFactory implements FactoryInterface
                 $timeout,
                 $writingTimeout,
                 $connectionTimeout,
-                $chunkSize
+                $chunkSize,
             );
         } catch (MissingExtensionException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', InsightOpsHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

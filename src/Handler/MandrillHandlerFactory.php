@@ -80,13 +80,13 @@ final class MandrillHandlerFactory implements FactoryInterface
                 $apiKey,
                 $message,
                 $level,
-                $bubble
+                $bubble,
             );
         } catch (InvalidArgumentException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', MandrillHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

@@ -82,7 +82,7 @@ final class NewRelicHandlerFactory implements FactoryInterface
             $bubble,
             $appName,
             $explodeArrays,
-            $transactionName
+            $transactionName,
         );
 
         $this->addFormatter($container, $handler, $options);
