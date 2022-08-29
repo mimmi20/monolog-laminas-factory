@@ -89,7 +89,7 @@ final class FilterHandlerFactory implements FactoryInterface
             $handler,
             $minLevelOrList,
             $maxLevel,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

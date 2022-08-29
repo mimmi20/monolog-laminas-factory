@@ -53,7 +53,7 @@ final class MicrosoftTeamsHandlerFactory implements FactoryInterface
     {
         if (!extension_loaded('curl')) {
             throw new ServiceNotCreatedException(
-                sprintf('The curl extension is needed to use the %s', MicrosoftTeamsHandler::class)
+                sprintf('The curl extension is needed to use the %s', MicrosoftTeamsHandler::class),
             );
         }
 
@@ -110,7 +110,7 @@ final class MicrosoftTeamsHandlerFactory implements FactoryInterface
             $emoji,
             $color,
             $format,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

@@ -57,7 +57,7 @@ final class FallbackGroupHandlerFactory
 
         $handler = new FallbackGroupHandler(
             $handlers,
-            $bubble
+            $bubble,
         );
 
         $this->addProcessor($container, $handler, $options);

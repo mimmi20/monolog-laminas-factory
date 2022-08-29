@@ -64,7 +64,7 @@ final class ChromePHPHandlerFactory implements FactoryInterface
 
         $handler = new ChromePHPHandler(
             $level,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

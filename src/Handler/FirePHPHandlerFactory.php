@@ -64,7 +64,7 @@ final class FirePHPHandlerFactory implements FactoryInterface
 
         $handler = new FirePHPHandler(
             $level,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

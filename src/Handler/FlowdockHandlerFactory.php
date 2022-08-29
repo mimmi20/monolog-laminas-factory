@@ -76,13 +76,13 @@ final class FlowdockHandlerFactory implements FactoryInterface
                 $timeout,
                 $writingTimeout,
                 $connectionTimeout,
-                $chunkSize
+                $chunkSize,
             );
         } catch (MissingExtensionException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', FlowdockHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

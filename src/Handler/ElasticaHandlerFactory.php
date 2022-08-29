@@ -72,13 +72,13 @@ final class ElasticaHandlerFactory implements FactoryInterface
                 throw new ServiceNotFoundException(
                     sprintf('Could not load client class for %s class', ElasticaHandler::class),
                     0,
-                    $e
+                    $e,
                 );
             }
 
             if (!$client instanceof Client) {
                 throw new ServiceNotCreatedException(
-                    sprintf('Could not create %s', ElasticaHandler::class)
+                    sprintf('Could not create %s', ElasticaHandler::class),
                 );
             }
         }
@@ -117,7 +117,7 @@ final class ElasticaHandlerFactory implements FactoryInterface
                 'ignore_error' => $ignoreError,
             ],
             $level,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

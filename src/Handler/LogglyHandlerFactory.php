@@ -75,13 +75,13 @@ final class LogglyHandlerFactory implements FactoryInterface
             $handler = new LogglyHandler(
                 $token,
                 $level,
-                $bubble
+                $bubble,
             );
         } catch (MissingExtensionException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', LogglyHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

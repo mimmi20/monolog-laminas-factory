@@ -76,13 +76,13 @@ final class FleepHookHandlerFactory implements FactoryInterface
                 $timeout,
                 $writingTimeout,
                 $connectionTimeout,
-                $chunkSize
+                $chunkSize,
             );
         } catch (MissingExtensionException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', FleepHookHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

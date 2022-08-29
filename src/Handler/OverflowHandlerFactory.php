@@ -95,7 +95,7 @@ final class OverflowHandlerFactory implements FactoryInterface
             $handler,
             $thresholdMap,
             $level,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

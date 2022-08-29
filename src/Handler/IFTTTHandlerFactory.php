@@ -81,13 +81,13 @@ final class IFTTTHandlerFactory implements FactoryInterface
                 $eventName,
                 $secretKey,
                 $level,
-                $bubble
+                $bubble,
             );
         } catch (MissingExtensionException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', IFTTTHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 

@@ -72,13 +72,13 @@ final class DoctrineCouchDBHandlerFactory implements FactoryInterface
                 throw new ServiceNotFoundException(
                     sprintf('Could not load client class for %s class', DoctrineCouchDBHandler::class),
                     0,
-                    $e
+                    $e,
                 );
             }
 
             if (!$client instanceof CouchDBClient) {
                 throw new ServiceNotCreatedException(
-                    sprintf('Could not create %s', DoctrineCouchDBHandler::class)
+                    sprintf('Could not create %s', DoctrineCouchDBHandler::class),
                 );
             }
         }
@@ -97,7 +97,7 @@ final class DoctrineCouchDBHandlerFactory implements FactoryInterface
         $handler = new DoctrineCouchDBHandler(
             $client,
             $level,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

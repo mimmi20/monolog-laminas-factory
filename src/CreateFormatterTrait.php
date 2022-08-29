@@ -48,13 +48,13 @@ trait CreateFormatterTrait
         try {
             $formatter = $monologFormatterPluginManager->get(
                 $formatterConfig['type'],
-                $formatterConfig['options'] ?? []
+                $formatterConfig['options'] ?? [],
             );
         } catch (ContainerExceptionInterface $e) {
             throw new ServiceNotFoundException(
                 sprintf('Could not find service %s', $formatterConfig['type']),
                 0,
-                $e
+                $e,
             );
         }
 

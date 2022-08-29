@@ -74,7 +74,7 @@ final class PsrHandlerFactory implements FactoryInterface
 
             if (!$logger instanceof LoggerInterface) {
                 throw new ServiceNotCreatedException(
-                    sprintf('Could not create %s', PsrHandler::class)
+                    sprintf('Could not create %s', PsrHandler::class),
                 );
             }
         }
@@ -93,7 +93,7 @@ final class PsrHandlerFactory implements FactoryInterface
         $handler = new PsrHandler(
             $logger,
             $level,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

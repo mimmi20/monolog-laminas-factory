@@ -96,7 +96,7 @@ final class CouchDBHandlerFactory implements FactoryInterface
                 'password' => $password,
             ],
             $level,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

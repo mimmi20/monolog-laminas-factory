@@ -54,7 +54,7 @@ final class WebProcessorFactory implements FactoryInterface
 
         return new WebProcessor(
             $serverData,
-            $extraFields
+            $extraFields,
         );
     }
 
@@ -82,7 +82,7 @@ final class WebProcessorFactory implements FactoryInterface
 
         if (!is_string($serverData) || !$container->has($serverData)) {
             throw new ServiceNotFoundException(
-                'No serverData service found'
+                'No serverData service found',
             );
         }
 

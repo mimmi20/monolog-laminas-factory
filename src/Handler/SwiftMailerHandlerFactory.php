@@ -76,7 +76,7 @@ final class SwiftMailerHandlerFactory implements FactoryInterface
 
             if (!$mailer instanceof Swift_Mailer) {
                 throw new ServiceNotCreatedException(
-                    sprintf('Could not create %s', SwiftMailerHandler::class)
+                    sprintf('Could not create %s', SwiftMailerHandler::class),
                 );
             }
         }

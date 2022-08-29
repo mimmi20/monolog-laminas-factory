@@ -64,7 +64,7 @@ final class TestHandlerFactory implements FactoryInterface
 
         $handler = new TestHandler(
             $level,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

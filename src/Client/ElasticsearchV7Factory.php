@@ -65,17 +65,15 @@ final class ElasticsearchV7Factory implements FactoryInterface
         $builder->setHosts(
             array_filter(
                 $options['hosts'],
-                /**
-                 * @param array|int|string $host
-                 */
+                /** @param array|int|string $host */
                 static function ($host): bool {
                     if (is_string($host)) {
                         return true;
                     }
 
                     return is_array($host) && array_key_exists('host', $host);
-                }
-            )
+                },
+            ),
         );
 
         if (array_key_exists('retries', $options)) {

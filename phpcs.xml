@@ -9,6 +9,7 @@
     <!-- inherit rules from: -->
     <rule ref="mimmi20-cs">
         <exclude name="SlevomatCodingStandard.Classes.ModernClassNameReference.ClassNameReferencedViaFunctionCall"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.UnionTypeHintFormat"/>
     </rule>
 
     <!-- Paths to check -->

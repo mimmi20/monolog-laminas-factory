@@ -72,13 +72,13 @@ final class DynamoDbHandlerFactory implements FactoryInterface
                 throw new ServiceNotFoundException(
                     sprintf('Could not load client class for %s class', DynamoDbHandler::class),
                     0,
-                    $e
+                    $e,
                 );
             }
 
             if (!$client instanceof DynamoDbClient) {
                 throw new ServiceNotCreatedException(
-                    sprintf('Could not create %s', DynamoDbHandler::class)
+                    sprintf('Could not create %s', DynamoDbHandler::class),
                 );
             }
         }
@@ -103,7 +103,7 @@ final class DynamoDbHandlerFactory implements FactoryInterface
             $client,
             $table,
             $level,
-            $bubble
+            $bubble,
         );
 
         $this->addFormatter($container, $handler, $options);

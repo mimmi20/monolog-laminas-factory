@@ -95,7 +95,7 @@ final class BufferHandlerFactory implements FactoryInterface
             $bufferLimit,
             $level,
             $bubble,
-            $flushOnOverflow
+            $flushOnOverflow,
         );
 
         $this->addFormatter($container, $handler, $options);

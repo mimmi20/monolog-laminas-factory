@@ -56,7 +56,7 @@ final class GroupHandlerFactory implements FactoryInterface
 
         $handler = new GroupHandler(
             $handlers,
-            $bubble
+            $bubble,
         );
 
         $this->addProcessor($container, $handler, $options);

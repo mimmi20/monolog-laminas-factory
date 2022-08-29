@@ -80,13 +80,13 @@ final class CubeHandlerFactory implements FactoryInterface
             $handler = new CubeHandler(
                 $url,
                 $level,
-                $bubble
+                $bubble,
             );
         } catch (UnexpectedValueException $e) {
             throw new ServiceNotCreatedException(
                 sprintf('Could not create %s', CubeHandler::class),
                 0,
-                $e
+                $e,
             );
         }
 
