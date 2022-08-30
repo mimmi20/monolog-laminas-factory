@@ -20,21 +20,9 @@ updates:
       include: "scope"
       prefix: "composer"
     ignore:
-      - dependency-name: "rollbar/rollbar"
-        versions:
-          - ">= 3"
-      - dependency-name: "predis/predis"
-        versions:
-          - ">= 2"
-      - dependency-name: "elasticsearch/elasticsearch"
-        versions:
-          - ">= 8"
       - dependency-name: "laminas/laminas-dependency-plugin"
         versions:
           - ">= 2.3.0"
-      - dependency-name: "mimmi20/monolog-streamformatter"
-        versions:
-          - ">= 2"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -97,55 +85,6 @@ updates:
     labels:
       - "dependencies"
     target-branch: "2.0.x"
-    commit-message:
-      include: "scope"
-      prefix: "github-actions"
-
-  - package-ecosystem: "composer"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    open-pull-requests-limit: 10
-    reviewers:
-      - "mimmi20"
-    assignees:
-      - "mimmi20"
-    labels:
-      - "dependencies"
-    versioning-strategy: "increase"
-    target-branch: "1.1.x"
-    commit-message:
-      include: "scope"
-      prefix: "composer"
-    ignore:
-      - dependency-name: "rollbar/rollbar"
-        versions:
-          - ">= 3"
-      - dependency-name: "predis/predis"
-        versions:
-          - ">= 2"
-      - dependency-name: "elasticsearch/elasticsearch"
-        versions:
-          - ">= 8"
-      - dependency-name: "laminas/laminas-dependency-plugin"
-        versions:
-          - ">= 2.3.0"
-      - dependency-name: "mimmi20/monolog-streamformatter"
-        versions:
-          - ">= 2"
-
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    open-pull-requests-limit: 10
-    reviewers:
-      - "mimmi20"
-    assignees:
-      - "mimmi20"
-    labels:
-      - "dependencies"
-    target-branch: "1.1.x"
     commit-message:
       include: "scope"
       prefix: "github-actions"

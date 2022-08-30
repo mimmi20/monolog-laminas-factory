@@ -38,9 +38,7 @@ use function sprintf;
 
 final class LoggerAbstractFactoryTest extends TestCase
 {
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithoutConfig(): void
     {
         $requestedName = Logger::class;
@@ -180,9 +178,7 @@ final class LoggerAbstractFactoryTest extends TestCase
         self::assertInstanceOf(ProcessorPluginManager::class, $logger->getProcessorPluginManager());
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigException(): void
     {
         $requestedName = Logger::class;
@@ -213,7 +209,7 @@ final class LoggerAbstractFactoryTest extends TestCase
                     }
 
                     throw new ServiceNotFoundException();
-                }
+                },
             );
 
         $factory = new LoggerAbstractFactory();
@@ -225,9 +221,7 @@ final class LoggerAbstractFactoryTest extends TestCase
         $factory($container, $requestedName, null);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfigException2(): void
     {
         $requestedName = Logger::class;
@@ -270,7 +264,7 @@ final class LoggerAbstractFactoryTest extends TestCase
                     }
 
                     throw new ServiceNotFoundException();
-                }
+                },
             );
 
         $factory = new LoggerAbstractFactory();
@@ -414,9 +408,7 @@ final class LoggerAbstractFactoryTest extends TestCase
         self::assertSame($processorPluginManager, $logger->getProcessorPluginManager());
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfig5(): void
     {
         $requestedName = Logger::class;
@@ -473,9 +465,7 @@ final class LoggerAbstractFactoryTest extends TestCase
         $factory($container, $requestedName, null);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfig6(): void
     {
         $requestedName = Logger::class;
@@ -611,9 +601,7 @@ final class LoggerAbstractFactoryTest extends TestCase
         self::assertSame($processorPluginManager, $logger->getProcessorPluginManager());
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfig8(): void
     {
         $requestedName = Logger::class;
@@ -670,9 +658,7 @@ final class LoggerAbstractFactoryTest extends TestCase
         $factory($container, $requestedName, null);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfig9(): void
     {
         $requestedName = Logger::class;
@@ -734,9 +720,7 @@ final class LoggerAbstractFactoryTest extends TestCase
         $factory($container, $requestedName, null);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfig10a(): void
     {
         $requestedName = Logger::class;
@@ -800,9 +784,7 @@ final class LoggerAbstractFactoryTest extends TestCase
         $factory($container, $requestedName, null);
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testInvokeWithConfig10b(): void
     {
         $requestedName = Logger::class;
@@ -876,7 +858,7 @@ final class LoggerAbstractFactoryTest extends TestCase
                     'name' => $name,
                     'handlers' => $handlers,
                     'processors' => $processors,
-                ]
+                ],
             )
             ->willThrowException(new ServiceNotFoundException());
 
@@ -984,7 +966,7 @@ final class LoggerAbstractFactoryTest extends TestCase
                     'name' => $name,
                     'handlers' => $handlers,
                     'processors' => $processors,
-                ]
+                ],
             )
             ->willReturn($monolog);
 
@@ -1374,7 +1356,7 @@ final class LoggerAbstractFactoryTest extends TestCase
                     'handlers' => $handlers,
                     'processors' => $processors,
                     'timezone' => $timezone,
-                ]
+                ],
             )
             ->willReturn($monolog);
 
@@ -1525,7 +1507,7 @@ final class LoggerAbstractFactoryTest extends TestCase
                     'handlers' => $handlers,
                     'processors' => $processors,
                     'timezone' => $timezone,
-                ]
+                ],
             )
             ->willReturn($monolog);
 
@@ -1675,7 +1657,7 @@ final class LoggerAbstractFactoryTest extends TestCase
                     'name' => $name,
                     'handlers' => $handlers,
                     'processors' => $processors,
-                ]
+                ],
             )
             ->willReturn($monolog);
 
@@ -1717,9 +1699,7 @@ final class LoggerAbstractFactoryTest extends TestCase
         }
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     public function testCanCreateWithoutConfig(): void
     {
         $requestedName = Logger::class;

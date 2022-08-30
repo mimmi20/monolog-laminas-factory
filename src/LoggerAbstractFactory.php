@@ -51,7 +51,7 @@ final class LoggerAbstractFactory implements AbstractFactoryInterface
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      */
-    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): Logger
+    public function __invoke(ContainerInterface $container, $requestedName, array | null $options = null): Logger
     {
         // Configure the logger
         try {
@@ -184,7 +184,7 @@ final class LoggerAbstractFactory implements AbstractFactoryInterface
             try {
                 $monolog = $container->get(MonologPluginManager::class)->get(
                     \Monolog\Logger::class,
-                    $monologConfig
+                    $monologConfig,
                 );
             } catch (ContainerExceptionInterface $e) {
                 throw new ServiceNotCreatedException(sprintf('Could not find service %s', MonologPluginManager::class), 0, $e);
@@ -211,7 +211,7 @@ final class LoggerAbstractFactory implements AbstractFactoryInterface
     {
         try {
             $config = $container->get('config');
-        } catch (ContainerExceptionInterface $e) {
+        } catch (ContainerExceptionInterface) {
             return false;
         }
 

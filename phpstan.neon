@@ -22,4 +22,4 @@ parameters:
       missingCheckedExceptionInThrows: true
       tooWideThrowType: true
 #  ignoreErrors:
-#    - '~overridden property~'
+#    - '~PHPDoc tag @throws with type .* is not subtype of Throwable~'
