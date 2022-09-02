@@ -28,7 +28,7 @@
     "laminas/laminas-modulemanager": "^2.11.0",
     "laminas/laminas-servicemanager": "^3.16.0",
     "mikey179/vfsstream": "^1.6.11",
-    "mimmi20/coding-standard": "^3.0.9",
+    "mimmi20/coding-standard": "^3.0.10",
     "phpstan/extension-installer": "^1.1.0",
     "phpstan/phpstan": "^1.8.2",
     "phpstan/phpstan-deprecation-rules": "^1.0.0",
