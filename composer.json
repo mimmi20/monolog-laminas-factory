@@ -22,18 +22,18 @@
     "mimmi20/monolog-factory": "^1.0.2"
   },
   "require-dev": {
-    "laminas/laminas-config": "^3.7.0",
-    "laminas/laminas-dependency-plugin": "^2.2.0",
-    "laminas/laminas-eventmanager": "^3.5.0",
-    "laminas/laminas-modulemanager": "^2.12.0",
-    "laminas/laminas-servicemanager": "^3.17.0",
-    "mikey179/vfsstream": "^1.6.11",
-    "mimmi20/coding-standard": "^3.0.11",
-    "phpstan/extension-installer": "^1.1.0",
+    "laminas/laminas-config": "3.7.0",
+    "laminas/laminas-dependency-plugin": "2.4.0",
+    "laminas/laminas-eventmanager": "3.5.0",
+    "laminas/laminas-modulemanager": "2.12.0",
+    "laminas/laminas-servicemanager": "3.17.0",
+    "mikey179/vfsstream": "1.6.11",
+    "mimmi20/coding-standard": "3.0.11",
+    "phpstan/extension-installer": "1.1.0",
     "phpstan/phpstan": "^1.8.6",
     "phpstan/phpstan-deprecation-rules": "^1.0.0",
     "phpstan/phpstan-phpunit": "^1.1.1",
-    "phpunit/phpunit": "^9.5.24"
+    "phpunit/phpunit": "9.5.24"
   },
   "suggest": {
     "laminas/laminas-servicemanager": "Required for the Factories"
