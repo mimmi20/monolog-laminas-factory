@@ -22,6 +22,12 @@
     "mimmi20/monolog-factory": "^1.0.2"
   },
   "require-dev": {
+    "ext-ctype": "*",
+    "ext-dom": "*",
+    "ext-simplexml": "*",
+    "ext-tokenizer": "*",
+    "ext-xml": "*",
+    "ext-xmlwriter": "*",
     "laminas/laminas-config": "^3.7.0",
     "laminas/laminas-dependency-plugin": "^2.2.0",
     "laminas/laminas-eventmanager": "^3.5.0",
