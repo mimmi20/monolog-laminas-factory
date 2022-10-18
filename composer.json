@@ -27,7 +27,7 @@
     "ext-tokenizer": "*",
     "ext-xml": "*",
     "ext-xmlwriter": "*",
-    "laminas/laminas-config": "^3.7.0",
+    "laminas/laminas-config": "^3.8.0",
     "laminas/laminas-dependency-plugin": "^2.2.0",
     "laminas/laminas-eventmanager": "^3.6.0",
     "laminas/laminas-modulemanager": "^2.12.0",
